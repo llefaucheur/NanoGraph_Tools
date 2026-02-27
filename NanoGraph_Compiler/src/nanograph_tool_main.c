@@ -36,7 +36,8 @@
 #include "nanograph_tool_include.h"
 
 extern void arm_nanograph_read_manifests (struct nanograph_platform_manifest *platform, char *all_files);
-extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform,struct nanograph_graph_linkedlist *graph, char* ggraph_txt);
+extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_txt);
+extern void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_txt);
 extern void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph, FILE *ptf_graph_bin, char* ggraph_source);
 
 /**
@@ -143,7 +144,14 @@ void main(int argc, char* argv[])
     
     printf ("\n-----------------\n\n %s \n\n-----------------\n", GRAPH_TXT);
     read_input_file (GRAPH_TXT, ggraph);
-    arm_nanograph_read_graph(platform, graph, ggraph);
+    if (0 == strncmp(ggraph, "GUI", 3))
+    {
+        arm_nanograph_read_GUI(platform, graph, ggraph);
+    }
+    else
+    {
+        arm_nanograph_read_graph(platform, graph, ggraph);
+    }
 
     /*@@@  TODO
        check consistency : formats between nodes/arcs 

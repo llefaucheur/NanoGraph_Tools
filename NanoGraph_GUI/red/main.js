@@ -74,8 +74,8 @@ var RED = (function() {
 			// Note YML does not use TABS, always use spaces
 			var yml = "";
 			if (export_as_yaml){
-				yml += "version: " + "'1.0'" + "\n";
-				// yml += "graph:" + "\n";
+				// yml += "version: " + "'1.0'" + "\n";
+				yml += "GUI graph " + "\n";
 				yml += "  nodes:" + "\n";
 			}
 
@@ -106,6 +106,7 @@ var RED = (function() {
                             yml += "  - node: " + name + "\n";
                             if (! isEmpty(node["PRESET"])) { yml += "    PRESET: " + String(node["PRESET"]) + "\n" }
                             if (! isEmpty(node["SCRIPT"])) { yml += "    SCRIPT: " + String(node["SCRIPT"]) + "\n" }
+                            if (! isEmpty(node["COEFS"]))  { yml += "    COEFS:  " + String(node["COEFS"]) + "\n" }
                         }
 						//if (node._def.inputs > 0) {
 						//	yml += "    inputs:\n";
