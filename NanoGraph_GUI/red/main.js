@@ -75,7 +75,7 @@ var RED = (function() {
 			var yml = "";
 			if (export_as_yaml){
 				// yml += "version: " + "'1.0'" + "\n";
-				yml += "GUI graph " + "\n";
+				yml += "GUI graph - AUTOMATICALLY GENERATED ! " + ( new Date() ).toDateString() + "\n";
 				yml += "  nodes:" + "\n";
 			}
 
@@ -89,24 +89,18 @@ var RED = (function() {
 					// TODO When graph is finalised create an array of field types to iterate through
 					// or at least remove the if (!undefined) logic for fields that are universal
 					if (export_as_yaml){
-						//yml += "  - node: " + name + "\n";
-						//yml += "    kind: " + node["kind"] + "\n";
-						//if (node["samplingRate"] != undefined)  {yml += "    samplingRate: " + String(node["samplingRate"]) + "\n"}
-						//if (node["NbChan"] != undefined)        {yml += "    NbChan: " + String(node["NbChan"]) + "\n"}
-						//if (node["interleaving"] != undefined)  {yml += "    interleaving: " + String(node["interleaving"]) + "\n"}
-                        //if (node["timeStamp"] != undefined)     {yml += "    timeStamp: " + String(node["timeStamp"]) + "\n" }
 
                         if (node["kind"] == "IO") {
                             yml += "  - IO:   " + name + "\n";
-                            if (! isEmpty(node["FRAMEL"])) { yml += "    FRAMEL: " + String(node["FRAMEL"]) + "\n" } // frame length in samples
-                            //if (node["FRAMEL"] != undefined) { yml += "    FRAMEL: " + String(node["FRAMEL"]) + "\n" } // frame length in samples
-                            if (! isEmpty(node["NBCHAN"])) { yml += "    NBCHAN: " + String(node["NBCHAN"]) + "\n" } // number of channel options 
+                            if (! isEmpty(node["framel"])) { yml += "    FRAMEL: " + String(node["framel"]) + "\n" } // frame length in samples
+                            if (! isEmpty(node["nbchan"])) { yml += "    NBCHAN: " + String(node["nbchan"]) + "\n" } // number of channel options 
+                            if (! isEmpty(node["samprt"])) { yml += "    SAMPRT: " + String(node["samprt"]) + "\n" } // sampling rate in Hertz
                         } 
                         if (node["kind"] == "node") {
                             yml += "  - node: " + name + "\n";
-                            if (! isEmpty(node["PRESET"])) { yml += "    PRESET: " + String(node["PRESET"]) + "\n" }
-                            if (! isEmpty(node["SCRIPT"])) { yml += "    SCRIPT: " + String(node["SCRIPT"]) + "\n" }
-                            if (! isEmpty(node["COEFS"]))  { yml += "    COEFS:  " + String(node["COEFS"]) + "\n" }
+                            if (! isEmpty(node["preset"])) { yml += "    PRESET: " + String(node["preset"]) + "\n" }
+                            if (! isEmpty(node["script"])) { yml += "    SCRIPT: " + String(node["script"]) + "\n" }
+                            if (! isEmpty(node["params"])) { yml += "    PARAMS: " + String(node["params"]) + "\n" }
                         }
 						//if (node._def.inputs > 0) {
 						//	yml += "    inputs:\n";

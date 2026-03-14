@@ -288,8 +288,8 @@ struct arcStruct
     uint32_t domain;                    // domain of operation
     uint32_t HQoS;                      // treat this stream of data with highest priority whatever the other arc content
     uint32_t INST_ID;                   // IO affinity for the instance ID
-    //uint32_t procID;                    // IO affinity for the processor ID
-    //uint32_t archID;                    // IO affinity for the architecture ID
+    uint32_t script_sel;                // Activate a script on read / write / both
+    uint32_t script;                    // script executed on R/W access
     uint32_t arc_graph_ID;              // index of the arc used in the graph for this HW IO arc
     uint32_t fw_io_idx;                 // ID of the interface given in "files_manifests_computer" associated function (platform dependent) 
     uint32_t format_idx;                // stream format index

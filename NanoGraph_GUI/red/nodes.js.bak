@@ -60,8 +60,7 @@ RED.nodes = (function() {
 		var sep = /[0-9]$/.test(basename) ? "_" : "";
 		var name;
 		while (1) {
-			/* name = basename + sep + count; */
-			name = basename + "[" + count + "]";
+			name = basename + sep + count;
 			if (!checkID(name)) break;
 			count++;
 		}
@@ -81,7 +80,7 @@ RED.nodes = (function() {
 			}
 			while (RED.nodes.namedNode(newName) !== null) {
 				count += 1;
-				newName = base + "[" + count + "]";
+				newName = base + count;
 			}
 		}
 		return newName;

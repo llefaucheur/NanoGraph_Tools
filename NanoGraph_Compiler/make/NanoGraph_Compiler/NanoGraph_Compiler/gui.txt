@@ -1,0 +1,15 @@
+GUI graph - AUTOMATICALLY GENERATED ! Thu Mar 12 2026
+  nodes:
+  - IO:   io_data_in[0]
+  - node: filter[0]
+    PARAMS: 1 0.06 1.4 24
+  - node: detector[0]
+    PRESET: 2
+  - IO:   io_data_out[0]
+  arcs:
+  - OPort0 IO:   io_data_in[0]
+    IPort0 node: filter[0]
+  - OPort0 node: filter[0]
+    IPort0 node: detector[0]
+  - OPort0 node: detector[0]
+    IPort0 IO:   io_data_out[0]

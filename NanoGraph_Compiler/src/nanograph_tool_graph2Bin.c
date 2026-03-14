@@ -67,7 +67,7 @@
 
 */
 
-void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph, FILE *ptf_graph_bin, char* ggraph_source)
+void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph, char* ggraph_source)
 {
     uint32_t FMT0, FMT1, FMT2, FMT3, FMT4, FMT5, ARC0_; 
     uint32_t ARCW[SIZEOF_ARCDESC_W32];
@@ -913,6 +913,8 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
             (graph->arc[iarc].HQoS==0)?" ":"HQoS"); 
         GTEXTINC(tmpstring); 
 
+        ST(ARCW[FMT_ARCW4], SCRIPTSEL_ARCW4, graph->arc[iarc].script_sel);
+        ST(ARCW[FMT_ARCW4], SCRIPT_ARCW4,    graph->arc[iarc].script);
         ST(ARCW[FMT_ARCW4], PRODUCFMT_ARCW4, graph->arc[iarc].fmtProd);
         ST(ARCW[FMT_ARCW4], CONSUMFMT_ARCW4, graph->arc[iarc].fmtCons);
 

@@ -1019,11 +1019,12 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             fields_extract(&pt_line, "ci", ctmp, &i);
             graph->arc[i].alignmentBytes = i;
         } 
-        if (COMPARE(arc_control_script))            // align the arc buffer to the cache line
+        if (COMPARE(arc_control_script))    // arc_control_script #ScriptID  R/W/Both
         {
-            fields_extract(&pt_line, "ci", ctmp, &i);
-            graph->arc[i].alignmentBytes = i;
-        } 
+            fields_extract(&pt_line, "cii", ctmp, &i, &j);
+            graph->arc[i].script = i;
+            graph->arc[i].script_sel = j;
+        }
     }
 }
 

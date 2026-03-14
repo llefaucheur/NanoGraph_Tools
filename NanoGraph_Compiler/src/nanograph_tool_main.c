@@ -37,8 +37,8 @@
 
 extern void arm_nanograph_read_manifests (struct nanograph_platform_manifest *platform, char *all_files);
 extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_txt);
-extern void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_txt);
-extern void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph, FILE *ptf_graph_bin, char* ggraph_source);
+extern void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_gui, FILE * ggraph_txt_result);
+extern void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph, char* ggraph_source);
 
 /**
   @brief            (main) 
@@ -52,34 +52,37 @@ extern void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *plat
 
 void main(int argc, char* argv[])
 {
-    char *all_files, *ggraph;
+    char * pt_line, found_manifest_file, found_gui_file;
 
     struct nanograph_platform_manifest *platform;
     struct nanograph_graph_linkedlist *graph;
 #define GRAPH_HEADER        "header.h"         /* list of labels to do "set_parameter" from scripts */
 #define GRAPH_DEBUG         "debug.txt"        /* comments made during graph conversion  */
     FILE *commands;
-    //char GRAPH_PATH[MAXINPUT];
-    //char SYSTEM[MAXINPUT];
-    char GRAPH_TXT[MAXINPUT];
-    char GRAPH_BIN[MAXINPUT];
-    char GRAPH_TOP_MANIFEST[MAXINPUT];
+    char ARG_PARAM[MAXINPUT], tag[NBCHAR_LINE], file_name[NBCHAR_LINE], file_nameGUI[NBCHAR_LINE];
+    char MANIFEST [MAXINPUT];
+    char GRAPH_GUI[MAXINPUT];
+    char GRAPH_TXT[MAXINPUT], graph_file_name[NBCHAR_LINE];
+    char GRAPH_BIN[MAXINPUT], binary_file_name[NBCHAR_LINE];
 
-    commands = fopen(argv[1], "rt");
+    /* read the command file (the list of files used for the compilation) */
+    read_input_file(argv[1], ARG_PARAM);
+    pt_line = ARG_PARAM;
+    found_gui_file = found_manifest_file = 0;
 
-    //fscanf(commands, "%s", GRAPH_PATH);
-    //sprintf(SYSTEM, "cd %s \n", GRAPH_PATH);
-    //system(SYSTEM);
-
-    fscanf(commands, "%s", GRAPH_TXT);
-    fscanf(commands, "%s", GRAPH_BIN);
-    fscanf(commands, "%s", GRAPH_TOP_MANIFEST);
-    fclose(commands);
-
-    if (0 == (all_files = calloc(MAXINPUT, 1))) { printf("\n init error calloc \n"); }
-    if (0 == (ggraph = calloc (MAXINPUT, 1))) {  printf ("\n init error \n"); exit( 1); }
-    if (0 == (platform = calloc (sizeof(struct nanograph_platform_manifest), 1))) {  printf ("\n init error \n"); exit( 1); }
-    if (0 == (graph = calloc (sizeof(struct nanograph_graph_linkedlist), 1))) {  printf ("\n init error \n"); exit( 1); }
+    jump2next_valid_line(&pt_line);
+    while (found_manifest_file == 0)
+    {
+        fields_extract(&pt_line, "cc", tag, file_name);
+        if (0 == strcmp("GUI", tag)) { strcpy(file_nameGUI, file_name);  read_input_file(file_nameGUI, GRAPH_GUI); found_gui_file = 1;}
+        if (0 == strcmp("GRAPH", tag)) { strcpy(graph_file_name, file_name);  }
+        if (0 == strcmp("COMPILED", tag)) { strcpy(binary_file_name, file_name); }
+        if (0 == strcmp("MANIFEST", tag)) { read_input_file(file_name, MANIFEST); found_manifest_file = 1; }
+        if (globalEndFile == FOUND_END_OF_FILE) break;
+    }
+    globalEndFile = 0;
+    if (0 == (platform = calloc(sizeof(struct nanograph_platform_manifest), 1))) { printf("\n init error \n"); exit(1); }
+    if (0 == (graph = calloc(sizeof(struct nanograph_graph_linkedlist), 1))) { printf("\n init error \n"); exit(1); }
 
     /* 
         Read the file names : 
@@ -114,16 +117,12 @@ void main(int argc, char* argv[])
 
     system("cd ");
 
-    if (0 == (graph->ptf_graph_bin = fopen(GRAPH_BIN, "wt"))) { printf("\n init error %s \n", GRAPH_BIN); exit(1); }
+    if (0 == (graph->ptf_graph_bin = fopen(binary_file_name, "wt"))) { printf("\n init error %s \n", GRAPH_BIN); exit(1); }
     if (0 == (graph->ptf_header = fopen(GRAPH_HEADER, "wt"))) {  printf (  "\n init error %s \n", GRAPH_HEADER); exit( 1); }
     if (0 == (graph->ptf_debug = fopen(GRAPH_DEBUG, "wt"))) {  printf (  "\n init error %s\n", GRAPH_DEBUG); exit( 1); }
 
-;
-
-    read_input_file (GRAPH_TOP_MANIFEST, all_files);
-    arm_nanograph_read_manifests(platform, all_files);
-    
-    
+    arm_nanograph_read_manifests(platform, MANIFEST);
+   
     /*
         read the GRAPH, compile the scripts
         cumulate SRAM needs (static/working/graph size) 
@@ -142,16 +141,19 @@ void main(int argc, char* argv[])
             PACK data to 32bits
     */
     
-    printf ("\n-----------------\n\n %s \n\n-----------------\n", GRAPH_TXT);
-    read_input_file (GRAPH_TXT, ggraph);
-    if (0 == strncmp(ggraph, "GUI", 3))
+    if (found_gui_file)
     {
-        arm_nanograph_read_GUI(platform, graph, ggraph);
+        FILE* ptf_graph_txt;
+        printf("\n-----------------\n\n %s => %s\n\n-----------------\n", file_nameGUI, graph_file_name);
+        if (0 == (ptf_graph_txt = fopen(graph_file_name, "wt"))) { exit(-1); };
+
+        arm_nanograph_read_GUI(platform, graph, GRAPH_GUI, ptf_graph_txt);
+        fclose(ptf_graph_txt);
     }
-    else
-    {
-        arm_nanograph_read_graph(platform, graph, ggraph);
-    }
+
+    printf("\n-----------------\n\n %s \n\n-----------------\n", graph_file_name);
+    read_input_file(graph_file_name, GRAPH_TXT);
+    arm_nanograph_read_graph(platform, graph, GRAPH_TXT);
 
     /*@@@  TODO
        check consistency : formats between nodes/arcs 
@@ -172,13 +174,11 @@ void main(int argc, char* argv[])
         Convert the structure to the binary format
             used by the graph interpreter and scheduler
     */
-    {   FILE * ptf_graph_bin;
+    {  if (0 == (graph->ptf_graph_bin = fopen(binary_file_name, "wt"))) exit( 1);
 
-        if (0 == (ptf_graph_bin = fopen(GRAPH_BIN, "wt"))) exit( 1);
+        arm_nanograph_graphTxt2Bin(platform, graph, graph_file_name);
 
-        arm_nanograph_graphTxt2Bin(platform, graph, ptf_graph_bin, GRAPH_TXT);
-
-        fclose(ptf_graph_bin); 
+        fclose(graph->ptf_graph_bin);
 
     }
 

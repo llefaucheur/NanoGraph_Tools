@@ -23,7 +23,7 @@ RED.sidebar.info = (function() {
 	content.style.paddingRight = "4px";
 
 	RED.sidebar.addTab("info",content);
-	$("#tab-info").html("");
+	$("#tab-info").html("<h3>Welcome</h3><p> </p><h3>Offline Use</h3><p>This tool does not use a server.  A stand-alone copy is provided in the gui folder.</p><h3>Credits</h3><p> Open source <a href=\"http://nodered.org/\" target=\"_blank\">Node-RED</a> project and <a href=\"https://www.pjrc.com/teensy/gui/\" target=\"_blank\">Teensy Audio</a> fork which this graph generator is based on </p>");
 
 	function jsonFilter(key,value) {
 		if (key === "") {
