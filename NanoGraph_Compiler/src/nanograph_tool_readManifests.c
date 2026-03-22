@@ -55,19 +55,21 @@
 void decode_domain(int *domain_index, char *input)
 {         
     *domain_index = (char)(-1);
-    if (0 == strncmp(input, "general",           strlen("general")))            *domain_index = IO_DOMAIN_GENERAL;         
-    if (0 == strncmp(input, "audio_in",          strlen("audio_in")))           *domain_index = IO_DOMAIN_AUDIO_IN;         /* for PDM, I2S, ADC */
-    if (0 == strncmp(input, "audio_out",         strlen("audio_out")))          *domain_index = IO_DOMAIN_AUDIO_OUT;
-    if (0 == strncmp(input, "gpio",              strlen("gpio")))               *domain_index = IO_DOMAIN_GPIO;             /* extra data for BSP (delay, edge, HiZ, debouncing, analog mix..) */
-    if (0 == strncmp(input, "motion",            strlen("motion")))             *domain_index = IO_DOMAIN_MOTION; 
-    if (0 == strncmp(input, "2d_in",             strlen("d2_in")))              *domain_index = IO_DOMAIN_2D_IN;            /* control of AGC, zoom in 1/4 image area */
-    if (0 == strncmp(input, "2d_out",            strlen("2d_out")))             *domain_index = IO_DOMAIN_2D_OUT;
-    if (0 == strncmp(input, "user_interface",    strlen("user_interface")))     *domain_index = IO_DOMAIN_USER_INTERFACE; 
-    if (0 == strncmp(input, "analog_in",         strlen("analog_in")))          *domain_index = IO_DOMAIN_ANALOG_IN;        /* sensor with aging control */
-    if (0 == strncmp(input, "analog_out",        strlen("analog_out")))         *domain_index = IO_DOMAIN_ANALOG_OUT;
-    if (0 == strncmp(input, "platform_1",        strlen("platform1")))          *domain_index = IO_DOMAIN_PLATFORM_1;       /* platform callbacks */
-    if (0 == strncmp(input, "platform_2",        strlen("platform2")))          *domain_index = IO_DOMAIN_PLATFORM_2;       
-    if (0 == strncmp(input, "platform_3",        strlen("platform3")))          *domain_index = IO_DOMAIN_PLATFORM_3;       
+    if (0 == strncmp(input, "general",        strlen("general")))        *domain_index = IO_DOMAIN_GENERAL;         
+    if (0 == strncmp(input, "audio_in",       strlen("audio_in")))       *domain_index = IO_DOMAIN_AUDIO_IN;         /* for PDM, I2S, ADC */
+    if (0 == strncmp(input, "audio_out",      strlen("audio_out")))      *domain_index = IO_DOMAIN_AUDIO_OUT;
+    if (0 == strncmp(input, "gpio",           strlen("gpio")))           *domain_index = IO_DOMAIN_GPIO;             /* extra data for BSP (delay, edge, HiZ, debouncing, analog mix..) */
+    if (0 == strncmp(input, "motion",         strlen("motion")))         *domain_index = IO_DOMAIN_MOTION; 
+    if (0 == strncmp(input, "2d_in",          strlen("d2_in")))          *domain_index = IO_DOMAIN_2D_IN;            /* control of AGC, zoom in 1/4 image area */
+    if (0 == strncmp(input, "2d_out",         strlen("2d_out")))         *domain_index = IO_DOMAIN_2D_OUT;
+    if (0 == strncmp(input, "analog_in",      strlen("analog_in")))      *domain_index = IO_DOMAIN_ANALOG_IN;        /* sensor with aging control */
+    if (0 == strncmp(input, "analog_out",     strlen("analog_out")))     *domain_index = IO_DOMAIN_ANALOG_OUT;
+    if (0 == strncmp(input, "user_interface", strlen("user_interface"))) *domain_index = IO_DOMAIN_USER_INTERFACE; 
+    if (0 == strncmp(input, "time",           strlen("time")))           *domain_index = IO_DOMAIN_TIME;             /* timers systick */
+    if (0 == strncmp(input, "platform_1",     strlen("platform1")))      *domain_index = IO_DOMAIN_PLATFORM_1;       /* platform callbacks */
+    if (0 == strncmp(input, "platform_2",     strlen("platform2")))      *domain_index = IO_DOMAIN_PLATFORM_2;       
+    if (0 == strncmp(input, "platform_3",     strlen("platform3")))      *domain_index = IO_DOMAIN_PLATFORM_3;       
+
 
     if (*domain_index == (char)(-1))
     {   fprintf(stderr, "\n\n decode_domain error for %s \n\n", input);
@@ -598,13 +600,18 @@ void arm_nanograph_read_manifests (struct nanograph_platform_manifest *platform,
         platform->nbMemoryBank_shared_and_private = index_mem;
 
         /*
-            ;Path   IO Manifest        IO_AL_idx    Comments               
-            1 io_platform_2d_in_0.txt          5    camera                 
-            1 io_platform_gpio_out_1.txt       8    GPIO/PWM               
+            ;Path   IO Manifest        IO_AL_idx  inst_idx  Comments               
+            1 io_platform_2d_in_0.txt          5   1        camera                 
+            1 io_platform_gpio_out_1.txt       8   1        GPIO/PWM               
         */
+
+        for (i = 0; i < MAX_GRAPH_NB_HW_IO; i++)        /* reset the IO arc connections */
+        {   platform->IO_arc[i].arc_graph_ID = NOT_CONNECTED_TO_GRAPH;
+        }
+
         for (istream = 0; istream < platform->processor[iproc].nb_hwio_processor; istream++)
-        {        
-            char tmpchar[NBCHAR_LINE];  /* file name of the HW IO */ 
+        {
+            char tmpchar[NBCHAR_LINE];  /* file name of the HW IO */
 
             fields_extract(&pt_line, "icii", &ipath, tmpchar, &io_al_idx, &instance_idx_allowed);
 
@@ -620,7 +627,6 @@ void arm_nanograph_read_manifests (struct nanograph_platform_manifest *platform,
             read_platform_io_nanograph_manifest(inputFile, &(platform->IO_arc[io_al_idx]));
             platform->IO_arc[io_al_idx].fw_io_idx = io_al_idx;
             platform->IO_arc[io_al_idx].INST_ID = instance_idx_allowed;
-            platform->IO_arc[io_al_idx].arc_graph_ID = NOT_CONNECTED_TO_GRAPH;
         } 
 
         //platform->nb_hwio_stream += platform->processor[iproc].nb_hwio_processor; /* sum of all IO, one per processor */

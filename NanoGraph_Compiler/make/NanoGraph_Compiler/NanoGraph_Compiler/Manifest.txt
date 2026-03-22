@@ -1,11 +1,17 @@
-; GUI TEST 
 ;=================================================================
-    4                      six file paths
+; TOP MANIFEST :
+;   - paths to the files
+;   - shared memories
+;   - list of processors and their private memories and IOs
+;   - list of the nodes installed in each processor and/or architectures
+;=================================================================
+    4                      file paths
 
     0 .                   
     1 ../../../../../NanoGraph_Infineon_PSOC_E84/NanoGraph_Platform/io_manifest/ 
-    2 ../../../../../NanoGraph_Infineon_PSOC_E84/NanoGraph_Store/arm/                  
-    3 ../../../../../NanoGraph_Infineon_PSOC_E84/NanoGraph_Store/signal-processingFR/  
+    2 ../../../../../NanoGraph_Store/arm/                  
+    3 ../../../../../NanoGraph_Store/signal-processingFR/  
+
 
 ;=================================================================
     1           number of processors
@@ -31,7 +37,7 @@
 ;=================================================================
 ;   Processor #1 - architecture #1 
 ;   proc ID, arch ID, main proc, nb mem, service mask, I/O, CacheLine
-    1        1        1          2       15            9    0
+    1        1        1          2       15            13    0
 
 ;---MEMID SIZE  A S T SWAP  Comments 
     3    1000   1 2 0 -1    simulates DTCM 
@@ -40,59 +46,56 @@
 ;-----IO AFFINITY WITH PROCESSOR 1-------------------------------
     ; io_al_idx : index to the software table of functions
     ;             0 used for sinking (+rewinding script) without consumer node
-    ; inst_idx : instance index allowed to initialize this IO stream
+    ; inst_idx : instance index controlling this IO stream
+    ;Path Manifest       io_al_idx inst_idx   Comments / frame size
 
-    ;Path Manifest      io_al_idx inst_idx   Comments / frame size
+     1 io_data_in_0.txt          1   0 
+     1 io_data_in_1.txt          2   0 
+     1 io_data_out_0.txt         3   0 
+     1 io_data_out_1.txt         4   0 
+     1 io_sensor_in_0.txt        5   0 
+;    1 io_sensor_in_1.txt        6   0 
+;    1 io_sensor_in_2.txt        7   0 
+;    1 io_sensor_in_3.txt        8   0 
+     1 io_timer_0.txt            9   0 
+;    1 io_timer_1.txt           10   0 
+     1 io_ui_in_0.txt           11   0 
+;    1 io_ui_in_1.txt           12   0 
+;    1 io_ui_in_2.txt           13   0 
+;    1 io_ui_in_3.txt           14   0 
+     1 io_ui_out_0.txt          15   0 
+;    1 io_ui_out_1.txt          16   0 
+;    1 io_ui_out_2.txt          17   0 
+;    1 io_ui_out_3.txt          18   0 
+     1 io_serial_in_0.txt       19   0 
+;    1 io_serial_out_0.txt      20   0 
+     1 io_analog_in_0.txt       21   0 
+;    1 io_analog_out_0.txt      22   0 
+     1 io_audio_in_0.txt        23   0 
+;    1 io_audio_in_1.txt        24   0 
+;    1 io_audio_in_2.txt        25   0 
+     1 io_audio_out_0.txt       26   0 
+;    1 io_audio_out_1.txt       27   0 
+;    1 io_audio_out_2.txt       28   0 
+     1 io_2d_in_0.txt           30   0 
+;    1 io_2d_in_1.txt           31   0 
+;    1 io_2d_out_0.txt          32   0 
+;    1 io_2d_out_1.txt          33   0 
 
-    1 io_data_in_0.txt          1  1
-    1 io_data_in_1.txt          1  2
-    1 io_data_out_0.txt         1  3
-    1 io_data_out_1.txt         1  4
-    1 io_sensor_in_0.txt        1  5
-    1 io_sensor_in_1.txt        1  6
-    1 io_sensor_in_2.txt        1  7
-    1 io_sensor_in_3.txt        1  8
-    1 io_timer_0.txt            1  9
-    1 io_timer_1.txt            1 10
-    1 io_ui_in_0.txt            1 11
-    1 io_ui_in_1.txt            1 12
-    1 io_ui_in_2.txt            1 13
-    1 io_ui_in_3.txt            1 14
-    1 io_ui_out_0.txt           1 15
-    1 io_ui_out_1.txt           1 16
-    1 io_ui_out_2.txt           1 17
-    1 io_ui_out_3.txt           1 18
-    1 io_serial_in_0.txt        1 19
-    1 io_serial_out_0.txt       1 20
-    1 io_analog_in_0.txt        1 21
-    1 io_analog_out_0.txt       1 22
-    1 io_audio_in_0.txt         1 23
-    1 io_audio_in_1.txt         1 24
-    1 io_audio_in_2.txt         1 25
-    1 io_audio_out_0.txt        1 26
-    1 io_audio_out_1.txt        1 27
-    1 io_audio_out_2.txt        1 28
-    1 io_2d_in_0.txt            1 30
-    1 io_2d_in_1.txt            1 31
-    1 io_2d_out_0.txt           1 32
-    1 io_2d_out_1.txt           1 33
 
 ;---MEMID SIZE  A S T   Comments
 ;------IO AFFINITY WITH PROCESSOR 3-------------------------------
 
 ;======== ALL NODES ==============================================
-; scheduler algorithm :
-; if the node archID > 0 then check compatibility with processor archID and exit
-; if the node procID > 0 then check compatibility with processor procID and exit
 ;
 ;   Path                 Node Manifest                PROC ARCH  ID    COMMENTS
-;    2       router/node_manifest_router.txt             0   1    2  
+    2       router/node_manifest_router.txt             0   1    2  
 ;    2    amplifier/node_manifest_amplifier.txt          0   1    3    
-     2       filter/node_manifest_filter.txt             0   1    4    
+    2       filter/node_manifest_filter.txt             0   1    4    
 ;    2    modulator/node_manifest_modulator.txt          0   1    5    
 ;    2  demodulator/node_manifest_demodulator.txt        0   1    6    
 ;    2     filter2D/node_manifest_filter2D.txt           0   1    7    
-    3      detector/node_manifest_detector.txt           0   1    8    
+   3      detector/node_manifest_detector.txt           0   1    8    
 ;   3    detector2D/node_manifest_detector2D.txt         0   1    9    
 ;   3     resampler/node_manifest_resampler.txt          0   1   10    
 ;   3    compressor/node_manifest_compressor.txt         0   1   11    

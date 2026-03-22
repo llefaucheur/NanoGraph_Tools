@@ -53,7 +53,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container-fluid">
-                <span class="brand">Graph Interpreter Project </a></span>
+                <span class="brand">   NanoGraph </a></span>
                 <div class="btn-group pull-right">
                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-align-justify"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -111,7 +111,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
             <div id="palette-container" class="palette-scroll">
             </div>
             <div id="palette-search">
-                <i class="icon-search"></i><input id="palette-search-input" type="text" placeholder="filter"><a href="#" id="palette-search-clear"><i class="icon-remove"></i></a></input>
+                <i class="icon-search"></i><input id="palette-search-input" type="text" placeholder="arm_filter"><a href="#" id="palette-search-clear"><i class="icon-remove"></i></a></input>
             </div>
         </div><!-- /palette -->
 
@@ -377,7 +377,22 @@ span.mainfunction {color: #993300; font-weight: bolder}
     -->
     TODO Add support for multiple IO for more nodes. Currently only those required for DSP-App demo are fully functional but support for nodes with multiple IO may require more work to maintain exportability. This file should be treated as a work in progress.
 
-    <!-- TODO If you remove dataformat here remember to remove from individual labels below -->
+    <!-- INPUT                                  
+         {"type":             "XXXXXXX_in", 
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"YYYYY", "required": "true" },  ======>>> YYYYY default value (if any)
+                  "shortName":"XXXXXXX_in","inputs":0,"outputs":1,
+                  "category":"input-function",                      <<<<===== category
+                  "color":"#e2f2ff"                                 <<<<===== nb of IOs   / 000000 arrow-in_OFF.png  / RED e2f2ff
+
+         OUPUT
+                  "shortName":"XXXXXX","inputs":1,"outputs":0,      <<<<===== category
+                  "category":"output-function",                     <<<<===== category
+                  "color":"#ffeaf1","icon":"arrow-in.png"}},        <<<<===== nb of IOs   / 000000 arrow-in_OFF.png / BLUE ffeaf1     
+         NODES
+                  "shortName":"XXXXXX","inputs":1,"outputs":1,
+                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},   / 000000 arrow-in_OFF.png / grey f1f1f1  
+    -->
     <script type="text/x-red" data-container-name="NodeDefinitions">
          {"nodes":[
 
@@ -396,295 +411,177 @@ span.mainfunction {color: #993300; font-weight: bolder}
                   "shortName":"data_in_0","inputs":0,"outputs":1,
                   "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"data_in_1",
+         {"type":             "io_data_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"data_in_1","inputs":0,"outputs":1,
-                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"analog_sensor",
+         {"type":             "io_sensor_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"analog_sensor","inputs":0,"outputs":1,
-                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_sensor_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"motion_in_0",
+         {"type":             "io_timer",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"motion_in_0","inputs":0,"outputs":1,
-                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_timer","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"audio_in_0",
+         {"type":             "io_ui_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"audio_in_0","inputs":0,"outputs":1,
-                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_ui_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"2d_in_0",
+         {"type":             "io_serial_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" }
-                  },
-                  "shortName":"2d_in_0","inputs":0,"outputs":1,
-                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_serial_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-
-
-        {"type":"line_out_0",
+         {"type":             "io_analog_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"line_out_0","inputs":1,"outputs":0,
-                  "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_analog_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"gpio_out_0",
+         {"type":             "io_audio_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"gpio_out_0","inputs":1,"outputs":0,
-                  "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_audio_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"gpio_out_1",
+         {"type":             "io_2d_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"gpio_out_1","inputs":1,"outputs":0,
-                  "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_2d_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
-         {"type":"data_out_0",
+         {"type":             "io_data_ext_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "FRAMEL":{"value":"", "required": "true" },
-                  "NBCHAN":{"value":"", "required": "true" }
-                  },
-                  "shortName":"data_out_0","inputs":1,"outputs":0,
-                  "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_ext_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
 
 
 
-         {"type":"script4i4o",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" }
-                              },
-                  "shortName":"script4i4o","inputs":4,"outputs":4,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"format_conv",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"format_conv","inputs":1,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"router4i4o",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"router4i4o","inputs":4,"outputs":4,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
 
 
-         {"type":"amplifier",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"amplifier","inputs":1,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":             "io_data_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
-         {"type":"mixer4i1o",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"mixer4i1o","inputs":4,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":             "io_ui_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_ui_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
-         {"type":"filter",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"filter","inputs":1,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":             "io_serial_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_serial_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
-          {"type":"rescaler",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":             "io_analog_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_analog_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
-         {"type":"modulator",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":             "io_audio_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_audio_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
+         {"type":             "io_2d_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_2d_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
-         {"type":"demodulator",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"qos",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"split1i4o",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"split1i4o","inputs":1,"outputs":4,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"analysis",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"analysis","inputs":1,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"filter2D",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"filter2D","inputs":1,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-
-         {"type":"compressor",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"compressor","inputs":1,"outputs":1,
-                  "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"decompressor",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"decompressor","inputs":1,"outputs":1,
-                  "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"converter",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"converter","inputs":1,"outputs":1,
-                  "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"resampler",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"resampler","inputs":1,"outputs":1,
-                  "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":             "io_data_ext_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_ext_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
 
 
-         {"type":"detector",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"detector","inputs":1,"outputs":1,
-                  "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"detector2D",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"detector2D","inputs":1,"outputs":1,
-                  "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"JpgEncoder",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"JpgEncoder","inputs":1,"outputs":1,
-                  "category":"bitbanksw","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":"JpgDecoder",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"JpgDecoder","inputs":1,"outputs":1,
-                  "category":"bitbanksw","color":"#f1f1f1","icon":"arrow-in.png"}},
 
 
 
-         {"type":"OpusDecoder",
-          "data":{"defaults":{"name":{"value":"new"},
-                              "kind":{"value": "node", "required" : "true"},
-                              "PRESET":{"value":"", "required": "true" },
-                              "SCRIPT":{"value":"", "required": "true" }
-                              },
-                  "shortName":"OpusDecoder","inputs":1,"outputs":1,
-                  "category":"Company4","color":"#f1f1f1","icon":"arrow-in.png"}}
+         {"type":             "arm_script",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"script","inputs":2,"outputs":2, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "arm_router",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_router","inputs":4,"outputs":4, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "arm_amplifier",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_amplifier","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "arm_filter",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_filter","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+   
+         {"type":             "arm_modulator",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_modulator","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "arm_demodulator",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_demodulator","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "arm_filter2D",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_filter2D","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "sigp_detector",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_detector","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+   
+         {"type":             "sigp_detector2D",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_detector2D","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+   
+         {"type":             "sigp_resampler",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_resampler","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+   
+         {"type":             "sigp_compressor",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_compressor","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "sigp_decompressor",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_decompressor","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "JPEGENC",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"JPEGENC","inputs":1,"outputs":1, "category":"bitbanksw","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "TjpgDec",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"TjpgDec","inputs":1,"outputs":1, "category":"elm","color":"#f1f1f1","icon":"arrow-in.png"}}
+
 
          ]}
     </script>
 
-    <!-- #Critical Section
+    <!-- 
+    #Critical Section
 
-        {"type":"_SignalGen","data":{"defaults":{"name":{"value":"new"}, "dataformat": {"value": "int16_t", "required": "true" }, "kind":{"value": "Source", "required" : "true"},"numArgs": {"value": 0, "required": "true" }},"shortName":"signal_gen","inputs":0,"outputs":1, "category":"input-function","color":"#E6E0F8","icon":"arrow-in.png"}}
-
-    Use 'adc' node as a case-study:
     data-template-name must match 'type' field from node-definitions for node to connect the two.
 
     You can overwrite default parameters in the GUI via 'form-rows', to connect the GUI input to the actual data field you must use the prefix
     node-input-"ENTER_EXACT_DATAFIELD_NAME_USED_IN_NodeDefinitions"
-    The adc has a text entry field for changing the name of the node and a drop-down to select from preset sample numbers 128/256
 
     Each form row must be inside matching <div class="form-row"> and </div> pairs.
     Drop-downs must be inside <select and </select> pairs with a separate <option>PARAMETER_PRESET_VALUE_HERE</option>
@@ -693,7 +590,10 @@ span.mainfunction {color: #993300; font-weight: bolder}
     data-help-name section is for adding instructions/description of the node.
     Information/text to be displayed should be added inside <p> and </p>
     -->
-    <!----------------------------------- Platform Computer ------------------------------------------->
+    
+    
+    
+   <!----------------------------------- Platform Computer ------------------------------------------->
 
     <script type="text/x-red" data-help-name="Computer">
         <h3>Overview</h3>
@@ -731,897 +631,703 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
+    <!----------------------------------- io_data_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_in">
 
-    <!----------------------------------- data_in_0 ------------------------------------------->
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose graph input (from platform I/O or the main application) </p>
+        </div> </script>
 
-    <script type="text/x-red" data-template-name="data_in_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
+    <!----------------------------------- io_sensor_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_sensor_in">
 
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_sensor_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose graph input (from platform I/O or the main application) </p>
+        <p>reserved for motion, temperature, proximity, CO2, PIR ("motion", "analog_in" or "gpio" domains) </p>
+        </div> </script>
+    <!----------------------------------- io_timer ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_timer">
 
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_timer">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port connected to timers at 100ms, 1s or other tunable values from 1 micro second to periods in days ("timer" domain, hardware or systick timers) </p>
+        </div> </script>
+    <!----------------------------------- io_ui_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_ui_in">
 
-    </script>
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_ui_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to buttons, slider ("user_interface" domain) </p>
+        </div> </script>
+    <!----------------------------------- io_serial_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_serial_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_serial_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to communication RX and remote controls ("general" domain) </p>
+        </div> </script>
+    <!----------------------------------- io_analog_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_analog_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_analog_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to analog A/D input ("motion", "analog_in" or "gpio" domain)</p>
+        </div> </script>
+    <!----------------------------------- io_audio_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_audio_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_audio_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to microphone, PDM, line-in, modem, USB audio ("audio_in" domain) </p>
+        </div> </script>
+    <!----------------------------------- io_2d_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_2d_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_2d_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to camera ("2d_in" domain) </p>
+        </div> </script>   
+    <!----------------------------------- io_data_ext_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_ext_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_ext_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>general purpose IO   </p>
+        </div> </script>
+        
 
 
 
-    <script type="text/x-red" data-help-name="data_in_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose graph input 0 (from I/O or application) </p>
-        <p>Data exchanged with a buffer declared in the  graph memory space (SET) </p>
-        </div>
-    </script>
 
-    <!----------------------------------- data_in_1 ------------------------------------------->
+        
+    <!----------------------------------- io_data_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <script type="text/x-red" data-template-name="data_in_1">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose input to gpio/application </p>
+        </div> </script>
+        
+    <!----------------------------------- io_ui_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_ui_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_ui_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to LED, LCD, Digits, Metadata ("user_interface" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_serial_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_serial_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_serial_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to communication TX for debug / trace and remote control ("general" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_analog_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_analog_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    </script>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_analog_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to analog D/A output ("analog_out" or "gpio" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_audio_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_audio_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <script type="text/x-red" data-help-name="data_in_1">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose graph input 0 (from I/O or application) </p>
-        <p>Data exchanged with a buffer declared in the  graph memory space (SET) </p>
-        </div>
-    </script>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_audio_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to buzzer, class-D, earphone, line-out, ultrasound ("audio_out" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_2d_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_2d_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <!----------------------------------- analog_sensor ------------------------------------------->
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_2d_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to display ("2d_out" domain)</p>
+        </div> </script>
+           <!----------------------------------- io_data_ext_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_ext_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <script type="text/x-red" data-template-name="analog_sensor">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_ext_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose input to gpio/application, usually reserved for the LED </p>
+        </div> </script>
+               
+        
+        
 
-         <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
 
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
-    </script>
+    <!---------------------------------------------------- arm_script ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_script">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <script type="text/x-red" data-help-name="analog_sensor">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>A/D converter and general purpose sensor input </p>
-        </div>
-    </script>
+        </script> <script type="text/x-red" data-help-name="arm_script">  
+        <h4>Description</h4> <div class=tooltipinfo>
+        <p> 
+Scripts are nodes interpreted from byte code declared in the graph. This is a virtual machine programmed like a pocket calculator. There are 14 registers used as data or pointers. Computations are made in floating point (E8M32, 8bits exponent, 32bits mantissa). The programming language supports several data addressing mode (stack, heap, scatter/gather, bit-fields). 
+</p><p>
+The main use-cases of scripts are
+</p><p>
+- update the graph operation on changes of use-cases decided by the application (update node parameters)
+</p><p>- control the input/output FIFO at the boundary of the graph and nodes (compute the average data level and data rates, patch data content, synchronize two streams, flush data)
+</p><p>- characters string processing (AT commands and JSON string generation, Modbus control, debug traces)
+</p><p>- control the execution of a sequence of nodes (loop, by-pass, exit the graph)
+</p><p>
+Script nodes data/stack/parameters and registers context are in a RAM section declared as a dummy output FIFO. 
+</p><p>
+The default memory configuration is "not shared", meaning that memory associated with scripts do not share the same memory buffer.
 
-    <!----------------------------------- motion_in_0 ------------------------------------------->
-
-    <script type="text/x-red" data-template-name="motion_in_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
-    </script>
-
-    <script type="text/x-red" data-help-name="motion_in_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>Accelerometer and Gyroscope input
             </p>
-        </div>
-    </script>
+        </div> </script>
 
-    <!----------------------------------- audio_in_0 ------------------------------------------->
+    <!---------------------------------------------------- arm_router ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_router">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <script type="text/x-red" data-template-name="audio_in_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_router">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+This node receives up to four input streams (arcs) and generates up to four output streams.  
+</p><p>
+Each stream may be multichannel.
+</p><p>
 
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
+The format of the streams is known by the node during the reset and set-parameter commands.
+</p><p>
 
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
+Input streams may be asynchronous and include time stamps.  
+</p><p>
+Output streams are isochronous with other graph streams and have a defined sampling rate.
+</p><p>
 
-        <div class="form-row">
-            <label for="node-input-RAWFMT"><i class="fa fa-tag"></i> Format </label>
-            <select id="node-input-RAWFMT">
-            <option>float32_t</option>
-            <option>int32_t</option>
-            <option>int16_t</option>
-        </select>
-        </div>
-    </script>
+The first parameters specify the number of arcs and identify the input arc to be used with high quality of service (HQoS), or −1 if none is used.  
+</p><p>
+These parameters are followed by a list of routing and mixing rules.
+</p><p>
 
-    <script type="text/x-red" data-help-name="audio_in_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose audio graph input (from I/O or application)
+When an HQoS arc is defined, data movement is aligned to that arc in the time domain.  
+</p><p>
+Other arcs are synchronized accordingly, and data is interpolated or zeroed in case of flow issues.
             </p>
-        </div>
-    </script>
-
-    <!----------------------------------- 2d_in_0 ------------------------------------------->
-
-    <script type="text/x-red" data-template-name="2d_in_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>QQVGA</option>
-            <option>QVGA</option>
-            <option>VGA</option>
-            <option>XGA</option>
-        </select>
-        </div>
+When no HQoS arc is defined, the node evaluates all input and output arcs and determines the minimum amount of data that can be processed consistently across all arcs in the time domain.
 
 
-    </script>
-
-    <script type="text/x-red" data-help-name="2d_in_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose images graph input (from I/O or application) </p>
-        </div>
-    </script>
-
-    <!----------------------------------- line_out_0 ------------------------------------------->
-    <script type="text/x-red" data-template-name="line_out_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-RAWFMT"><i class="fa fa-tag"></i> Format </label>
-            <select id="node-input-RAWFMT">
-            <option>float32_t</option>
-            <option>int32_t</option>
-            <option>int16_t</option>
-        </select>
-        </div>
-    </script>
+        <h4>Use-cases</h4> <div class=tooltipinfo> 
+The following use-cases can be combined:
+</p><p>
+1. Router, deinterleaving, interleaving, channels recombination: the input arc data is processed deinterleaved, and the output arc is the result of recombination of any input arc. Audio example with two stereo input arcs using 5ms and 12ms frame lengths, recombined to create a stereo stream interleaved output using 20ms frame length, the left channel from the first arc and the left channel of the second arc.
+</p><p>
+2. Router and mixer with smoothed gain control: the output arc data can result from the weighted mix of input arcs. The applied gain can be changed on the fly. The slope of the time taken to the desired gain is controlled. Audio example: a mono output arc is computed from the combination of two stereo input arc, by mixing the four input channels with a factor 0.25 applied in the mixer.
+</p><p>
+3. Router and raw data conversion. The raw formats can be converted to any other format in this list : int16, int32, int64, float16, float32, float64.
+</p><p>
+4. Router and sampling-rate conversion of isochronous streams (input streams have a determined and independent sampling-rate). Audio example: input streams sampled at 44100Hz is converted to 48000Hz + 0.026Hz for drift compensation (the sampling-rate information, and all the details of the arc's data format, is shared by the graph scheduler during the reset phase of the nodes).
+</p><p>
+5. Router and conversion of asynchronous streams using time-stamps to an isochronous stream with a determined sampling-rate. Motion sensor example: an accelerometer is sampled at 200Hz (5ms period)  with +/- 1ms jitter sampling time uncertainty. The samples are provided with an accurate time-stamp in float32 format of time differences between samples (or float64 for absolute time reference to Jan 1st 2025). The output samples are delivered resampled at 410Hz with no jitter.
+</p><p>
+6. Router of data needing a time synchronization at sample or frame level. In this use-case the node waits the input samples are arriving within a time window before delivering an output frame. Example with motor control and the capture of current and voltage on two input arcs: it is important to send time-synchronized pairs of data. The command [node_script “index”](node_script-"index") is used to call a script checking the arrival of current and voltage with their respective time-stamps (logged in the arc descriptors), the scripts check the arrival of data within a time and release execution of the router when conditions are met.
+</p><p>
+7. Router of streams generated from different threads. The problem is to avoid on multiprocessing devices one channel to be delivered to the final mixer ahead and desynchronized from the others. This problem is solved with an external script controlling the system time like in the use-case 6.
+</p><p>
 
 
-    <script type="text/x-red" data-help-name="line_out_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose audio output  </p>
-        </div>
-    </script>
+        <h4>Parameters</h4> <div class=tooltipinfo>
+</p><p>
+The list of routing and mixing information is :
+</p><p>
+</p><p>- index of the input arc (<= 4)
+</p><p>- index of the channels (1 Byte to 31 Bytes)
+</p><p>- index of the output destination arc (<=4)
+</p><p>- index of the channels (1 Byte to 31 Bytes) 
+</p>   - mixer gain to apply (fp32) and convergence speed (fp32)
 
-    <!----------------------------------- gpio_out_0 ------------------------------------------->
-    <script type="text/x-red" data-template-name="gpio_out_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-RAWFMT"><i class="fa fa-tag"></i> Format </label>
-            <select id="node-input-RAWFMT">
-            <option>float32_t</option>
-            <option>int32_t</option>
-            <option>int16_t</option>
-        </select>
-        </div>
-    </script>
-
-    <script type="text/x-red" data-help-name="gpio_out_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose output to gpio/application </p>
-        </div>
-    </script>
-    <!----------------------------------- gpio_out_1 ------------------------------------------->
-    <script type="text/x-red" data-template-name="gpio_out_1">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-RAWFMT"><i class="fa fa-tag"></i> Format </label>
-            <select id="node-input-RAWFMT">
-            <option>float32_t</option>
-            <option>int32_t</option>
-            <option>int16_t</option>
-        </select>
-        </div>
-    </script>
-
-    <script type="text/x-red" data-help-name="gpio_out_1">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose output to gpio/application </p>
-        </div>
-    </script>
-    <!----------------------------------- data_out_0 ------------------------------------------->
-    <script type="text/x-red" data-template-name="data_out_0">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row">
-            <label for="node-input-NBCHAN"><i class="fa fa-tag"></i> nb channel</label>
-            <select id="node-input-NBCHAN">
-            <option>1</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-FRAMEL"><i class="fa fa-tag"></i> frame len </label>
-            <select id="node-input-FRAMEL">
-            <option>1</option>
-            <option>2</option>
-            <option>16</option>
-            <option>256</option>
-        </select>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-RAWFMT"><i class="fa fa-tag"></i> Format </label>
-            <select id="node-input-RAWFMT">
-            <option>float32_t</option>
-            <option>int32_t</option>
-            <option>int16_t</option>
-        </select>
-        </div>
-    </script>
-
-    <script type="text/x-red" data-help-name="data_out_0">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>General purpose output to gpio/application </p>
-        </div>
-    </script>
-
-
-    <!----------------------------------- script ------------------------------------------->
-    <script type="text/x-red" data-template-name="script4i4o">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-    </script>
-
-    <script type="text/x-red" data-help-name="script4i4o">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>Interpreted code with maximum 4 input and 4 output </p>
-        </div>
-    </script>
-
-    <!----------------------------------- format_conv ------------------------------------------->
-    <script type="text/x-red" data-template-name="format_conv">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="format_conv">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>arm stream format converter
             </p>
-        </div>
-    </script>
+        </div> </script>
+    <!---------------------------------------------------- arm_amplifier ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_amplifier">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <!----------------------------------- router4i4o ------------------------------------------->
-    <script type="text/x-red" data-template-name="router4i4o">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="router4i4o">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>router4i4o.
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_amplifier">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+</p><p>Operation : rescale and control of the amplitude of the input stream with controlled time of ramp-up/ramp-down. 
+</p><p>The gain control “mute” is used to store the current gain setting, being reloaded with the command “unmute”
+</p><p>Option : either the same gain/controls for all channels or list of parameters for each channel
+</p><p>
+</p><p>Parameters :  new gain/mute/unmute, ramp-up/down slope, delay before starting the slope. 
+</p><p>Use-cases :
+</p><p>    Features : adaptive gain control (range compressor, expander, AGC) under a script control with energy polling 
+</p><p>    Metadata features : "saturation occurred" "energy"
+</p><p>    Mixed-Signal glitches : remove the first seconds of an IR sensor until it was self-calibrated (same for audio Class-D)
+</p><p>
+</p><p>parameters of amplifier (variable size): 
+</p><p>TAG_CMD = 1, uint8_t, 1st-order shifter slope time (as stream_mixer, 0..75k samples)
+</p><p>TAG_CMD = 2, uint16_t, desired gain
+</p><p>TAG_CMD = 3, uint8_t, set/reset mute state
+</p><p>TAG_CMD = 4, uint16_t, delay before applying unmute, in samples
+</p><p>TAG_CMD = 5, uint16_t, delay before applying mute, in samples
+</p><p>
+</p><p>Slopes of rising and falling gains, identical to all channels
+</p><p> Operation : applies vq = **interp1**(x,v,xq) 
+</p><p> Following https://fr.mathworks.com/help/matlab/ref/interp1.html
+</p><p>   linear of polynomial interpolation (implementation)
+</p><p> **Parameters : X,V vectors, size max = 32 points**
             </p>
-        </div>
-    </script>
-
-    <!----------------------------------- amplifier ------------------------------------------->
-    <script type="text/x-red" data-template-name="amplifier">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="amplifier">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>amplifier.
-            </p>
-        </div>
-    </script>
-
-    <!----------------------------------- mixer4i1o ------------------------------------------->
-    <script type="text/x-red" data-template-name="mixer4i1o">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-    <script type="text/x-red" data-help-name="mixer4i1o">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>mixer4i1o.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- filter ------------------------------------------->
-    <script type="text/x-red" data-template-name="filter">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="filter">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>filter.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- rescaler ------------------------------------------->
-    <script type="text/x-red" data-template-name="rescaler">
-            <div class="form-row">
-                <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-                <input type="text" id="node-input-name" placeholder="Name">
-            </div>
-            <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-                 <input type="text" id="node-input-PRESET">  </div>
-
-            <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-                 <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-
-        <script type="text/x-red" data-help-name="rescaler">
-            <h3>Summary</h3>
-            <div class=tooltipinfo>
-            <p>rescaler.
-                </p>
-            </div>
-    </script>
-
-
-
-    <!----------------------------------- modulator ------------------------------------------->
-    <script type="text/x-red" data-template-name="modulator">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="modulator">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>modulator.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- demodulator ------------------------------------------->
-    <script type="text/x-red" data-template-name="demodulator">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="demodulator">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>demodulator.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- qos ------------------------------------------->
-    <script type="text/x-red" data-template-name="qos">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="qos">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>qos.
-            </p>
-        </div>
-    </script>
-
-    <!----------------------------------- split ------------------------------------------->
-    <script type="text/x-red" data-template-name="split1i4o">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="split1i4o">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>split1i4o.
-            </p>
-        </div>
-    </script>
-
-
-
-
-    <!----------------------------------- analysis ------------------------------------------->
-    <script type="text/x-red" data-template-name="analysis">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="analysis">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>analysis.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- filter2D ------------------------------------------->
-    <script type="text/x-red" data-template-name="filter2D">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="filter2D">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>filter2D.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- compressor ------------------------------------------->
-    <script type="text/x-red" data-template-name="compressor">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="compressor">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>compressor.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- decompressor ------------------------------------------->
-    <script type="text/x-red" data-template-name="decompressor">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="decompressor">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>decompressor.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- converter ------------------------------------------->
-    <script type="text/x-red" data-template-name="converter">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="converter">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>converter.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- resampler ------------------------------------------->
-    <script type="text/x-red" data-template-name="resampler">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="resampler">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>resampler.
-            </p>
-        </div>
-    </script>
-
-
-
-    <!----------------------------------- detector --------setting window and right window------------------------>
-    <script type="text/x-red" data-template-name="detector">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-
-    </script>
-
-    <script type="text/x-red" data-help-name="detector">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>Signal detector PRESET. </p>
-        <p>Input MONO of a stream of Q31/float32 data, with or without time-stamp, at any input sampling-rate.</p>
-        <p>Detection flag (0 or 1.0/0x7FFF.FFFF) push on the output port at the rate of the input stream.</p>
+        </div> </script>
+    <!---------------------------------------------------- arm_filter ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_filter">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_filter">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+        Parameters to write in the "params" box:
         <ul>
-        <li>PRESET=0 : (default) voice activity detector , 3dB above floor noise, sampling-rate in range 6kHz .. 16kHz
-        <li>PRESET=1 : audio activity detector , 6dB above floor noise, sampling-rate in range 6kHz .. 192kHz
-        <li>PRESET=2 : signal detection without the high-pass filter
+          <li>filter type (lowpass=1, highpass=2, notch=3, bandpass=4, allpass=5, peak=6, lowshelf=7, highshelf=8) </li>
+          <li>nomalized frequency (Nyquist=0.5)</li>
+          <li>Q-factor</li>
+          <li>gain in dB</li>
+        </ul>  
+        <p>Example for a low-pass filter at 1kHz when the sampling rate is 16kHz : </p>
+        <p>1 0.0625 1.414 24</p>
+            </p>
+        </div> </script>
+
+    <!---------------------------------------------------- arm_modulator ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_modulator">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_modulator">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+ sine, noise, square, saw tooth with amplitude or frequency modulation
+ use-case : ring modulator, sweep generation with a cascade of a ramp generator and a frequency modulator
+            </p>
+        </div> </script>
+    <!---------------------------------------------------- arm_demodulator ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_demodulator">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_demodulator">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+decode a bit-stream from analog data. Use-case: IR decoder, CAN/UART on SPI/I2S audio (Arduino-IRremote)
+</p><p>
+sinewave frequency recognition for alarm detector.
+</p><p>
+Parameters : clock and parity setting or let the algorithm discover the frame setting after some time
+</p><p>
+        </div> </script>        
+    <!---------------------------------------------------- arm_filter2D ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_filter2D">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_filter2D">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+</p><p>
+Filter, rescale/zoom/extract, rotate, exposure compensation, background removal. 
+</p><p>
+
+Channel mixer : insert a portion of the processed image in a larger frame buffer.
+</p><p>
+
+Parameters : spatial and temporal filtering, decimation, distortion, color mapping/log-effect
+</p><p>
+            </p>
+        </div> </script>        
+
+    <!-------------------------------------------------- sigp_detector ------------------------------------------->
+    <script type="text/x-red" data-template-name=       "sigp_detector">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script><script type="text/x-red" data-help-name="sigp_detector">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+            <div class=tooltipinfo>
+        <p>Signal sigp_detector PRESET. </p>
+        <p>Input MONO of a stream of Q15/float32 data, without time-stamp, at any sampling-rate.</p>
+        <p>Detection flag (0 or 1.0/0x7FFF) push on the output port at the frame rate of the input stream.</p>
+        <ul>
+        <li>PRESET=0 : (default) voice activity detector use-case (Fs=16kHz)
+        <li>PRESET=1 : audio activity (Fs=44.1/48kHz)
+        <li>PRESET=2 : signal detection without pre-filtering (debouncing)
         </ul>
-        </p>
-
-        <p align=center><img src="img/node_detector1.png"><br><small> Block diagram of the detector </small></p>
-
-        </div>
-    </script>
+                </p>
+        <p align=center><img img style="max-width: 300px; max-height: 150px" src="img/node_sigp_detector.png"><br><small> Block diagram of the detector </small></p>
+        </div> </script>
 
 
+    <!---------------------------------------------------- sigp_detector2D ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_detector2D">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
-    <!----------------------------------- detector2D ------------------------------------------->
-    <script type="text/x-red" data-template-name="detector2D">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_detector2D">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+Motion and pattern detector. Counting moving object and build a text report (object sizes, shape, speed, color, ..) to be later processed by SLM on the application processor.
+</p><p>
 
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="detector2D">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>detector2D.
+Operation : detection of movement(s) and computation of the movement map
+</p><p>
+Parameters : sensitivity, floor-noise smoothing factors
+</p><p>
+Metadata : decimated map of movement detection
+</p><p>
             </p>
-        </div>
-    </script>
+        </div> </script>        
+
+    <!---------------------------------------------------- sigp_resampler ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_resampler">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_resampler">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+Operation : high quality conversion of multichannel input data rate to the rate of the output arcs 
+</p><p>
+
+  + asynchronous rate conversion within +/- 1% adjustment
+</p><p>
+
+SSRC synchronous rate converter, FS in/out are exchanged during STREAM_RESET
+</p><p>
+ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) pre-LP-filtering tuned from Fout/Fin ratio + Lagrange polynomial interpolator
+</p><p>
 
 
-
-    <!----------------------------------- JpgEncoder ------------------------------------------->
-    <script type="text/x-red" data-template-name="JpgEncoder">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="JpgEncoder">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>JpgEncoder.
             </p>
-        </div>
-    </script>
+        </div> </script>        
 
+    <!---------------------------------------------------- sigp_compressor ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_compressor">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_compressor">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+Operation : wave compression using IMADPCM(4bits/sample)
+</p><p>
+Parameters : coding scheme 
+</p><p>
 
-    <!----------------------------------- JpgDecoder ------------------------------------------->
-    <script type="text/x-red" data-template-name="JpgDecoder">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
+presets (provision codes):
+</p><p>
 
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="JpgDecoder">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>JpgDecoder.
+- 1 : coder IMADPCM
+</p><p>
+- 2 : coder LPC
+</p><p>
+- 4 : coder CVSD for BT speech 
+</p><p>
+- 5 : coder SBC
+</p><p>
+- 6 : coder MP3
+</p><p>
             </p>
-        </div>
-    </script>
+        </div> </script>        
 
+    <!---------------------------------------------------- sigp_decompressor ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_decompressor">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_decompressor">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+decompression of encoded data
+</p><p>
+Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD threshold and silence frame format (w/wo time-stamps)
+</p><p>
 
-    <!----------------------------------- OpusDecoder ------------------------------------------->
-    <script type="text/x-red" data-template-name="OpusDecoder">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <div class="form-row"> <label for="node-input-PRESET"><i class="fa fa-tag"></i> PRESET</label>
-             <input type="text" id="node-input-PRESET">  </div>
-
-        <div class="form-row"> <label for="node-input-SCRIPT"><i class="fa fa-tag"></i> SCRIPT</label>
-             <input type="text" id="node-input-SCRIPT" placeholder="">  </div>
-
-    </script>
-
-    <script type="text/x-red" data-help-name="OpusDecoder">
-        <h3>Summary</h3>
-        <div class=tooltipinfo>
-        <p>OpusDecoder.
+​	dynamic parameters : pause, stop, fast-forward x2 and x4.
+</p><p>
+- 1 : decoder IMADPCM
+</p><p>
+- 2 : decoder LPC
+</p><p>
+- 3 : MIDI player
+</p><p>
+- 4 : decoder CVSD for BT speech 
+</p><p>
+- 5 : decoder SBC
+</p><p>
+- 6 : decoder MP3
+</p><p>
             </p>
-        </div>
-    </script>
+        </div> </script>        
+
+    <!---------------------------------------------------- JPEGENC ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "JPEGENC">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="JPEGENC">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+From "bitbank" https://github.com/google/jpegli/tree/main
+            </p>
+        </div> </script>        
+
+    <!---------------------------------------------------- TjpgDec ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "TjpgDec">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="TjpgDec">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+From "EML" Use-case : images decompression, pattern generation.
+            </p>
+        </div> </script>        
+
 
 
 </body>

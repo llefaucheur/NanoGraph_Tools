@@ -92,15 +92,15 @@ var RED = (function() {
 
                         if (node["kind"] == "IO") {
                             yml += "  - IO:   " + name + "\n";
-                            if (! isEmpty(node["framel"])) { yml += "    FRAMEL: " + String(node["framel"]) + "\n" } // frame length in samples
-                            if (! isEmpty(node["nbchan"])) { yml += "    NBCHAN: " + String(node["nbchan"]) + "\n" } // number of channel options 
-                            if (! isEmpty(node["samprt"])) { yml += "    SAMPRT: " + String(node["samprt"]) + "\n" } // sampling rate in Hertz
+                            if (! isEmpty(node["framel"])) { yml += "    framel: " + String(node["framel"]) + "\n" } // frame length in samples
+                            if (! isEmpty(node["nbchan"])) { yml += "    nbchan: " + String(node["nbchan"]) + "\n" } // number of channel options 
+                            if (! isEmpty(node["samprt"])) { yml += "    samprt: " + String(node["samprt"]) + "\n" } // sampling rate in Hertz
                         } 
                         if (node["kind"] == "node") {
                             yml += "  - node: " + name + "\n";
-                            if (! isEmpty(node["preset"])) { yml += "    PRESET: " + String(node["preset"]) + "\n" }
-                            if (! isEmpty(node["script"])) { yml += "    SCRIPT: " + String(node["script"]) + "\n" }
-                            if (! isEmpty(node["params"])) { yml += "    PARAMS: " + String(node["params"]) + "\n" }
+                            if (! isEmpty(node["preset"])) { yml += "    preset: " + String(node["preset"]) + "\n" }
+                            if (! isEmpty(node["script"])) { yml += "    script: " + String(node["script"]) + "\n" }
+                            if (! isEmpty(node["params"])) { yml += "    params: " + String(node["params"]) + "\n" }
                         }
 						//if (node._def.inputs > 0) {
 						//	yml += "    inputs:\n";

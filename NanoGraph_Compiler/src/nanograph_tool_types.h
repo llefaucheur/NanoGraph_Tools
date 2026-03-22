@@ -498,7 +498,7 @@ struct nanograph_platform_manifest
     /* desired platform domains mapping to platform capabilities (fw_io_idx) TODO @@@@*/
     int domains_to_fw_io_idx[IO_DOMAIN_MAX_NB_DOMAINS];
 
-    uint32_t max_io_al_idx;
+    uint32_t max_io_al_idx;             /* max { fw_io_idx } */
 
     uint32_t platform_key[MAXNB_WORD32_PLAFORM_KEY];
 };

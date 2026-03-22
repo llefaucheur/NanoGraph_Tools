@@ -175,10 +175,10 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
         ST(FMT0,      INST_IDX_HWIO_CONTROL, platform->IO_arc[j].INST_ID);
         ST(FMT0, IDX_TO_NANOGRAPH_HWIO_CONTROL, platform->IO_arc[j].arc_graph_ID);
         if (platform->IO_arc[j].arc_graph_ID == NOT_CONNECTED_TO_GRAPH)
-        {   sprintf(tmpstring, "IO(HW%d) Not Connected InstID_%d ", j, platform->IO_arc[j].INST_ID);
+        {   sprintf(tmpstring, "IO(HW%d) Not Connected ", j);
         }
         else
-        {   sprintf(tmpstring, "IO(HW%d) GraphID(%d)    InstID_%d %s", j, platform->IO_arc[j].arc_graph_ID,
+        {   sprintf(tmpstring, "IO(HW%d) GraphID(%d) allowed InstID_%d %s", j, platform->IO_arc[j].arc_graph_ID,
                 platform->IO_arc[j].INST_ID, platform->IO_arc[j].manifest_file);
         }
         GTEXT(tmpstring); GWORDINC(FMT0);
@@ -647,11 +647,12 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
 
 
     /* ------------------------------------------------------------------------------------------------------------------------------
-        ARC descriptors (4 words each)  + buffer memory allocation
-        Word0: base offsetm data format, need for flush after write
+        ARC descriptors (5 words each)  + buffer memory allocation
+        Word0: base offset need for flush after write
         Word1: size, debug result registers
         Word2: read index, ready for read, flow error and debug tasks index
-        Word3: write index, ready for write, need realignment flag, locking byte 
+        Word3: write index, ready for write, need realignment flag, locking byte
+        Word4: consumer / producer format, script
 
             [0] PIO HW decoding table
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO)

@@ -465,7 +465,7 @@ void findArcIOWithThisID(struct nanograph_graph_linkedlist *graph, uint32_t idx_
 */
 void search_platform_node (char *cstring, struct nanograph_node_manifest **platform_node, 
                  uint32_t *platform_node_idx, 
-                 struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph)
+                 struct nanograph_platform_manifest *platform)
 {   uint32_t inode; 
     
     for (inode = 0; inode < platform->nb_nodes; inode++)
@@ -481,15 +481,24 @@ void search_platform_node (char *cstring, struct nanograph_node_manifest **platf
     *platform_node = &(platform->all_nodes[inode]);
 }
 
-void search_graph_node(char *cstring,  struct nanograph_node_manifest **graph_node, uint32_t *graph_NODE_idx,
+void search_graph_node(char *cstring, uint32_t instance_idx, struct nanograph_node_manifest **graph_node, uint32_t *graph_NODE_idx,
                   struct nanograph_graph_linkedlist *graph)
 {   uint32_t inode, found; 
     
     found = 0;
     for (inode = 0; inode < graph->nb_nodes; inode++)
-    {   if (0 == strncmp(cstring, graph->all_nodes[inode].nodeName,strlen(cstring))) 
-        {   found = 1; 
-            break;
+    {
+        if (0 == strncmp(cstring, graph->all_nodes[inode].nodeName, strlen(cstring)))
+        {
+            if (graph->all_nodes[inode].graph_instance != instance_idx)
+            {
+                continue;
+            }
+            else
+            {
+                found = 1;
+                break;
+            }
         }
     }   
 
@@ -772,7 +781,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             struct nanograph_node_manifest *graph_node;
 
             fields_extract(&pt_line, "cci", ctmp, cstring1, &instance);
-            search_platform_node(cstring1, &platform_node, &platform_node_idx, platform, graph);
+            search_platform_node(cstring1, &platform_node, &platform_node_idx, platform);
 
             graph_node = &(graph->all_nodes[graph->nb_nodes]);
             graph_node->platform_node_idx = platform_node_idx;
@@ -928,7 +937,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             current_arc_is_IO = 1;
             //graph->arc[arcIO] = graph->arc[arcIO];                    /* copy the already filled arc IO details to this new arc */
 
-            search_graph_node(Consumer, &graph_node_Cons, &SwcConsGraphIdx, graph); /* update the arc of the consumer */
+            search_graph_node(Consumer, instCons, &graph_node_Cons, &SwcConsGraphIdx, graph); /* update the arc of the consumer */
             graph->arc[arcIO].fmtProd = fmtProd;        
             graph->arc[arcIO].fmtCons = fmtCons;        
             graph->arc[arcIO].SwcProdGraphIdx = SwcConsGraphIdx;
@@ -949,7 +958,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             current_arc_is_IO = 1;
             //graph->arc[arcIO] = graph->arc[arcIO];                  /* copy the already filled arc IO details to this new arc */
 
-            search_graph_node(Producer, &graph_node_Prod, &SwcProdGraphIdx, graph);
+            search_graph_node(Producer, instProd , &graph_node_Prod, &SwcProdGraphIdx, graph);
             graph->arc[arcIO].fmtProd = fmtProd;           
             graph->arc[arcIO].fmtCons = fmtCons;           
             graph->arc[arcIO].SwcProdGraphIdx = SwcProdGraphIdx;
@@ -967,7 +976,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             char Producer[NBCHAR_LINE], Consumer[NBCHAR_LINE], HQOS[NBCHAR_LINE];
 
             fields_extract(&pt_line, "cciiiciiic", ctmp, Producer, &instProd, &outPort, &fmtProd, Consumer, &instCons, &inPort, &fmtCons, HQOS);
-            search_graph_node(Producer, &graph_node_Prod, &SwcProdGraphIdx, graph);
+            search_graph_node(Producer, instProd, &graph_node_Prod, &SwcProdGraphIdx, graph);
             current_arc_is_IO = 0;
 
             graph_node_Prod->arc[outPort].fmtProd = fmtProd;
@@ -978,7 +987,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             graph_node_Prod->connected_to_the_graph = 1;
 
 
-            search_graph_node(Consumer, &graph_node_Cons, &SwcConsGraphIdx, graph);
+            search_graph_node(Consumer, instCons, &graph_node_Cons, &SwcConsGraphIdx, graph);
             graph_node_Cons->arc[inPort].fmtCons = fmtCons;
             graph_node_Cons->arc[inPort].SwcConsGraphIdx = SwcConsGraphIdx;
             graph_node_Cons->arc[inPort].arcID = graph->nb_arcs;    

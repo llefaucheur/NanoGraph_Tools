@@ -1,0 +1,38 @@
+;--------------------------------------------------------------------------
+;  DATE Fri Mar 20 16:50:34 2026
+;  AUTOMATICALLY GENERATED CODES
+;  DO NOT MODIFY !
+;
+; --- HEADER --------------------------------------------------------------
+graph_locations -1 -1 -1 -1  0 0 0 
+;
+; --- FORMAT -----------------------------------------------------------
+format_index          0      
+format_frame_length  16      
+;
+; --- IO ------------------------------------------------------------------
+stream_io_graph       0   5 ; io_sensor_in_0 
+stream_io_graph       1  15 ; io_ui_out_0 
+;
+; --- NODES ---------------------------------------------------------------
+node arm_filter       0 
+    node_preset       0 
+;
+; -------------------------------------------------------------------------
+node sigp_detector    0 
+    node_preset       0 
+;
+; --- ARCS ----------------------------------------------------------------
+; 
+; Syntax 
+;     arc_input{ io / fmtProd }         { node / inst / arc / fmtCons }
+;     arc_nodes{ inst / arc / fmtProd } { inst / arc / fmtCons }
+;     arc_output{ io / fmtCons }        { node / inst / arc / fmtProd }
+; 
+arc_input  0 0   arm_filter      0 0 0
+;
+arc_nodes  arm_filter      0 1 0  sigp_detector   0 0 0
+;
+arc_output 1 0   sigp_detector   0 1 0
+;
+end ; 

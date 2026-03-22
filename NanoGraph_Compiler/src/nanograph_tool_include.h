@@ -62,8 +62,8 @@ extern void nanograph_tool_read_parameters(char **pt_line,
 extern int  vid_malloc(uint32_t VID, uint32_t size, uint32_t alignment, uint32_t* packxxb, uint32_t* alignment_pad,
         int working, char *comment, struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph);
 extern void search_platform_node(char *cstring, struct nanograph_node_manifest **platform_node, uint32_t *platform_node_idx,
-            struct nanograph_platform_manifest *platform, struct nanograph_graph_linkedlist *graph);
-extern void search_graph_node(char *cstring, struct nanograph_node_manifest **graph_node, uint32_t *graph_NODE_idx, struct nanograph_graph_linkedlist *graph);
+            struct nanograph_platform_manifest *platform);
+extern void search_graph_node(char *cstring, uint32_t idx, struct nanograph_node_manifest **graph_node, uint32_t *graph_NODE_idx, struct nanograph_graph_linkedlist *graph);
 extern void compute_memreq(struct node_memory_bank *m, struct formatStruct *all_format, struct nanograph_node_manifest *node);
 extern void nanograph_tool_read_code(char **pt_line, struct nanograph_platform_manifest *platform,
                             struct nanograph_graph_linkedlist *graph, struct nanograph_script *script);

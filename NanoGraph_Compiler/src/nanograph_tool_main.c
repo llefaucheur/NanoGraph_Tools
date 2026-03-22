@@ -97,14 +97,16 @@ void main(int argc, char* argv[])
     {   uint32_t i;
         for (i = 0; i < MAX_NB_ARCS; i++)
         {   struct arcStruct* arc;
+
             arc = &(graph->arc[i]);
             arc->commander0_servant1 = 1;
             arc->IO_FMT_manifest.nchan = 1;
-            arc->IO_FMT_manifest.frame_length_bytes = 1;
+            arc->IO_FMT_manifest.frame_length_bytes = 4;
+
             arc = &(platform->IO_arc[i]);
             arc->commander0_servant1 = 1;
             arc->IO_FMT_manifest.nchan = 1;
-            arc->IO_FMT_manifest.frame_length_bytes = 1;
+            arc->IO_FMT_manifest.frame_length_bytes = 4;
         }
         for (i = 0; i < MAX_NB_FORMAT; i++)
         {
