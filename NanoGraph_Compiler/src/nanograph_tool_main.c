@@ -58,7 +58,7 @@ void main(int argc, char* argv[])
     struct nanograph_graph_linkedlist *graph;
 #define GRAPH_HEADER        "header.h"         /* list of labels to do "set_parameter" from scripts */
 #define GRAPH_DEBUG         "debug.txt"        /* comments made during graph conversion  */
-    FILE *commands;
+
     char ARG_PARAM[MAXINPUT], tag[NBCHAR_LINE], file_name[NBCHAR_LINE], file_nameGUI[NBCHAR_LINE];
     char MANIFEST [MAXINPUT];
     char GRAPH_GUI[MAXINPUT];

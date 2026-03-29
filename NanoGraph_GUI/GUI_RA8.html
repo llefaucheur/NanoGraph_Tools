@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<!-- vim: set ts=4: -->
+<html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!--
+  Modified from original Node-Red source, for audio system visualization
+
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<head>
+<title>CMSIS-Stream Graph Generator </title>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="jquery/css/smoothness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" media="screen">
+<link rel="stylesheet" type="text/css" href="orion/built-editor.css"/>
+<link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="style.css">
+<style>
+table.doc {border-spacing:3px; border-collapse:separate; font-size: 80%}
+tr.top {background-color:#C0C0C0}
+tr.odd {background-color:#F0F0F0}
+tr.even {background-color:#E0E0E0}
+p.func {padding-bottom:0; margin:0px}
+p.desc {padding-left:2em; margin:0px; padding-top:0.2em; padding-bottom:0.8em; font-size:0.75em}
+p.exam {padding-left:2em; text-indent:-1.2em; margin:0px; padding-top:0; padding-bottom:0.5em; font-size:0.75em; font-weight:bold}
+pre.desc {padding-left:3em; margin:0px; padding-top:0em; padding-bottom:0.8em; font-size:0.75em;
+	background-color:#FFFFFF; border:0px; line-height:100%;
+}
+span.indent {padding-left:2em}
+span.literal {color: #006699}
+span.comment {color: #777755}
+span.keyword {color: #cc6600}
+span.function {color: #996600}
+span.mainfunction {color: #993300; font-weight: bolder}
+</style>
+</head>
+<body spellcheck="false">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <span class="brand">   NanoGraph </a></span>
+                <div class="btn-group pull-right">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-align-justify"></i> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a id="btn-sidebar" tabindex="-1" href="#"><i class="icon-ok pull-right"></i><i class="icon-list-alt"></i> Sidebar</a></li>
+                        <li class="divider"></li>
+                        <!-- <li><a id="btn-node-status" tabindex="-1" href="#"><i class="icon-ok pull-right"></i><i class="icon-info-sign"></i> Node Status</a></li>
+                                            <li class="divider"></li>
+                        -->
+                        <!--
+                        <li class="dropdown-submenu pull-left"><a tabindex="-1" href="#"><i class="icon-edit"></i> Import from...</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a id="btn-import" tabindex="-1" href="#"><i class="icon-edit"></i> Clipboard...</a></li>
+                                                    <li id="flow-menu-parent" class="dropdown-submenu pull-left">
+                                                        <a tabindex="-1" href="#"><i class="icon-book"></i> Library</a>
+                                                        <ul class="dropdown-menu"></ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li id="li-menu-export" class="dropdown-submenu disabled pull-left"><a tabindex="-1" href="#"><i class="icon-share"></i> Export to...</a>
+                                                <ul class="dropdown-menu">
+                                                    <li id="li-menu-export-clipboard" class="disabled"><a id="btn-export-clipboard" tabindex="-1" href="#"><i class="icon-share"></i> Clipboard...</a></li>
+                                                    <li id="li-menu-export-library" class="disabled"><a id="btn-export-library" tabindex="-1" href="#"><i class="icon-book"></i> Library...</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="divider"></li>
+                        -->
+                        <!--
+                         <li><a id="btn-config-nodes" tabindex="-1" href="#"><i class="icon-th-list"></i> Configuration nodes...</a></li>
+                                            <li class="divider"></li>
+                        -->
+                        <!--
+                        <li class="dropdown-submenu pull-left"><a tabindex="-1" href="#"><i class="icon-th-large"></i> Workspaces</a>
+                                                <ul id="workspace-menu-list" class="dropdown-menu">
+                                                    <li><a id="btn-workspace-add" tabindex="-1" href="#"><i class="icon-plus"></i> Add</a></li>
+                                                    <li><a id="btn-workspace-edit" tabindex="-1" href="#"><i class="icon-edit"></i> Rename</a></li>
+                                                    <li><a id="btn-workspace-delete" tabindex="-1" href="#"><i class="icon-minus"></i> Delete</a></li>
+                                                    <li class="divider"></li>
+                                                </ul>
+                                            </li>
+                                            <li class="divider"></li>-->
+                        <li><a id="btn-keyboard-shortcuts" tabindex="-1" href="#"><i class="icon-question-sign"></i> Keyboard Shortcuts</a></li>
+                        <li><a id="btn-help" tabindex="-1" href="http://node-red.github.io/docs" target="_blank"><i class="icon-question-sign"></i> Help...</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group pull-left">
+                    <a id="btn-deploy" class="btn action-deploy disabled" href="#"><i id="btn-icn-deploy" class="icon-upload"></i>Export Graph</a>
+                    <!-- <a id="btn-import" class="btn action-import disabled" href="#"><i id="btn-icn-download" class="icon-download"></i>Import</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main-container" class="sidebar-closed">
+        <div id="palette">
+            <img src="img/spin.svg" class="palette-spinner" />
+            <div id="palette-container" class="palette-scroll">
+            </div>
+            <div id="palette-search">
+                <i class="icon-search"></i><input id="palette-search-input" type="text" placeholder="arm_filter"><a href="#" id="palette-search-clear"><i class="icon-remove"></i></a></input>
+            </div>
+        </div><!-- /palette -->
+
+        <div id="workspace">
+            <ul id="workspace-tabs"></ul>
+            <!--<div id="workspace-add-tab"><a id="btn-workspace-add-tab" href="#"><i class="icon-plus"></i></a></div>-->
+            <div id="chart"></div>
+            <div id="workspace-toolbar">
+                <div class="btn-group">
+                    <a class="btn btn-small" href="#"><i class="icon-zoom-out"></i></a>
+                    <a class="btn btn-small" href="#"><i class="icon-th"></i></a>
+                    <a class="btn btn-small" href="#"><i class="icon-zoom-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div id="chart-zoom-controls">
+            <div class="btn-group">
+                <a class="btn btn-mini" id="btn-zoom-out" href="#"><i class="icon-zoom-out"></i></a>
+                <a class="btn btn-mini" id="btn-zoom-zero" href="#"><i class="icon-th"></i></a>
+                <a class="btn btn-mini" id="btn-zoom-in" href="#"><i class="icon-zoom-in"></i></a>
+            </div>
+        </div>
+
+        <div id="sidebar">
+            <ul id="sidebar-tabs"></ul>
+            <div id="sidebar-content"></div>
+        </div>
+
+        <div id="sidebar-separator"></div>
+
+    </div>
+
+    <div id="notifications"></div>
+    <div id="dropTarget"><div>Drop the flow here</div></div>
+
+    <div id="dialog" class="hide"><form id="dialog-form" class="form-horizontal"></form></div>
+    <div id="node-config-dialog" class="hide"><form id="dialog-config-form" class="form-horizontal"></form><div class="form-tips" id="node-config-dialog-user-count"></div></div>
+
+    <div id="node-dialog-confirm-deploy" class="hide">
+        <form class="form-horizontal">
+            <div id="node-dialog-confirm-deploy-config" style="text-align: center; padding-top: 30px;">
+                Some of the nodes are not properly configured. Are you sure you want to deploy?
+            </div>
+            <div id="node-dialog-confirm-deploy-unknown" style="text-align: center; padding-top: 10px;">
+                The workspace contains some unknown node types:
+                <ul style="width: 300px; margin: auto; text-align: left;" id="node-dialog-confirm-deploy-unknown-list"></ul>
+                Are you sure you want to deploy?
+            </div>
+        </form>
+    </div>
+
+    <div id="node-dialog-error-deploy" class="hide">
+        <form class="form-horizontal">
+            <div id="node-dialog-error-deploy-noio" style="text-align: center; padding-top: 10px;">
+                <p>The workspace contains no input/output nodes!</p>
+                <p>You need an input or an output to export the data!</p>
+                <p>
+                    Without such a input/output function the exported
+                    code will not run properly!
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <div id="node-help" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="node-help-label" aria-hidden="true">
+        <div class="modal-header">
+            <h5 id="node-help-label">Keyboard Shortcuts <span style="float: right;"><a href="http://node-red.github.io/docs" target="_blank">Open help in new window &raquo;</a></span></h5>
+        </div>
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td><span class="help-key">?</span></td>
+                    <td>Help</td>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">a</span></td>
+                    <td>Select all nodes</td>
+                </tr>
+                <tr>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">Space</span></td>
+                    <td>Toggle sidebar</td>
+                    <td><span class="help-key">Shift</span> <span class="help-key">Click</span></td>
+                    <td>Select all connected nodes</td>
+                </tr>
+                <tr>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">z</span></td>
+                    <td>Undo</td>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">Click</span></td>
+                    <td>Add/remove node from selection</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><span class="help-key">Delete</span></td>
+                    <td>Delete selected nodes or link</td>
+                </tr>
+                <tr>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">x</span></td>
+                    <td>Cut selected nodes</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">c</span></td>
+                    <td>Copy selected nodes</td>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">v</span></td>
+                    <td>Paste nodes</td>
+                </tr>
+                <tr>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">i</span></td>
+                    <td>Import nodes</td>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">e</span></td>
+                    <td>Export selected nodes</td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">+</span></td>
+                    <td>Zoom in</td>
+                    <td><span class="help-key">Ctrl</span> <span class="help-key">-</span></td>
+                    <td>Zoom out</td>
+                </tr>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </div>
+
+    <div id="node-dialog-library-save-confirm" class="hide">
+        <form class="form-horizontal">
+            <div style="text-align: center; padding-top: 30px;">
+                A <span id="node-dialog-library-save-type"></span> called <span id="node-dialog-library-save-name"></span> already exists. Overwrite?
+            </div>
+        </form>
+    </div>
+
+    <div id="node-dialog-library-save" class="hide">
+        <form class="form-horizontal">
+            <div class="form-row">
+                <label for="node-dialog-library-save-folder"><i class="icon-folder-open"></i> Folder</label>
+                <input type="text" id="node-dialog-library-save-folder" placeholder="Folder">
+            </div>
+            <div class="form-row">
+                <label for="node-dialog-library-save-filename"><i class="icon-file"></i> Filename</label>
+                <input type="text" id="node-dialog-library-save-filename" placeholder="Filename">
+            </div>
+        </form>
+    </div>
+
+    <div id="node-dialog-library-lookup" class="hide">
+        <form class="form-horizontal">
+            <div class="form-row">
+                <ul id="node-dialog-library-breadcrumbs" class="breadcrumb">
+                    <li class="active"><a href="#">Library</a></li>
+                </ul>
+            </div>
+            <div class="form-row">
+                <div style="vertical-align: top; display: inline-block; height: 100%; width: 30%; padding-right: 20px;">
+                    <div id="node-select-library" style="border: 1px solid #999; width: 100%; height: 100%; overflow:scroll;"><ul></ul></div>
+                </div>
+                <div style="vertical-align: top; display: inline-block;width: 65%; height: 100%;">
+                    <div style="height: 100%; width: 95%;" class="node-text-editor" id="node-select-library-text"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="node-dialog-rename-workspace" class="hide">
+        <form class="form-horizontal">
+            <div class="form-row">
+                <label for="node-input-workspace-name"><i class="icon-tag"></i> Name:</label>
+                <input type="text" id="node-input-workspace-name">
+            </div>
+        </form>
+    </div>
+    <div id="node-dialog-delete-workspace" class="hide">
+        <form class="form-horizontal">
+            <div style="text-align: center; padding-top: 30px;">
+                Are you sure you want to delete '<span id="node-dialog-delete-workspace-name"></span>'?
+            </div>
+        </form>
+    </div>
+
+    <script type="text/x-red" data-template-name="export-clipboard-dialog">
+        <div class="form-row">
+            <label for="node-input-export" style="display: block; width:100%;"><i class="icon-share"></i> YAML output:</label>
+            <textarea readonly style="font-family: monospace; font-size: 12px; background:rgb(226, 229, 255); padding-left: 0.5em;" class="input-block-level" id="node-input-export" rows="12"></textarea>
+        </div>
+        <div class="form-tips">
+            Select the text above and copy to the clipboard with Ctrl-A Ctrl-C.
+        </div>
+    </script>
+    <script type="text/x-red" data-template-name="export-library-dialog">
+        <div class="form-row">
+            <label for="node-input-filename" ><i class="icon-tag"></i> Filename:</label>
+            <input type="text" id="node-input-filename" placeholder="Filename">
+        </div>
+    </script>
+    <script type="text/x-red" data-template-name="import-dialog">
+        <div class="form-row">
+            <label for="node-input-import"><i class="icon-share"></i>Nodes:</label>
+            <textarea style="font-family: monospace; font-size: 12px; background:rgb(226, 229, 255); padding-left: 0.5em;" class="input-block-level" id="node-input-import" rows="5" placeholder="Paste nodes here, or lookup in the library. When importing existing graph, the whole flow will be replaced."></textarea>
+
+        </div>
+        <div class="form-tips">
+            <label for="node-input-cmsis" style="font-size: 13px; padding: 2px 0px 0px 4px;">
+                <input style="margin-bottom: 4px; margin-right: 4px;" type="checkbox" id="node-input-cmsis" checked="checked" class="input-block-level" />
+                    &nbsp;Import code 
+            </label>
+        </div>
+    </script>
+
+    <script src="jquery/js/jquery-1.9.1.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="jquery/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="jquery/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="orion/built-editor.min.js"></script>
+    <script src="red/d3/d3.v3.min.js"></script>
+    <script src="red/main.js"></script>
+    <script src="red/ui/state.js"></script>
+    <script src="red/nodes.js"></script>
+    <script src="red/storage.js"></script>
+    <script src="red/history.js"></script>
+    <script src="red/ui/keyboard.js"></script>
+    <script src="red/ui/tabs.js"></script>
+    <script src="red/ui/view.js"></script>
+    <script src="red/ui/sidebar.js"></script>
+    <script src="red/ui/palette.js"></script>
+    <script src="red/ui/tab-info.js"></script>
+    <script src="red/ui/tab-config.js"></script>
+    <script src="red/ui/editor.js"></script>
+    <script src="red/ui/library.js"></script>
+    <script src="red/ui/notifications.js"></script>
+    <script src="red/ui/touch/radialMenu.js"></script>
+
+    <!--
+     TODO: generate some or all of this automatically from the C++ source
+    -->
+    <!--
+     TODO: add a field for maximum instance count
+    -->
+    <!--
+     TODO: add a field for exclusive to other objects (not allowed if they're used)
+    -->
+    <!--
+     TODO: add "parameters" fields, to replace the form html stuff
+    -->
+    <!-- TODO Investigate why having this field unpopulated causes a breakdown in the graph engine:
+    Without this section being defined connections can no longer be drawn, nodes cannot be deleted and
+    multiple nodes of same type cannot be created-->
+    <script type="text/x-red" data-container-name="InputOutputCompatibilityMetadata">
+        {"requirements":[
+
+            {"type":"AudioAmplifier",      "resource":"placeholder",  "shareable":true,  "setting":"placeholder"}
+        ]}
+    </script>
+
+    <!-- #Critical Section#
+    This is where new nodes are defined. Pay careful attention to syntax and where the "defaults" section for each node begins and ends. For fields that are non-optional for a node they need to be inside the 'defaults section brackets {}'
+    Note that dataformats are specified here as strings which are later changed to actual datatypes during YML->Graph generation.
+
+    Data fields configured by drop-downs must match exactly with fields in individual node descriptions below
+    -->
+    TODO Add support for multiple IO for more nodes. Currently only those required for DSP-App demo are fully functional but support for nodes with multiple IO may require more work to maintain exportability. This file should be treated as a work in progress.
+
+    <!-- INPUT                                  
+         {"type":             "XXXXXXX_in", 
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"YYYYY", "required": "true" },  ======>>> YYYYY default value (if any)
+                  "shortName":"XXXXXXX_in","inputs":0,"outputs":1,
+                  "category":"input-function",                      <<<<===== category
+                  "color":"#e2f2ff"                                 <<<<===== nb of IOs   / 000000 arrow-in_OFF.png  / RED e2f2ff
+
+         OUPUT
+                  "shortName":"XXXXXX","inputs":1,"outputs":0,      <<<<===== category
+                  "category":"output-function",                     <<<<===== category
+                  "color":"#ffeaf1","icon":"arrow-in.png"}},        <<<<===== nb of IOs   / 000000 arrow-in_OFF.png / BLUE ffeaf1     
+         NODES
+                  "shortName":"XXXXXX","inputs":1,"outputs":1,
+                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},   / 000000 arrow-in_OFF.png / grey f1f1f1  
+    -->
+    <script type="text/x-red" data-container-name="NodeDefinitions">
+         {"nodes":[
+
+
+         {"type":"PSOC_RA8", "data":{"shortName":"PSOC_RA8","inputs":0,"outputs":0,
+          "category":"Platforms","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+
+
+
+
+         {"type":             "io_data_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_sensor_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_sensor_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_timer",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_timer","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_ui_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_ui_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_serial_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_serial_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_analog_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_analog_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_audio_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_audio_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+                  
+         {"type":             "io_2d_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_2d_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
+
+         {"type":             "io_data_ext_in",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_ext_in","inputs":0,"outputs":1, "category":"input-function","color":"#000000","icon":"arrow-in_OFF.png"}},
+                  
+                  
+
+
+
+
+         {"type":             "io_data_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+
+         {"type":             "io_ui_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_ui_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+
+         {"type":             "io_serial_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_serial_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+
+         {"type":             "io_analog_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_analog_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+
+         {"type":             "io_audio_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_audio_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+
+         {"type":             "io_2d_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_2d_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+
+         {"type":             "io_data_ext_out",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_data_ext_out","inputs":1,"outputs":0, "category":"output-function","color":"#000000","icon":"arrow-in_OFF.png"}},                  
+
+
+
+
+       
+
+         {"type":             "arm_script",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"script","inputs":1,"outputs":1, "category":"arm","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "arm_router",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_router","inputs":4,"outputs":4, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "arm_amplifier",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_amplifier","inputs":1,"outputs":1, "category":"arm","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "arm_filter",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_filter","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+   
+         {"type":             "arm_modulator",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_modulator","inputs":1,"outputs":1, "category":"arm","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "arm_demodulator",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_demodulator","inputs":1,"outputs":1, "category":"arm","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "arm_filter2D",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"arm_filter2D","inputs":1,"outputs":1, "category":"arm","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "sigp_detector",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_detector","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+   
+         {"type":             "sigp_detector2D",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_detector2D","inputs":1,"outputs":1, "category":"sigprocfr","color":"#000000","icon":"arrow-in_OFF.png"}},
+   
+         {"type":             "sigp_resampler",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_resampler","inputs":1,"outputs":1, "category":"sigprocfr","color":"#000000","icon":"arrow-in_OFF.png"}},
+   
+         {"type":             "sigp_compressor",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_compressor","inputs":1,"outputs":1, "category":"sigprocfr","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "sigp_decompressor",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_decompressor","inputs":1,"outputs":1, "category":"sigprocfr","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "JPEGENC",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"JPEGENC","inputs":1,"outputs":1, "category":"bitbanksw","color":"#000000","icon":"arrow-in_OFF.png"}},
+
+         {"type":             "TjpgDec",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"TjpgDec","inputs":1,"outputs":1, "category":"elm","color":"#000000","icon":"arrow-in_OFF.png"}}
+
+
+         ]}
+    </script>
+
+    <!-- 
+    #Critical Section
+
+    data-template-name must match 'type' field from node-definitions for node to connect the two.
+
+    You can overwrite default parameters in the GUI via 'form-rows', to connect the GUI input to the actual data field you must use the prefix
+    node-input-"ENTER_EXACT_DATAFIELD_NAME_USED_IN_NodeDefinitions"
+
+    Each form row must be inside matching <div class="form-row"> and </div> pairs.
+    Drop-downs must be inside <select and </select> pairs with a separate <option>PARAMETER_PRESET_VALUE_HERE</option>
+    for each new preset option.
+
+    data-help-name section is for adding instructions/description of the node.
+    Information/text to be displayed should be added inside <p> and </p>
+    -->
+    
+    
+    
+    <!----------------------------------- Platform PSOC_RA8 ------------------------------------------->
+
+    <script type="text/x-red" data-help-name="PSOC_RA8">
+        <h3>Overview</h3>
+        <div class=tooltipinfo>
+        <p>
+The RA8E1 Fast Prototyping Board comes equipped with an R7FA8E1AFDCFB microcontroller and is an evaluation board specialized for prototype development for a variety of applications. 
+</p><p>
+It has a built-in SEGGER J-Link™ emulator circuit so you can write and debug programs without additional tools. 
+</p><p>
+In addition, with Arduino® UNO and Pmod™ interfaces included standard and through-hole access to all pins of the microcontroller, and so on, it has high expandability.
+</p><p>
+Sample software is available to demonstrate the functionality of the RA8E1 MCU and for connecting the RA8E1 Fast Prototyping Board with various wireless or sensor modules. 
+</p><p>
+<b>FEATURES: </b>
+<ul>
+ <li>R7FA8E1AFDCFB MCU (referred to as RA MCU)</li>
+ <li>360MHz, Arm® Cortex®-M85 core</li>
+ <li>1MB Code Flash, 12KB Data Flash, 544KB SRAM including 32KB of TCM</li>
+ <li>144-pin, LFQFP package, 20mm x 20mm x 1.70mm, 0.5mm pitch</li>
+ <li>Native pin access through 1 x 20 and 2 x 50 male pin headers</li>
+ <li>20-pin camera interface connector</li>
+ <li>MCU current measurement point for precision current consumption measurement</li>
+ <li>Multiple clock sources, including low‑precision (~1%) internal RA MCU clocks and optional on‑board crystals providing precise 20.000MHz and 32.768Hz reference clocks</li>
+</ul>
+
+ <a href="https://www.renesas.com/en/design-resources/boards-kits/fpb-ra8e1">
+    Renesas RA8</a>
+ 
+        </p>
+        <p align=center><img src="img/fpb-ra8e1-top.jpg"></p>
+        </div>
+
+        <h4>NanoGraph PSOC_RA8 graph connexions (as of March 2026)</h4>
+        <table class=doc align=center cellpadding=8>
+            <tr class=top>   <th>Port</th>   <th>Purpose</th></tr>
+            <tr class=odd><td align=center>io_sensor_in </td>   <td>Motion sensor (graph input) </td></tr>
+            <tr class=odd><td align=center>io_ui_out </td>   <td>green LED (graph output) </td></tr>
+        </table>
+        <h4>NanoGraph PSOC_RA8 available computing nodes (as of March 2026)</h4>        
+        <table class=doc align=center cellpadding=8>
+            <tr class=top>   <th>Node</th>   <th>Comments</th></tr>
+            <tr class=odd><td align=center>arn_filter </td>   <td>cascade of biquad filters </td></tr>
+            <tr class=odd><td align=center>sigp_detector </td>   <td>trigger output when signal to noise ratio is above a threshold </td></tr>
+        </table>
+        </p><p><p><a href="https://community.element14.com/products/roadtest/rt/roadtests/701/apply_to_test_the_infineon_psoc_edge_e84_ai_evaluation_kit?CommentId=5460ca54-913d-467d-814e-6e35e1716a45#pifragment-18971=4&pifragment-18972=7&pifragment-19828=11">(Element14)</a>
+        </p>
+    </script>
+
+    <script type="text/x-red" data-template-name="PSOC_RA8">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+
+
+
+
+    <!----------------------------------- io_data_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose graph input (from platform I/O or the main application) </p>
+        </div> </script>
+
+    <!----------------------------------- io_sensor_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_sensor_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_sensor_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose graph input (from platform I/O or the main application) </p>
+        <p>reserved for motion, temperature, proximity, CO2, PIR ("motion", "analog_in" or "gpio" domains) </p>
+        </div> </script>
+    <!----------------------------------- io_timer ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_timer">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_timer">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port connected to timers at 100ms, 1s or other tunable values from 1 micro second to periods in days ("timer" domain, hardware or systick timers) </p>
+        </div> </script>
+    <!----------------------------------- io_ui_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_ui_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_ui_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to buttons, slider ("user_interface" domain) </p>
+        </div> </script>
+    <!----------------------------------- io_serial_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_serial_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_serial_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to communication RX and remote controls ("general" domain) </p>
+        </div> </script>
+    <!----------------------------------- io_analog_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_analog_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_analog_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to analog A/D input ("motion", "analog_in" or "gpio" domain)</p>
+        </div> </script>
+    <!----------------------------------- io_audio_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_audio_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_audio_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to microphone, PDM, line-in, modem, USB audio ("audio_in" domain) </p>
+        </div> </script>
+    <!----------------------------------- io_2d_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_2d_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_2d_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to camera ("2d_in" domain) </p>
+        </div> </script>   
+    <!----------------------------------- io_data_ext_in ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_ext_in">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_ext_in">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>general purpose IO   </p>
+        </div> </script>
+        
+
+
+
+
+        
+    <!----------------------------------- io_data_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose input to gpio/application </p>
+        </div> </script>
+        
+    <!----------------------------------- io_ui_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_ui_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_ui_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to LED, LCD, Digits, Metadata ("user_interface" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_serial_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_serial_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_serial_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to communication TX for debug / trace and remote control ("general" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_analog_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_analog_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_analog_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to analog D/A output ("analog_out" or "gpio" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_audio_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_audio_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_audio_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to buzzer, class-D, earphone, line-out, ultrasound ("audio_out" domain) </p>
+        </div> </script>
+           <!----------------------------------- io_2d_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_2d_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_2d_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>io port assigned to display ("2d_out" domain)</p>
+        </div> </script>
+           <!----------------------------------- io_data_ext_out ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_ext_out">
+    
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+                    
+    </script><script type="text/x-red" data-help-name="io_data_ext_out">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>General purpose input to gpio/application, usually reserved for the LED </p>
+        </div> </script>
+               
+        
+        
+
+
+    <!---------------------------------------------------- arm_script ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_script">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        </script> <script type="text/x-red" data-help-name="arm_script">  
+        <h4>Description</h4> <div class=tooltipinfo>
+        <p> 
+Scripts are nodes interpreted from byte code declared in the graph. This is a virtual machine programmed like a pocket calculator. There are 14 registers used as data or pointers. Computations are made in floating point (E8M32, 8bits exponent, 32bits mantissa). The programming language supports several data addressing mode (stack, heap, scatter/gather, bit-fields). 
+</p><p>
+The main use-cases of scripts are
+</p><p>
+- update the graph operation on changes of use-cases decided by the application (update node parameters)
+</p><p>- control the input/output FIFO at the boundary of the graph and nodes (compute the average data level and data rates, patch data content, synchronize two streams, flush data)
+</p><p>- characters string processing (AT commands and JSON string generation, Modbus control, debug traces)
+</p><p>- control the execution of a sequence of nodes (loop, by-pass, exit the graph)
+</p><p>
+Script nodes data/stack/parameters and registers context are in a RAM section declared as a dummy output FIFO. 
+</p><p>
+The default memory configuration is "not shared", meaning that memory associated with scripts do not share the same memory buffer.
+
+        </p>
+        </div> </script>
+
+    <!---------------------------------------------------- arm_router ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_router">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_router">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+This node receives up to four input streams (arcs) and generates up to four output streams.  
+</p><p>
+Each stream may be multichannel.
+</p><p>
+
+The format of the streams is known by the node during the reset and set-parameter commands.
+</p><p>
+
+Input streams may be asynchronous and include time stamps.  
+</p><p>
+Output streams are isochronous with other graph streams and have a defined sampling rate.
+</p><p>
+
+The first parameters specify the number of arcs and identify the input arc to be used with high quality of service (HQoS), or −1 if none is used.  
+</p><p>
+These parameters are followed by a list of routing and mixing rules.
+</p><p>
+
+When an HQoS arc is defined, data movement is aligned to that arc in the time domain.  
+</p><p>
+Other arcs are synchronized accordingly, and data is interpolated or zeroed in case of flow issues.
+</p>
+When no HQoS arc is defined, the node evaluates all input and output arcs and determines the minimum amount of data that can be processed consistently across all arcs in the time domain.
+
+
+        <h4>Use-cases</h4> <div class=tooltipinfo> 
+The following use-cases can be combined:
+</p><p>
+1. Router, deinterleaving, interleaving, channels recombination: the input arc data is processed deinterleaved, and the output arc is the result of recombination of any input arc. Audio example with two stereo input arcs using 5ms and 12ms frame lengths, recombined to create a stereo stream interleaved output using 20ms frame length, the left channel from the first arc and the left channel of the second arc.
+</p><p>
+2. Router and mixer with smoothed gain control: the output arc data can result from the weighted mix of input arcs. The applied gain can be changed on the fly. The slope of the time taken to the desired gain is controlled. Audio example: a mono output arc is computed from the combination of two stereo input arc, by mixing the four input channels with a factor 0.25 applied in the mixer.
+</p><p>
+3. Router and raw data conversion. The raw formats can be converted to any other format in this list : int16, int32, int64, float16, float32, float64.
+</p><p>
+4. Router and sampling-rate conversion of isochronous streams (input streams have a determined and independent sampling-rate). Audio example: input streams sampled at 44100Hz is converted to 48000Hz + 0.026Hz for drift compensation (the sampling-rate information, and all the details of the arc's data format, is shared by the graph scheduler during the reset phase of the nodes).
+</p><p>
+5. Router and conversion of asynchronous streams using time-stamps to an isochronous stream with a determined sampling-rate. Motion sensor example: an accelerometer is sampled at 200Hz (5ms period)  with +/- 1ms jitter sampling time uncertainty. The samples are provided with an accurate time-stamp in float32 format of time differences between samples (or float64 for absolute time reference to Jan 1st 2025). The output samples are delivered resampled at 410Hz with no jitter.
+</p><p>
+6. Router of data needing a time synchronization at sample or frame level. In this use-case the node waits the input samples are arriving within a time window before delivering an output frame. Example with motor control and the capture of current and voltage on two input arcs: it is important to send time-synchronized pairs of data. The command [node_script “index”](node_script-"index") is used to call a script checking the arrival of current and voltage with their respective time-stamps (logged in the arc descriptors), the scripts check the arrival of data within a time and release execution of the router when conditions are met.
+</p><p>
+7. Router of streams generated from different threads. The problem is to avoid on multiprocessing devices one channel to be delivered to the final mixer ahead and desynchronized from the others. This problem is solved with an external script controlling the system time like in the use-case 6.
+</p><p>
+
+   
+        <h4>Parameters</h4> <div class=tooltipinfo>
+</p><p>
+The list of routing and mixing information is :
+</p><p>
+</p><p>- index of the input arc (<= 4)
+</p><p>- index of the channels (1 Byte to 31 Bytes)
+</p><p>- index of the output destination arc (<=4)
+</p><p>- index of the channels (1 Byte to 31 Bytes) 
+</p>   - mixer gain to apply (fp32) and convergence speed (fp32)
+
+        </p>
+        </div> </script>
+    <!---------------------------------------------------- arm_amplifier ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_amplifier">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_amplifier">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+</p><p>Operation : rescale and control of the amplitude of the input stream with controlled time of ramp-up/ramp-down. 
+</p><p>The gain control “mute” is used to store the current gain setting, being reloaded with the command “unmute”
+</p><p>Option : either the same gain/controls for all channels or list of parameters for each channel
+</p><p>
+</p><p>Parameters :  new gain/mute/unmute, ramp-up/down slope, delay before starting the slope. 
+</p><p>Use-cases :
+</p><p>    Features : adaptive gain control (range compressor, expander, AGC) under a script control with energy polling 
+</p><p>    Metadata features : "saturation occurred" "energy"
+</p><p>    Mixed-Signal glitches : remove the first seconds of an IR sensor until it was self-calibrated (same for audio Class-D)
+</p><p>
+</p><p>parameters of amplifier (variable size): 
+</p><p>TAG_CMD = 1, uint8_t, 1st-order shifter slope time (as stream_mixer, 0..75k samples)
+</p><p>TAG_CMD = 2, uint16_t, desired gain
+</p><p>TAG_CMD = 3, uint8_t, set/reset mute state
+</p><p>TAG_CMD = 4, uint16_t, delay before applying unmute, in samples
+</p><p>TAG_CMD = 5, uint16_t, delay before applying mute, in samples
+</p><p>
+</p><p>Slopes of rising and falling gains, identical to all channels
+</p><p> Operation : applies vq = **interp1**(x,v,xq) 
+</p><p> Following https://fr.mathworks.com/help/matlab/ref/interp1.html
+</p><p>   linear of polynomial interpolation (implementation)
+</p><p> **Parameters : X,V vectors, size max = 32 points**
+        </p>
+        </div> </script>
+    <!---------------------------------------------------- arm_filter ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_filter">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_filter">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+        Parameters to write in the "params" box:
+        <ul>
+          <li>filter type (lowpass=1, highpass=2, notch=3, bandpass=4, allpass=5, peak=6, lowshelf=7, highshelf=8) </li>
+          <li>nomalized frequency (Nyquist=0.5)</li>
+          <li>Q-factor</li>
+          <li>gain in dB</li>
+        </ul>  
+        <p>Example for a low-pass filter at 1kHz when the sampling rate is 16kHz : </p>
+        <p>1 0.0625 1.414 24</p>
+            </p>
+        </div> </script>
+        
+    <!---------------------------------------------------- arm_modulator ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_modulator">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_modulator">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+ sine, noise, square, saw tooth with amplitude or frequency modulation
+ use-case : ring modulator, sweep generation with a cascade of a ramp generator and a frequency modulator
+        </p>
+        </div> </script>
+    <!---------------------------------------------------- arm_demodulator ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_demodulator">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_demodulator">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+decode a bit-stream from analog data. Use-case: IR decoder, CAN/UART on SPI/I2S audio (Arduino-IRremote)
+</p><p>
+sinewave frequency recognition for alarm detector.
+</p><p>
+Parameters : clock and parity setting or let the algorithm discover the frame setting after some time
+</p><p>
+        </div> </script>        
+    <!---------------------------------------------------- arm_filter2D ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_filter2D">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="arm_filter2D">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+</p><p>
+Filter, rescale/zoom/extract, rotate, exposure compensation, background removal. 
+</p><p>
+
+Channel mixer : insert a portion of the processed image in a larger frame buffer.
+</p><p>
+
+Parameters : spatial and temporal filtering, decimation, distortion, color mapping/log-effect
+</p><p>
+        </p>
+        </div> </script>        
+
+    <!-------------------------------------------------- sigp_detector ------------------------------------------->
+    <script type="text/x-red" data-template-name=       "sigp_detector">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script><script type="text/x-red" data-help-name="sigp_detector">  
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <div class=tooltipinfo>
+        <p>Signal sigp_detector PRESET. </p>
+        <p>Input MONO of a stream of Q15/float32 data, without time-stamp, at any sampling-rate.</p>
+        <p>Detection flag (0 or 1.0/0x7FFF) push on the output port at the frame rate of the input stream.</p>
+        <ul>
+        <li>PRESET=0 : (default) voice activity detector use-case (Fs=16kHz)
+        <li>PRESET=1 : audio activity (Fs=44.1/48kHz)
+        <li>PRESET=2 : signal detection without pre-filtering (debouncing)
+        </ul>
+        </p>
+        <p align=center><img img style="max-width: 300px; max-height: 150px" src="img/node_sigp_detector.png"><br><small> Block diagram of the detector </small></p>
+        </div> </script>
+
+
+    <!---------------------------------------------------- sigp_detector2D ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_detector2D">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_detector2D">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+Motion and pattern detector. Counting moving object and build a text report (object sizes, shape, speed, color, ..) to be later processed by SLM on the application processor.
+</p><p>
+
+Operation : detection of movement(s) and computation of the movement map
+</p><p>
+Parameters : sensitivity, floor-noise smoothing factors
+</p><p>
+Metadata : decimated map of movement detection
+</p><p>
+        </p>
+        </div> </script>        
+
+    <!---------------------------------------------------- sigp_resampler ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_resampler">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_resampler">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+Operation : high quality conversion of multichannel input data rate to the rate of the output arcs 
+</p><p>
+
+  + asynchronous rate conversion within +/- 1% adjustment
+</p><p>
+
+SSRC synchronous rate converter, FS in/out are exchanged during STREAM_RESET
+</p><p>
+ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) pre-LP-filtering tuned from Fout/Fin ratio + Lagrange polynomial interpolator
+</p><p>
+
+
+        </p>
+        </div> </script>        
+
+    <!---------------------------------------------------- sigp_compressor ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_compressor">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_compressor">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+Operation : wave compression using IMADPCM(4bits/sample)
+</p><p>
+Parameters : coding scheme 
+</p><p>
+
+presets (provision codes):
+</p><p>
+
+- 1 : coder IMADPCM
+</p><p>
+- 2 : coder LPC
+</p><p>
+- 4 : coder CVSD for BT speech 
+</p><p>
+- 5 : coder SBC
+</p><p>
+- 6 : coder MP3
+</p><p>
+        </p>
+        </div> </script>        
+
+    <!---------------------------------------------------- sigp_decompressor ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_decompressor">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="sigp_decompressor">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+decompression of encoded data
+</p><p>
+Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD threshold and silence frame format (w/wo time-stamps)
+</p><p>
+
+​	dynamic parameters : pause, stop, fast-forward x2 and x4.
+</p><p>
+- 1 : decoder IMADPCM
+</p><p>
+- 2 : decoder LPC
+</p><p>
+- 3 : MIDI player
+</p><p>
+- 4 : decoder CVSD for BT speech 
+</p><p>
+- 5 : decoder SBC
+</p><p>
+- 6 : decoder MP3
+</p><p>
+        </p>
+        </div> </script>        
+
+    <!---------------------------------------------------- JPEGENC ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "JPEGENC">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="JPEGENC">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+From "bitbank" https://github.com/google/jpegli/tree/main
+        </p>
+        </div> </script>        
+
+    <!---------------------------------------------------- TjpgDec ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "TjpgDec">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+            
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="TjpgDec">  
+        <h4>Operation</h4> <div class=tooltipinfo>
+        <p> 
+From "EML" Use-case : images decompression, pattern generation.
+        </p>
+        </div> </script>        
+
+
+
+</body>
+</html>
+
+
+<!-- Template for UI Boxes:
+
+<!-- <form id="dialog-form" class="form-horizontal" autocomplete="off" style="height: 438px;"><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-user" type="text" autocomplete="off"></span><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-username" type="text" autocomplete="off"></span><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-password" type="password" autocomplete="off"></span>
+		<div class="form-row">
+			<label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+			<div style="width: 70%; display: inline-flex;"><select id="node-input-group" style="flex-grow: 1;" class="input-error"><option value="138f1c9eb86904ea" selected="">[unassigned] sin chart</option><option value="a25e3f35.7e46c">[Files] Group 2</option><option value="ab397e95.29ebe">[Charts] Inputs</option><option value="89749fb7.87f01">[Charts] Charts</option><option value="4e7edda4.417004">[Charts] Group 3</option><option value="b14e0265.d6fc1">[Weegschaal] Weegschaal</option><option value="e250c38c.04261">[Charts] Graph</option><option value="a0e246d1b4737443">[Node-Red Dashboard]  Signal-Generator</option><option value="5d218c05f4088ef2">[SinChart] SinChart</option><option value="afe97566.fbda58">[Charts] Inputs</option><option value="44d9222c.07961c">[Charts] Charts</option><option value="ef33233b.dd28f">[Charts] Group 3</option><option value="2257ffde.e0372">[Tab1] Group 1</option><option value="dcb5c39c85066c72">[Files] json</option><option value="c77b04401d9c2692">[Tab1] OutputSignal</option><option value="_ADD_">Add new dashboard group...</option>
+			Note: This is for the pencil to create additional custom option in dropdown
+			</select><a id="node-input-lookup-group" class="red-ui-button" style="margin-left: 10px;"><i class="fa fa-pencil"></i></a></div>
+		</div>
+		<div class="form-row">
+			<label><i class="fa fa-object-group"></i> Size</label>
+			<input type="hidden" id="node-input-width" autocomplete="off" value="0" dir="">
+			<input type="hidden" id="node-input-height" autocomplete="off" value="0" dir="">
+			<button class="editor-button" id="node-input-size" style="min-width: 36px;">auto</button>
+		</div>
+		<div class="form-row">
+			<label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+			<input type="text" id="node-input-label" autocomplete="off" dir="">
+		</div>
+		<div class="form-row">
+			<label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
+			<input type="text" id="node-input-tooltip" placeholder="optional tooltip" autocomplete="off" dir="">
+		</div>
+		<div class="form-row">
+			<label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
+			<input type="text" id="node-input-format" placeholder="{{value}}" autocomplete="off" dir="">
+		</div>
+		<div class="form-row">
+			<label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
+			<span for="node-input-min">min</span>
+			<input type="text" id="node-input-min" style="width:60px" autocomplete="off" dir="">
+			<span for="not-input-max" style="margin-left:22px;">max</span>
+			<input type="text" id="node-input-max" style="width:60px" autocomplete="off" dir="">
+			<span for="not-input-step" style="margin-left:22px;">step</span>
+			<input type="text" id="node-input-step" style="width:60px" autocomplete="off" dir="">
+		</div>
+		<div class="form-row">
+			<label style="width:auto" for="node-input-wrap"><i class="fa fa-refresh"></i> Wrap value from max to min and min to max.</label>
+			<input type="checkbox" id="node-input-wrap" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
+		</div>
+		<div class="form-row">
+			<label style="width:auto" for="node-input-passthru"><i class="fa fa-arrow-right"></i> If <code>msg</code> arrives on input, pass through to output: </label>
+			<input type="checkbox" checked="" id="node-input-passthru" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
+		</div>
+		<div class="form-row">
+			<label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> When changed, send:</label>
+		</div>
+		<div class="form-row">
+			<label style="padding-left:25px; margin-right:-25px">Payload</label>
+			<label style="width:auto">Current value</label>
+		</div>
+		<div class="form-row">
+			<label for="node-input-topic" style="padding-left:25px; margin-right:-25px">Topic</label>
+			<input type="hidden" id="node-input-topic" autocomplete="off" dir="" class="red-ui-typedInput" value="topic">
+			<input type="hidden" id="node-input-topicType" autocomplete="off" value="msg" dir="" style="display: none;">
+		<div style="width: 331.717px; margin-right: 0px; margin-left: 0px;" class="red-ui-typedInput-container"><button type="button" class="red-ui-typedInput-type-select" tabindex="0" title="msg."><i class="red-ui-typedInput-icon fa fa-caret-down"></i><span class="red-ui-typedInput-type-label">msg.</span></button><div class="red-ui-typedInput-input-wrap"><input class="red-ui-typedInput-input red-ui-autoComplete" type="text" style="margin-right: 0px; margin-left: 0px;" autocomplete="off"></div><div class="red-ui-typedInput-value-label" style="display: none;"></div><button type="button" tabindex="0" class="red-ui-typedInput-option-trigger" style="display: none;"><span class="red-ui-typedInput-option-label"></span><span class="red-ui-typedInput-option-caret"><i class="red-ui-typedInput-icon fa fa-caret-down"></i></span></button><button type="button" tabindex="0" class="red-ui-typedInput-option-expand" style="display: none;"><i class="red-ui-typedInput-icon fa fa-ellipsis-h"></i></button></div></div>
+		<div class="form-row">
+			<label for="node-input-className"><i class="fa fa-code"></i>  Class</label>
+			<input type="text" id="node-input-className" placeholder="Optional CSS class name(s) for widget" autocomplete="off" dir="">
+		</div>
+		<div class="form-row">
+			<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+			<input type="text" id="node-input-name" autocomplete="off" dir="">
+		</div>
+	</form> -->-->

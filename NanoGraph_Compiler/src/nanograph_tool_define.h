@@ -214,6 +214,7 @@
 #define stream_io_format                "stream_io_format"
 #define stream_io_hwid                  "stream_io_hwid"
 #define stream_io_setting               "stream_io_setting"
+#define stream_io_max_opp               "stream_io_max_opp"
 
 #define mem_fill_pattern                "mem_fill_pattern"
 #define memory_mapping                  "memory_mapping"
@@ -252,6 +253,7 @@
 #define node_parameters                 "node_parameters"
 #define node_script_code                "node_script_code"
 #define node_user_key                   "node_user_key"
+#define node_max_opp					"node_max_opp"
 
 /*----------------------------------------------------------------------- GRAPH SCRIPTS ------------- */
 #define common_script                   "script "

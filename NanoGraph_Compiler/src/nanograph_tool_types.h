@@ -294,6 +294,7 @@ struct arcStruct
     uint32_t fw_io_idx;                 // ID of the interface given in "files_manifests_computer" associated function (platform dependent) 
     uint32_t format_idx;                // stream format index
     uint32_t initialized_from_platform; // manifest IO data from platform have been copied
+    uint32_t IO_arc_opp;                // command stream_io_max_opp "opp"
     char IO_name[MAXCHAR_NAME];         // IO stream name used in the GUI
     char domainName[MAXCHAR_NAME];      // arc name used in the GUI 
 
@@ -400,6 +401,7 @@ struct nanograph_node_manifest
     uint32_t stack_usage_max;           /* maximum stack usage reset time and run */
     uint32_t stack_usage_running;       /* maximum stack usage while running */
     uint32_t not_reentrant;             /* if <>0 it means only one instance of the node can be executed */
+    uint32_t node_maxopp;               /* node_max_opp "o" */
 
     uint32_t arc_parameter;             // SWC with extra-large amount of parameters (NN models) will declare it with extra arcs
     uint32_t mask_library;              // default 0 bit-field of dependencies to computing libraries

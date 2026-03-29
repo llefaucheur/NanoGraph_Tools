@@ -705,12 +705,16 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         if (COMPARE(stream_io_setting))
         {
             uint32_t callbk, w1, w2, w3;
-            fields_extract(&pt_line, "ciiii", ctmp, &callbk , &w1, &w2, &w3);
+            fields_extract(&pt_line, "ciiii", ctmp, &callbk, &w1, &w2, &w3);
             graph->arc[graph->current_io_arc].setting_callback = callbk;
             graph->arc[graph->current_io_arc].settings[0] = w1;
             graph->arc[graph->current_io_arc].settings[1] = w2;
             graph->arc[graph->current_io_arc].settings[2] = w3;
         }
+        if (COMPARE(stream_io_max_opp))         // stream_io_max_opp "o" 
+        {   fields_extract(&pt_line, "ci", ctmp, &(graph->arc[graph->current_io_arc].IO_arc_opp));
+        }
+            
         /* ----------------------------------------------- FORMATS ----------------------------------------------------------*/
         if (COMPARE(format_index))
         {   fields_extract(&pt_line, "ci", ctmp, &(graph->current_format_index)); 
@@ -870,6 +874,9 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         }
         if (COMPARE(node_script_code))
         {   nanograph_tool_read_code(&pt_line, platform, graph, &(graph->all_nodes[graph->nb_nodes -1].node_script));  // macro assembler
+        }
+        if (COMPARE(node_max_opp))                  // node_max_opp "o" 
+        {   fields_extract(&pt_line, "ci", ctmp, &(graph->all_nodes[graph->nb_nodes - 1].node_maxopp));
         }
         /* ----------------------------------------------- SCRIPTS ----------------------------------------------------------*/
         if (COMPARE(common_script))

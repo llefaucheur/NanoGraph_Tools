@@ -87,9 +87,8 @@ void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform,
 #define COMPARE2(x,y) (0==strncmp(y, x, strlen(x)))
 
     char* pt_line;
-    uint32_t preset, node_instance, node_instance2, IO_instance, iformat, nformat, iHWio, nHWio, iNode, nNode, iArc, nArc;
-    uint32_t nodeProd, nodeCons, inputPort, outputPort, nb_input_arc;
-    struct nanograph_node_manifest* platform_node;
+    uint32_t preset, node_instance, node_instance2, IO_instance, nformat, iHWio, nHWio, iNode, nNode, iArc, nArc;
+    uint32_t inputPort, outputPort, nb_input_arc;
     
     nformat = nHWio = nNode = nArc = 0;
     pt_line = ggraph_gui;
