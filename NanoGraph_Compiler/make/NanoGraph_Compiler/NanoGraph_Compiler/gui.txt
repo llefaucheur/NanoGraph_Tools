@@ -1,0 +1,17 @@
+GUI graph - AUTOMATICALLY GENERATED ! Thu May 07 2026
+  nodes:
+  - IO:   io_sensor_in[0]
+  - node: arm_filter[0]
+    preset: 2
+    params: 1 0.0625 1.414 20
+  - node: sigp_detector[0]
+    preset: 0
+    script: C:\Users\laulef01\NanoGraph_Computer\NanoGraph_Platform\graphs\detector_script.txt
+  - IO:   io_ui_out[0]
+  arcs:
+  - OPort0 IO:   io_sensor_in[0]
+    IPort0 node: arm_filter[0]
+  - OPort0 node: arm_filter[0]
+    IPort0 node: sigp_detector[0]
+  - OPort0 node: sigp_detector[0]
+    IPort0 IO:   io_ui_out[0]

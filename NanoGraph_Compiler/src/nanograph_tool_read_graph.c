@@ -384,9 +384,14 @@ void compute_memreq(struct node_memory_bank *m, struct formatStruct *all_format,
     memSize = ((memSize +3)>>2) <<2;
 
     /* add the extra memory requested in the graph (command "node_malloc_add Bytes segment") */
-    m->graph_memreq_size = m->size_mem_alloc_A;
-    m->graph_memreq_size += memSize;
-    m->graph_memreq_size += m->malloc_add;
+    memSize = memSize + m->size_mem_alloc_A;
+    memSize = memSize + m->malloc_add;
+
+    /* rounding to W32 */
+    memSize = memSize + 3;
+    memSize = memSize & 0xFFFFFFFCL;
+
+    m->graph_memreq_size = memSize;
 }
 
 
@@ -623,10 +628,13 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         }
     }
 
+    /* DEFAULT OTHER DATA */
+    graph->nb_semaphore = 2;
+
     /* DEFAULT GRAPH MAPPING */
     #define m(i) graph->option_graph_locations[i]
-    m(GRAPH_PIO_HW) = m(GRAPH_PIO_GRAPH) = m(GRAPH_SCRIPTS) = m(GRAPH_LINKED_LIST) = -1;
-    m(GRAPH_FORMATS) = m(GRAPH_ARCS) = 0;
+    m(GRAPH_PIO_HW) = m(GRAPH_PIO_GRAPH) = m(GRAPH_NODE_LOCATION) = m(GRAPH_SCRIPTS) = m(GRAPH_LINKED_LIST) = -1;
+    m(GRAPH_FORMATS) = m(GRAPH_ASYNCPROT) = m(GRAPH_ARCS) = 0;
     #undef m
 
     jump2next_valid_line(&pt_line);
@@ -642,7 +650,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         if (COMPARE(graph_locations))        // graph_locations x
         {   
             #define m(i) graph->option_graph_locations[i]
-            fields_extract(&pt_line, "ciiiiii", ctmp, &(m(GRAPH_PIO_HW)), &(m(GRAPH_PIO_GRAPH)), &(m(GRAPH_SCRIPTS)), &(m(GRAPH_LINKED_LIST)), &(m(GRAPH_FORMATS)), &(m(GRAPH_ARCS))); 
+            fields_extract(&pt_line, "ciiiiiiii", ctmp, &(m(GRAPH_PIO_HW)), &(m(GRAPH_PIO_GRAPH)), &(m(GRAPH_NODE_LOCATION)), &(m(GRAPH_SCRIPTS)), &(m(GRAPH_LINKED_LIST)), &(m(GRAPH_FORMATS)), &(m(GRAPH_ASYNCPROT)), &(m(GRAPH_ARCS)));
             #undef m
         }
         if (COMPARE(debug_script_fields))   //  LSB set means "call the debug script before each nanoAppsRT is called"
@@ -677,13 +685,13 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         /* ----------------------------------------------- STREAM IO --------------------------------------------------------*/
         if (COMPARE(stream_io_graph))           // nanograph_io_graph "soft ID" 
         {   uint32_t fw_io_idx, graph_io_idx;
+            struct arcStruct* arc;
+
             fields_extract(&pt_line, "cii", ctmp, &graph_io_idx, &fw_io_idx);
 
-            graph->arc[graph->nb_arcs].idx_arc_in_graph = graph_io_idx;
-            if (graph_io_idx >= MAX_GRAPH_IO_IDX)
-            {   fprintf(stderr, "\n\n too much IOs"); exit(6);
-            }
-            graph->arc[graph->nb_arcs].ioarc_flag = 1;
+            arc = &(graph->arc[graph->nb_arcs]);
+            arc->idx_arc_in_graph = graph_io_idx;
+            arc->ioarc_flag = 1;
             graph->current_io_arc = graph->nb_arcs;
             graph->nb_arcs++; graph->nb_io_arcs++;
 
@@ -691,6 +699,10 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             LoadPlatformArc(&(graph->arc[graph->current_io_arc]), &(platform->IO_arc[fw_io_idx]));
             graph->arc[graph->current_io_arc].initialized_from_platform = 1; /* initialization is done */
             platform->IO_arc[fw_io_idx].arc_graph_ID = graph->current_io_arc;
+
+            if (arc->commander0_servant1 != 0)
+            {   graph->nb_semaphore++;           /* asynchronous IO + other need for multiprocessing protection */
+            }
 
             if (platform->max_io_al_idx <= fw_io_idx)  /* largest io_al_idx to dimension platform_io_al_idx_to_stream[] */
             {   platform->max_io_al_idx = fw_io_idx +1;
@@ -792,11 +804,11 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
 
             if (platform_node_idx == NanoGraph_script_index)                 /* is it arm_nanograph_script ? */
             {   
-                graph_node->node_script.nb_reg = 6;       /* default number of registers + R12 + stack size */
+                graph_node->node_script.nb_reg = 16;                /* default number of registers stack size */
                 graph_node->node_script.nb_stack = 6;
                 graph_node->node_script.ram_heap_size = 0;
                 graph_node->node_script.arc_script = graph->nb_arcs;
-                graph_node->arc[0].arcID = graph->nb_arcs;   /* dummy arc used for regsiters */
+                graph_node->arc[0].arcID = graph->nb_arcs;          /* dummy arc used for regsiters */
                 graph->nb_arcs++;
             }
             
@@ -821,8 +833,8 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             fields_extract(&pt_line, "cii", ctmp, &nBytes, &iMem);
              graph->all_nodes[graph->nb_nodes -1].memreq[iMem].malloc_add = nBytes;
         }
-        if (COMPARE(node_map_block))
-        {   fields_extract(&pt_line, "cii", ctmp, &i, &j); graph->all_nodes[graph->nb_nodes -1].memreq[i].mem_VID = j; 
+        if (COMPARE(node_map_hwblock))          // node_map_hwblock "mem" "o" 
+        {   fields_extract(&pt_line, "cii", ctmp, &i, &j); graph->all_nodes[graph->nb_nodes - 1].memreq[i].mem_VID = j;
         }
         if (COMPARE(node_map_swap))
         {   fields_extract(&pt_line, "cii", ctmp, &i, &j); graph->all_nodes[graph->nb_nodes -1].memreq[i].toSwap = 1;
@@ -833,6 +845,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         if (COMPARE(node_memory_clear))
         {   fields_extract(&pt_line, "ci", ctmp, &i);  graph->all_nodes[graph->nb_nodes -1].memreq[i].toClear = 1;
         }   
+
         if (COMPARE(node_trace_id))
         {   
         }   
@@ -874,6 +887,7 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         }
         if (COMPARE(node_script_code))
         {   nanograph_tool_read_code(&pt_line, platform, graph, &(graph->all_nodes[graph->nb_nodes -1].node_script));  // macro assembler
+            graph->all_nodes[graph->nb_nodes - 1].local_script_index = MYSCRIPT_LW00;   // this the node local script 
         }
         if (COMPARE(node_max_opp))                  // node_max_opp "o" 
         {   fields_extract(&pt_line, "ci", ctmp, &(graph->all_nodes[graph->nb_nodes - 1].node_maxopp));
@@ -924,15 +938,18 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
             {   graph->all_scripts[graph->idx_script].mem_VID = i;
             }
         }
-        if (COMPARE(script_code))               // script_code
-        {   nanograph_tool_read_code(&pt_line, platform, graph, &(graph->all_scripts[graph->idx_script]));  // macro assembler
+        if (COMPARE(script_debug))               // script_debug (equivalent to debug K instruction)
+        {   fields_extract(&pt_line, "ci", ctmp, &i);
+            graph->all_nodes[idx_node_script].node_script.debug_option = i;
         }
         if (COMPARE(script_assembler))          // script_assembler 0      ; code of the binary format (0 : default, or native architecture)
         {   fields_extract(&pt_line, "ci", ctmp, &(graph->all_scripts[graph->idx_script].script_format));  
-
             nanograph_tool_read_assembler(&pt_line, platform, graph, &(graph->all_scripts[graph->idx_script]));
         }
-        
+        if (COMPARE(script_code))               // script_code
+        {   nanograph_tool_read_code(&pt_line, platform, graph, &(graph->all_scripts[graph->idx_script]));  // macro assembler
+        }
+
         /* --------------------------------------------- ARCS ----------------------------------------------------------------------*/
         if (COMPARE(arc_input))              //arc_input    idx_nanograph_io fmtProd     node_name instance arc_index Format (+HQOS)
         {   uint32_t instCons, inPort, fmtCons, fmtProd, arcIO, SwcConsGraphIdx;

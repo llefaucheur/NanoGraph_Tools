@@ -622,6 +622,8 @@ int fields_extract(char **pt_line, char *types,  ...)
             if (*ptstart0 == '\n')
                 break;
         }
+        if (*ptstart0 == '\n')
+            break;
 
         switch(types[ifield])
         {

@@ -341,6 +341,69 @@ RED.editor = (function() {
 		});
 	}
 
+	function ensurePropertyEditor(property,prefix) {
+		if (property === "kind") {
+			return;
+		}
+		if (property === "domain" && $("#"+prefix+"-"+property).length !== 0 && !$("#"+prefix+"-"+property).is("select")) {
+			$("#"+prefix+"-"+property).closest(".form-row").remove();
+		} else if ($("#"+prefix+"-"+property).length !== 0) {
+			return;
+		}
+		var labels = {
+			domain: "domain",
+			framel: "framel",
+			nbchan: "nbchan",
+			samprt: "samprt",
+			period: "period",
+			per_hr: "per_hr",
+			per_day: "per_day",
+			samprt_percent_accuracy: "samprt accuracy %",
+			unit: "unit",
+			scale: "scale",
+			data_type: "data_type",
+			time_stamp: "time_stamp",
+			interleaving: "interleaving",
+			params: "params",
+			paramtxt: "paramtxt",
+			preset: "preset",
+			maxopp: "maxopp",
+			script: "script"
+		};
+		var label = labels[property] || property;
+		var formId = (prefix === "node-config-input") ? "dialog-config-form" : "dialog-form";
+		var editor = '<input type="text" id="'+prefix+'-'+property+'">';
+		if (property === "domain") {
+			var domains = [
+				"",
+				"general",
+				"audio_in",
+				"audio_out",
+				"gpio",
+				"motion",
+				"2d_in",
+				"2d_out",
+				"analog_in",
+				"analog_out",
+				"user_interface",
+				"time",
+				"platform_0",
+				"platform_1"
+			];
+			editor = '<select id="'+prefix+'-'+property+'">';
+			for (var i=0; i<domains.length; i++) {
+				editor += '<option value="'+domains[i]+'">'+domains[i]+'</option>';
+			}
+			editor += '</select>';
+		}
+		$("#"+formId).append(
+			'<div class="form-row generated-form-row">' +
+			'<label for="'+prefix+'-'+property+'"><i class="fa fa-tag"></i> '+label+'</label>' +
+			editor +
+			'</div>'
+		);
+	}
+
 	/**
 	 * Assign the value to each credential field
 	 * @param node
@@ -417,6 +480,7 @@ RED.editor = (function() {
 	function prepareEditDialog(node,definition,prefix) {
 		for (var d in definition.defaults) {
 			if (definition.defaults.hasOwnProperty(d)) {
+				ensurePropertyEditor(d,prefix);
 				if (definition.defaults[d].type) {
 					prepareConfigNodeSelect(node,d,definition.defaults[d].type);
 				} else {

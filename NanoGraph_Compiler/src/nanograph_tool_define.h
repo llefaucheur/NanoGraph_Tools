@@ -73,6 +73,8 @@
 #define SECTION_END "end"
 
 #define MAX_VID_FOR_MALLOC 254
+
+
 /*----------------------------------------------------------------------- IO MANIFESTS ------------- */
 #define io_set0copy1				"io_set0copy1"
 #define io_commander0_servant1      "io_commander0_servant1"
@@ -240,8 +242,8 @@
 /*----------------------------------------------------------------------- GRAPH NODES ------------- */
 #define node_new                        "node "
 #define node_preset                     "node_preset"
-#define node_map_block                  "node_map_block"
 #define node_malloc_add                 "node_malloc_add"
+#define node_map_hwblock 				"node_map_hwblock"
 #define node_map_swap                   "node_map_swap"
 #define node_trace_id                   "node_trace_id"
 #define node_map_proc                   "node_map_proc"
@@ -256,15 +258,15 @@
 #define node_max_opp					"node_max_opp"
 
 /*----------------------------------------------------------------------- GRAPH SCRIPTS ------------- */
-#define common_script                   "script "
+#define common_script                   "script "			
 #define script_name                     "script_name"
 #define script_stack                    "script_stack"
 #define script_parameter                "script_parameter"
 #define script_mem_shared               "script_mem_shared"
 #define script_mem_map                  "script_mem_map"
+#define script_debug                    "script_debug"
 #define script_code                     "script_code"
 #define script_assembler                "script_assembler"
-#define script_parameters               "script_parameters"
 #define script_heap                     "script_heap"
 
 /*----------------------------------------------------------------------- GRAPH ARCS ------------- */

@@ -65,8 +65,9 @@ extern void search_platform_node(char *cstring, struct nanograph_node_manifest *
             struct nanograph_platform_manifest *platform);
 extern void search_graph_node(char *cstring, uint32_t idx, struct nanograph_node_manifest **graph_node, uint32_t *graph_NODE_idx, struct nanograph_graph_linkedlist *graph);
 extern void compute_memreq(struct node_memory_bank *m, struct formatStruct *all_format, struct nanograph_node_manifest *node);
-extern void nanograph_tool_read_code(char **pt_line, struct nanograph_platform_manifest *platform,
-                            struct nanograph_graph_linkedlist *graph, struct nanograph_script *script);
+extern void nanograph_tool_read_code(char** pt_line, struct nanograph_platform_manifest* platform,
+    struct nanograph_graph_linkedlist* graph,
+    struct nanograph_script* script);
 extern void nanograph_tool_read_assembler(char **pt_line, struct nanograph_platform_manifest *platform,
                             struct nanograph_graph_linkedlist *graph, struct nanograph_script *script);
 

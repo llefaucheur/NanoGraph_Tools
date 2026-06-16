@@ -345,7 +345,7 @@ void read_node_manifest(char* inputFile, struct nanograph_node_manifest* node)
     pt_line = inputFile;
     idx_mem = 0;
 
-    for (i = 0; i < MAX_NB_MEM_REQ_PER_NODE; i++) node->memreq[i].alignmentBytes = 4;
+    for (i = 0; i < MAX_NB_MEM_REQ_PER_NODE; i++) node->memreq[i].alignmentBytes = MEM_REQ_4BYTES_ALIGNMENT;
     node->nbInputArc = node->nbOutputArc = node->arc[1].rx0tx1 = node->locking_arc = 1;
 
     jump2next_valid_line(&pt_line);
@@ -413,6 +413,10 @@ void read_node_manifest(char* inputFile, struct nanograph_node_manifest* node)
         if (COMPARE(node_mem_alloc))            // node_mem_alloc    A=32 
         {   fields_extract(&pt_line, "ci", ctmp, &(node->memreq[idx_mem].size_mem_alloc_A));
         }
+        if (COMPARE(node_memory_clear))
+        {   fields_extract(&pt_line, "c", ctmp); node->memreq[idx_mem].toClear = 1;
+        }
+        
         if (COMPARE(node_mem_frame_size_mono))  // "mulfac B" "type" ("i") 
         {   fields_extract(&pt_line, "cfci", ctmp,  &(node->memreq[idx_mem].MulFrameSizeMono), 
                node->memreq[idx_mem].TypeFrameMono, &(node->memreq[idx_mem].iarcFrameMono));

@@ -861,7 +861,19 @@ RED.view = (function() {
 					existingLink = existingLink || (d.source === src && d.target === dst && d.sourcePort == src_port && d.targetPort == dst_port);
 			});
 			if (!existingLink) {
-				var link = {source: src, sourcePort:src_port, target: dst, targetPort: dst_port};
+				var link = {
+					source: src,
+					sourcePort:src_port,
+					target: dst,
+					targetPort: dst_port,
+					bufferSize: "",
+					arcName: "",
+					dataType: "",
+					refresh: "",
+					jitterPercent: "",
+					overlayWith: "",
+					script: ""
+				};
 				RED.nodes.addLink(link);
 				RED.history.push({t:'add',links:[link],dirty:dirty});
 				setDirty(true);
@@ -989,6 +1001,92 @@ RED.view = (function() {
 		RED.touch.radialMenu.show(obj,pos,options);
 		resetMouseVars();
 	}
+
+	function showEditLinkDialog(link) {
+		selected_link = link;
+		updateSelection();
+		$("#arc-input-buffer-size").val(link.bufferSize || "");
+		$("#arc-input-data-type").val(link.dataType || "");
+		$("#arc-input-arc-name").val(link.arcName || "");
+		$("#arc-input-refresh").val(link.refresh || "");
+		$("#arc-input-jitter-percent").val(link.jitterPercent || "");
+		$("#arc-input-overlay-with").val(link.overlayWith || "");
+		$("#arc-input-script").val(link.script || "");
+		$("#arc-dialog").dialog("option","link",link).dialog("open");
+	}
+
+	$("#arc-dialog-form").submit(function(e) { e.preventDefault(); });
+	$("#arc-dialog").dialog({
+		modal: true,
+		autoOpen: false,
+		width: 420,
+		title: "Arc parameters",
+		buttons: [
+			{
+				text: "Ok",
+				click: function() {
+					var link = $(this).dialog("option","link");
+					var values = {
+						bufferSize: $.trim($("#arc-input-buffer-size").val()),
+						dataType: $.trim($("#arc-input-data-type").val()),
+						arcName: $.trim($("#arc-input-arc-name").val()),
+						refresh: $.trim($("#arc-input-refresh").val()),
+						jitterPercent: $.trim($("#arc-input-jitter-percent").val()),
+						overlayWith: $.trim($("#arc-input-overlay-with").val()),
+						script: $.trim($("#arc-input-script").val())
+					};
+					if (values.bufferSize !== "" && (!/^\d+$/.test(values.bufferSize) || parseInt(values.bufferSize,10) <= 0)) {
+						RED.notify("<strong>Error</strong>: buffer size must be a positive integer or empty","error");
+						return;
+					}
+					if (values.jitterPercent !== "" && (isNaN(values.jitterPercent) || parseFloat(values.jitterPercent) < 0)) {
+						RED.notify("<strong>Error</strong>: jitter percent must be a non-negative number or empty","error");
+						return;
+					}
+					if (values.dataType !== "" && [
+						"int8","int16","int32","int64",
+						"uint8","uint16","uint32","uint64",
+						"float32","float64","utf8","utf16"
+					].indexOf(values.dataType) === -1) {
+						RED.notify("<strong>Error</strong>: data type is not in the supported NanoGraph list","error");
+						return;
+					}
+					var changes = {};
+					var changed = false;
+					for (var property in values) {
+						if (values.hasOwnProperty(property)) {
+							var oldValue = link[property] || "";
+							if (oldValue !== values[property]) {
+								changes[property] = oldValue;
+								link[property] = values[property];
+								changed = true;
+							}
+						}
+					}
+					if (changed) {
+						var wasDirty = dirty;
+						RED.history.push({t:"editlink",link:link,changes:changes,dirty:wasDirty});
+						setDirty(true);
+					}
+					redraw();
+					$(this).dialog("close");
+				}
+			},
+			{
+				text: "Cancel",
+				click: function() {
+					$(this).dialog("close");
+				}
+			}
+		],
+		open: function() {
+			RED.keyboard.disable();
+			$("#arc-input-buffer-size").focus();
+		},
+		close: function() {
+			RED.keyboard.enable();
+		}
+	});
 
 	
 	function checkRequirements(d) {
@@ -1452,6 +1550,11 @@ RED.view = (function() {
 					redraw();
 					d3.event.stopPropagation();
 				})
+				.on("dblclick",function(d) {
+					showEditLinkDialog(d);
+					d3.event.preventDefault();
+					d3.event.stopPropagation();
+				})
 				.on("touchstart",function(d) {
 					mousedown_link = d;
 					clearSelection();
@@ -1462,6 +1565,7 @@ RED.view = (function() {
 				});
 			l.append("svg:path").attr("class","link_outline link_path");
 			l.append("svg:path").attr("class","link_line link_path");
+			l.append("svg:text").attr("class","link_label").attr("text-anchor","middle");
 		});
 
 		link.exit().remove();
@@ -1504,6 +1608,10 @@ RED.view = (function() {
 
 		link.classed("link_selected", function(d) { return d === selected_link || d.selected; });
 		link.classed("link_unknown",function(d) { return d.target.type == "unknown" || d.source.type == "unknown"});
+		link.selectAll(".link_label")
+			.attr("x",function(d) { return (d.x1+d.x2)/2; })
+			.attr("y",function(d) { return (d.y1+d.y2)/2-6; })
+			.text(function(d) { return d.bufferSize ? "buffer: " + d.bufferSize : ""; });
 
 		if (d3.event) {
 			d3.event.preventDefault();

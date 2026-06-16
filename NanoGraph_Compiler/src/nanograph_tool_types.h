@@ -365,7 +365,10 @@ struct nanograph_script
 {
     #define AVG_SCRIPT_LEN 512
     uint32_t script_program[AVG_SCRIPT_LEN];
-    char  script_comments[AVG_SCRIPT_LEN][NBCHAR_LINE];
+    uint8_t script_program_type[AVG_SCRIPT_LEN];
+    char script_comments[AVG_SCRIPT_LEN][NBCHAR_LINE];
+    char fileName[NBCHAR_LINE];                             // script file name
+    uint32_t nb_line;                                       // original script source 
     uint32_t script_ID;                                     // script instance from the graph
     uint32_t arc_script;                                    // arc descriptor used for the state and pointer to the instance
     uint32_t nbw32_allocated;                               // static address, size
@@ -373,6 +376,7 @@ struct nanograph_script
     uint32_t script_nb_instruction, nb_reg, nb_stack;       // memory allocation parameters
     uint32_t code_param32;                                  // size of code + parameters in w32
     uint32_t stack_memory_script, mem_VID;
+    uint32_t debug_option;                                  // 1=simple trace
     uint32_t script_offset;
     uint32_t script_format;     /* 0 : interpreted byte code, or architecture native code */
     labelPos_t Label_positions[MAXNBLABELS];
@@ -409,7 +413,7 @@ struct nanograph_node_manifest
     uint32_t architecture;              // arch compatible with (default: 0 = source code) to merge and sort for ARCHID_LW0
     uint32_t fpu_used;                  // fpu option used (default 0: none, no FPU assembly or intrinsic)
     uint32_t node_node_version;         // version of the computing node
-    uint32_t nanograph_version;            // version of the stream scheduler it is compatible with
+    uint32_t nanograph_version;         // version of the stream scheduler it is compatible with
     uint32_t graph_instance;            // occurence of the same node
     
     /* to build the header */
@@ -434,10 +438,10 @@ struct nanograph_node_manifest
     uint32_t TAG;                     
     uint32_t trace_ID;                     
     uint32_t local_script_index;        /* call simple scripts */
-    nanograph_script_t node_script;        /* node arm_nanograph_script */
+    nanograph_script_t  node_script;    /* node arm_nanograph_script */
     uint32_t ParameterSizeW32;          /* size of the array below */
     uint32_t PackedParameters[MAXPARAMETERSIZE]; /* words32 PACK */
-
+    
     /* arcs and buffers */
     uint32_t nbInputArc, nbOutputArc;
     uint32_t initialized_from_platform;
@@ -445,7 +449,7 @@ struct nanograph_node_manifest
     uint16_t connected_to_the_graph;    /* check dummy nodes */
     struct arcStruct arc[MAX_NB_NANOGRAPH_PER_NODE]; /* loaded with default data */
 
-    uint32_t node_position_in_graph;    /* for script callsys */
+    uint32_t node_position_w32;    /* for script callsys */
     uint32_t script_position_in_graph;  /* for script callsys */
 };
 
@@ -538,6 +542,7 @@ struct nanograph_graph_linkedlist
     struct arcStruct arc[MAX_NB_NODES];             /* rx0tx1, domain, digital format and FS accuracy => merge data */
     uint16_t nb_arcs, nb_io_arcs, current_io_arc;   /*  consolidated formats per arc, inter-nodes and at boundaries */
     uint32_t nb_debug_registers;                    /* arcs self-debug : number of 16x64b debug registers, in the buffer of arc0 */ 
+    uint32_t nb_semaphore;                          /* asynchronous IO + other need for multiprocessing protection */
     
     /* ------- NODES ------- */
     struct nanograph_node_manifest all_nodes[MAX_NB_NODES]; /* share the same type as manifests => load arc data */

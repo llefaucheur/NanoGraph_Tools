@@ -487,6 +487,12 @@ a.brand img {
   fill: none;
 }
 
+.link_label {
+  fill: #555;
+  font-size: 10px;
+  pointer-events: none;
+}
+
 g.link_selected path.link_line {
   stroke: #ff7f0e;
 }

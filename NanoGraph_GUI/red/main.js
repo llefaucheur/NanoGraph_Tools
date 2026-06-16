@@ -46,13 +46,48 @@ var RED = (function() {
 	});
 	function make_name(n) {
 		var name = (n.name ? n.name : n.id);
-		name = name.replace(" ", "_").replace("+", "_").replace("-", "_");
-		return name
+		name = String(name);
+		name = name.replace(/\[([0-9]+)\]$/, "_$1");
+		name = name.replace(/[\s+\-]+/g, "_");
+		return name;
 	}
 
     function isEmpty(str) {
         return (!str || str.length === 0);
     }
+	function appendField(yml, obj, key) {
+		if (!isEmpty(obj[key])) {
+			yml += "    " + key + ": " + String(obj[key]) + "\n";
+		}
+		return yml;
+	}
+	function parseWire(wire) {
+		if (typeof wire === "string") {
+			var parts = wire.split(":");
+			return {
+				target: parts[0],
+				targetPort: parts[1],
+				bufferSize: "",
+				arcName: "",
+				dataType: "",
+				refresh: "",
+				jitterPercent: "",
+				overlayWith: "",
+				script: ""
+			};
+		}
+		return {
+			target: wire.target || wire.id,
+			targetPort: wire.targetPort,
+			bufferSize: wire.bufferSize || "",
+			arcName: wire.arcName || "",
+			dataType: wire.dataType || "",
+			refresh: wire.refresh || "",
+			jitterPercent: wire.jitterPercent || "",
+			overlayWith: wire.overlayWith || "",
+			script: wire.script || ""
+		};
+	}
 	function save(force) {
 		RED.storage.update();
 		var export_as_yaml = 1;
@@ -74,9 +109,8 @@ var RED = (function() {
 			// Note YML does not use TABS, always use spaces
 			var yml = "";
 			if (export_as_yaml){
-				// yml += "version: " + "'1.0'" + "\n";
-				yml += "GUI graph - AUTOMATICALLY GENERATED ! " + ( new Date() ).toDateString() + "\n";
-				yml += "  nodes:" + "\n";
+				yml += "# AUTOMATICALLY GENERATED ! " + ( new Date() ).toDateString() + "\n\n";
+				yml += "nodes:" + "\n";
 			}
 
 			// generate code for all data processing nodes
@@ -92,15 +126,33 @@ var RED = (function() {
 
                         if (node["kind"] == "IO") {
                             yml += "  - IO:   " + name + "\n";
-                            if (! isEmpty(node["framel"])) { yml += "    framel: " + String(node["framel"]) + "\n" } // frame length in samples
-                            if (! isEmpty(node["nbchan"])) { yml += "    nbchan: " + String(node["nbchan"]) + "\n" } // number of channel options 
-                            if (! isEmpty(node["samprt"])) { yml += "    samprt: " + String(node["samprt"]) + "\n" } // sampling rate in Hertz
+                            var ioFields = [
+								"framel",
+								"period",
+								"per_hr",
+								"per_day",
+								"domain",
+								"nbchan",
+								"samprt",
+								"samprt_percent_accuracy",
+								"unit",
+								"scale",
+								"data_type",
+								"time_stamp",
+								"interleaving",
+								"params",
+								"paramtxt"
+							];
+							for (var ioIndex=0; ioIndex<ioFields.length; ioIndex++) {
+								yml = appendField(yml,node,ioFields[ioIndex]);
+							}
                         } 
                         if (node["kind"] == "node") {
                             yml += "  - node: " + name + "\n";
-                            if (! isEmpty(node["preset"])) { yml += "    preset: " + String(node["preset"]) + "\n" }
-                            if (! isEmpty(node["script"])) { yml += "    script: " + String(node["script"]) + "\n" }
-                            if (! isEmpty(node["params"])) { yml += "    params: " + String(node["params"]) + "\n" }
+                            var nodeFields = ["preset","params","paramtxt","maxopp","script"];
+							for (var nodeIndex=0; nodeIndex<nodeFields.length; nodeIndex++) {
+								yml = appendField(yml,node,nodeFields[nodeIndex]);
+							}
                         }
 						//if (node._def.inputs > 0) {
 						//	yml += "    inputs:\n";
@@ -118,23 +170,6 @@ var RED = (function() {
 						//		//yml += "      type: " + String(node["output_node_dataformats"]) + "\n";
 						//	}
 						//}
-						// TODO Confirm this approach is robust as JSON object indices may not be reliable
-						// Abandoned more elegant way of finding index using  var arg_starting_index = node.findIndex("numArgs");
-						// Find index of numArgs+1 to access the individual arguments by index [numArgs+offset] rather than name
-						var index = 0;
-						for (const key in node) {
-							if (key =="numArgs"){
-								index++;
-								break;
-							}
-							index++;
-						}
-						if(node.numArgs > 0){
-							yml += "    args:\n"
-							for (var l=0; l< node.numArgs; l++) {
-								yml += "    - " + Object.keys(node)[index+l] + ": " + Object.values(node)[index+l] + "\n";
-							}
-						}
 					}
 
 					else { // if !export_as_yaml
@@ -151,7 +186,7 @@ var RED = (function() {
         
             // generate code for all connections (aka wires or links)
             var cordcount = 1; // TODO remove if un-used
-            yml += "  arcs:\n";
+            yml += "\narcs:\n";
             for (var i=0; i<nns.length; i++) {
                 var n = nns[i];
                 // TODO Add if n.args?
@@ -162,14 +197,14 @@ var RED = (function() {
                         for (var k=0; k<wires.length; k++) {
                             var wire = n.wires[j][k];
                             if (wire) {
-                                var parts = wire.split(":");
+                                var arc = parseWire(wire);
                                 // TODO Investigate when/why parts.length is not == 2
                                 // if (parts.length == 2) {
                                 var src = RED.nodes.node(n.id);
-                                var dst = RED.nodes.node(parts[0]);
+                                var dst = RED.nodes.node(arc.target);
                                 var src_name = make_name(src);
                                 var dst_name = make_name(dst);
-                                if (parts.length > 0) {
+                                if (arc.target) {
                                     // Note: Removed this line as logic was unclear
                                     // if (j == 0 && parts[1] == 0 && src && src.outputs == 1 && dst && dst._def.inputs == 1) {
                                     if (src && dst) {
@@ -181,13 +216,34 @@ var RED = (function() {
                                             }
 
                                             if (dst["kind"] == "IO") {
-                                                yml += "    IPort" + String(parts[1]) + " IO:   " + dst_name + "\n";
+                                                yml += "    IPort" + String(arc.targetPort) + " IO:   " + dst_name + "\n";
                                             } else {                                 
-                                                yml += "    IPort" + String(parts[1]) + " node: " + dst_name + "\n";
+                                                yml += "    IPort" + String(arc.targetPort) + " node: " + dst_name + "\n";
                                             } 
+                                            if (! isEmpty(arc.arcName)) {
+                                                yml += "    arc_name: " + String(arc.arcName) + "\n";
+                                            }
+                                            if (! isEmpty(arc.bufferSize)) {
+                                                yml += "    buffer_size: " + String(arc.bufferSize) + "\n";
+                                            }
+                                            if (! isEmpty(arc.dataType)) {
+                                                yml += "    data_type: " + String(arc.dataType) + "\n";
+                                            }
+                                            if (! isEmpty(arc.refresh)) {
+                                                yml += "    refresh: " + String(arc.refresh) + "\n";
+                                            }
+                                            if (! isEmpty(arc.jitterPercent)) {
+                                                yml += "    jitter_percent: " + String(arc.jitterPercent) + "\n";
+                                            }
+                                            if (! isEmpty(arc.overlayWith)) {
+                                                yml += "    overlay_with: " + String(arc.overlayWith) + "\n";
+                                            }
+                                            if (! isEmpty(arc.script)) {
+                                                yml += "    script: " + String(arc.script) + "\n";
+                                            }
                                         } else {
                                             yml += "Arc" + "    Arc" + cordcount + "(";
-                                            yml += src_name + ", " + j + ", " + dst_name + ", " + parts[1];
+                                            yml += src_name + ", " + j + ", " + dst_name + ", " + arc.targetPort;
                                         yml += ");\n";
                                         }
                                     }

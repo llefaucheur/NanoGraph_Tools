@@ -150,6 +150,47 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
     <div id="dialog" class="hide"><form id="dialog-form" class="form-horizontal"></form></div>
     <div id="node-config-dialog" class="hide"><form id="dialog-config-form" class="form-horizontal"></form><div class="form-tips" id="node-config-dialog-user-count"></div></div>
+    <div id="arc-dialog" class="hide">
+        <form id="arc-dialog-form" class="form-horizontal">
+            <div class="form-row">
+                <label for="arc-input-buffer-size"><i class="icon-hdd"></i> Buffer size:</label>
+                <input type="text" id="arc-input-buffer-size" placeholder="default">
+            </div>
+            <div class="form-row">
+                <label for="arc-input-data-type"><i class="icon-tag"></i> Data type:</label>
+                <input type="text" id="arc-input-data-type" placeholder="inherit">
+            </div>
+            <div class="form-row">
+                <label for="arc-input-arc-name"><i class="icon-tag"></i> Arc name:</label>
+                <input type="text" id="arc-input-arc-name" placeholder="optional">
+            </div>
+            <div class="form-row">
+                <label for="arc-input-refresh"><i class="icon-refresh"></i> Refresh:</label>
+                <select id="arc-input-refresh">
+                    <option value=""></option>
+                    <option value="flush">flush</option>
+                    <option value="invalidate">invalidate</option>
+                    <option value="both">both</option>
+                    <option value="none">none</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="arc-input-jitter-percent"><i class="icon-random"></i> Jitter %:</label>
+                <input type="text" id="arc-input-jitter-percent" placeholder="optional">
+            </div>
+            <div class="form-row">
+                <label for="arc-input-overlay-with"><i class="icon-resize-small"></i> Overlay with:</label>
+                <input type="text" id="arc-input-overlay-with" placeholder="optional arc name">
+            </div>
+            <div class="form-row">
+                <label for="arc-input-script"><i class="icon-file"></i> Script:</label>
+                <input type="text" id="arc-input-script" placeholder="optional">
+            </div>
+            <div class="form-tips">
+                Empty fields are omitted from YAML export.
+            </div>
+        </form>
+    </div>
 
     <div id="node-dialog-confirm-deploy" class="hide">
         <form class="form-horizontal">
@@ -403,6 +444,13 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
+         {"type":"data_in_0",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },
+                  "nbchan":{"value":"", "required": "true" }
+                  },
+                  "shortName":"data_in_0","inputs":0,"outputs":1,
+                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
          {"type":             "io_data_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
@@ -447,7 +495,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
          {"type":             "io_data_ext_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" }, "samprt":{"value":"", "required": "true" }, "nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_data_ext_in","inputs":0,"outputs":1, "category":"input-function","color":"#000000","icon":"arrow-in_OFF.png"}},
+                  "shortName":"io_data_ext_in","inputs":0,"outputs":1, "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
                   
                   
 
@@ -487,7 +535,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
          {"type":             "io_data_ext_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_data_ext_out","inputs":1,"outputs":0, "category":"output-function","color":"#000000","icon":"arrow-in_OFF.png"}},                  
+                  "shortName":"io_data_ext_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
 
 
 
@@ -497,7 +545,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
          {"type":             "arm_script",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"script","inputs":1,"outputs":1, "category":"arm","color":"#000000","icon":"arrow-in_OFF.png"}},
+                  "shortName":"script","inputs":2,"outputs":2, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
 
          {"type":             "arm_router",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
@@ -974,6 +1022,7 @@ Sample software is available to demonstrate the functionality of the RA8E1 MCU a
     <script type="text/x-red" data-template-name=         "arm_script">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
             
         </script> <script type="text/x-red" data-help-name="arm_script">  
         <h4>Description</h4> <div class=tooltipinfo>

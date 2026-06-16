@@ -159,7 +159,9 @@ L_next_node:
             jump2next_valid_line(&pt_line);
         }
         if (COMPARE("script"))
-        {   sscanf(pt_line, "%s %s", ctmp1, &fileName);
+        {
+            sscanf(pt_line, "%s %s", ctmp1, NODES[nNode].node_script.fileName);
+ 
             //NODES[nNode].TAG = preset;
             jump2next_valid_line(&pt_line);
         }
@@ -302,7 +304,7 @@ L_endGui:
     fprintf(ggraph_txt_result, ";  DO NOT MODIFY !\n");
     fprintf(ggraph_txt_result, ";\n");
     fprintf(ggraph_txt_result, "; --- HEADER --------------------------------------------------------------\n");
-    fprintf(ggraph_txt_result, "graph_locations -1 -1 -1 -1  0 0 0 \n");
+    fprintf(ggraph_txt_result, "graph_locations -1 -1 -1 -1 -1 0 0 0 0 \n");
     fprintf(ggraph_txt_result, ";\n");
     fprintf(ggraph_txt_result, "; --- FORMAT -----------------------------------------------------------\n");
 //    for (iformat = 0; iformat < nformat; iformat++)
@@ -330,6 +332,31 @@ L_endGui:
         fprintf(ggraph_txt_result, "node %-15s  %d \n", NODES[iNode].nodeName, NODES[iNode].graph_instance);
         fprintf(ggraph_txt_result, "    node_preset       %d \n", 0 /* PRESET */);
         fprintf(ggraph_txt_result, ";\n");
+
+        if (0 != NODES[iNode].node_script.fileName[0])
+        {
+            FILE* ptf;
+
+            if (0 == (ptf = fopen(NODES[iNode].node_script.fileName, "rt")))
+            {
+                printf("\n %s file read error \n", NODES[iNode].node_script.fileName);
+                exit(-3);
+            }
+
+            while (1)
+            {
+                int k;
+                char c;
+                if (feof(ptf))
+                    break;
+                c = fgetc(ptf);
+                k = c;
+                k = k & 0xFF;
+                if (0xFF == k)
+                    break;
+                fputc(c, ggraph_txt_result);
+            }
+        }
     }
 
     fprintf(ggraph_txt_result, "; --- ARCS ----------------------------------------------------------------\n");

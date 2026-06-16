@@ -23,7 +23,67 @@ RED.nodes = (function() {
 	//var defaultWorkspace;
 	var workspaces = {};
 
+	function inferDomain(type, def) {
+		if (def.category === "input-function") {
+			if (/audio/.test(type)) return "audio_in";
+			if (/2d/.test(type)) return "2d_in";
+			if (/analog/.test(type)) return "analog_in";
+			if (/ui/.test(type)) return "user_interface";
+			if (/timer/.test(type)) return "time";
+			if (/sensor/.test(type)) return "motion";
+			return "general";
+		}
+		if (def.category === "output-function") {
+			if (/audio/.test(type)) return "audio_out";
+			if (/2d/.test(type)) return "2d_out";
+			if (/analog/.test(type)) return "analog_out";
+			if (/ui/.test(type)) return "user_interface";
+			return "general";
+		}
+		return "";
+	}
+
+	function ensureDefault(def, name, value, required, validate) {
+		def.defaults = def.defaults || {};
+		if (!def.defaults[name]) {
+			def.defaults[name] = {value:value || ""};
+		}
+		if (required != null) {
+			def.defaults[name].required = required;
+		}
+		if (validate) {
+			def.defaults[name].validate = validate;
+		}
+	}
+
+	function augmentTypeDefaults(type, def) {
+		if (def.category === "input-function" || def.category === "output-function") {
+			ensureDefault(def, "domain", inferDomain(type, def), false);
+			ensureDefault(def, "framel", "", true, RED.validators.positiveInteger());
+			ensureDefault(def, "nbchan", "", true, RED.validators.positiveInteger());
+			ensureDefault(def, "samprt", "", false, RED.validators.positiveNumber());
+			ensureDefault(def, "period", "", false, RED.validators.positiveNumber());
+			ensureDefault(def, "per_hr", "", false, RED.validators.positiveNumber());
+			ensureDefault(def, "per_day", "", false, RED.validators.positiveNumber());
+			ensureDefault(def, "samprt_percent_accuracy", "", false, RED.validators.nonNegativeNumber());
+			ensureDefault(def, "unit", "", false);
+			ensureDefault(def, "scale", "", false, RED.validators.positiveNumber());
+			ensureDefault(def, "data_type", "float32", false, RED.validators.dataType());
+			ensureDefault(def, "time_stamp", "", false, RED.validators.oneOf(["none","counter","delta","absolute"]));
+			ensureDefault(def, "interleaving", "", false, RED.validators.oneOf(["sample","frame"]));
+			ensureDefault(def, "params", "", false);
+			ensureDefault(def, "paramtxt", "", false);
+		} else if (def.category !== "config" && ((def.inputs || 0) > 0 || (def.outputs || 0) > 0)) {
+			ensureDefault(def, "preset", "", false);
+			ensureDefault(def, "params", "", false);
+			ensureDefault(def, "paramtxt", "", false);
+			ensureDefault(def, "maxopp", "", false, RED.validators.positiveInteger());
+			ensureDefault(def, "script", "", false);
+		}
+	}
+
 	function registerType(nt,def) {
+		augmentTypeDefaults(nt,def);
 		node_defs[nt] = def;
 		// TODO: too tightly coupled into palette UI
 		RED.palette.add(nt,def);
@@ -293,7 +353,17 @@ RED.nodes = (function() {
 			var wires = links.filter(function(d){return d.source === n;});
 			for (var j=0;j<wires.length;j++) {
 				var w = wires[j];
-				node.wires[w.sourcePort].push(w.target.id + ":" + w.targetPort);
+				node.wires[w.sourcePort].push({
+					target: w.target.id,
+					targetPort: w.targetPort,
+					bufferSize: w.bufferSize || "",
+					arcName: w.arcName || "",
+					dataType: w.dataType || "",
+					refresh: w.refresh || "",
+					jitterPercent: w.jitterPercent || "",
+					overlayWith: w.overlayWith || "",
+					script: w.script || ""
+				});
 			}
 		}
 		return node;
@@ -653,7 +723,7 @@ RED.nodes = (function() {
 
 						for (var d2 in node._def.defaults) {
 							if (node._def.defaults.hasOwnProperty(d2)) {
-								node[d2] = n[d2];
+								node[d2] = (n[d2] != null) ? n[d2] : node._def.defaults[d2].value;
 							}
 						}
 
@@ -672,10 +742,36 @@ RED.nodes = (function() {
 					var wires = (n.wires[w1] instanceof Array)?n.wires[w1]:[n.wires[w1]];
 					for (var w2=0;w2<wires.length;w2++) {
 						if (wires[w2] != null) {
-							var parts = wires[w2].split(":");
-							if (parts.length == 2 && parts[0] in node_map) {
-								var dst = node_map[parts[0]];
-								var link = {source:n,sourcePort:w1,target:dst,targetPort:parts[1]};
+							var wire = wires[w2];
+							var targetId;
+							var targetPort;
+							var bufferSize = "";
+							if (typeof wire === "string") {
+								var parts = wire.split(":");
+								if (parts.length == 2) {
+									targetId = parts[0];
+									targetPort = parts[1];
+								}
+							} else {
+								targetId = wire.target || wire.id;
+								targetPort = wire.targetPort;
+								bufferSize = wire.bufferSize || "";
+							}
+							if (targetId in node_map) {
+								var dst = node_map[targetId];
+								var link = {
+									source:n,
+									sourcePort:w1,
+									target:dst,
+									targetPort:targetPort,
+									bufferSize:bufferSize,
+									arcName: wire.arcName || "",
+									dataType: wire.dataType || "",
+									refresh: wire.refresh || "",
+									jitterPercent: wire.jitterPercent || "",
+									overlayWith: wire.overlayWith || "",
+									script: wire.script || ""
+								};
 								addLink(link);
 								new_links.push(link);
 							}
