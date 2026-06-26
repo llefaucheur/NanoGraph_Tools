@@ -123,6 +123,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\nanograph_common_included_in_tools.h" />
+    <ClInclude Include="..\..\..\nanograph_interpreter_included_in_tools.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_define.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_include.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_types.h" />

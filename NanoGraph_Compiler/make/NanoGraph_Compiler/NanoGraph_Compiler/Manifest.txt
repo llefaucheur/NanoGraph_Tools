@@ -89,19 +89,19 @@
 ; if the node procID > 0 then check compatibility with processor procID and exit
 ;
 ;   Path                 Node Manifest                PROC ARCH  ID    COMMENTS
-     2       filter/node_manifest_filter.txt             0   1    1   
-;     4      JPEGENC/node_manifest_bitbank_JPEGENC.txt    0   1   2    
-;    5       TJpgDec/node_manifest_TjpgDec.txt            0   1   3   
-;     2       router/node_manifest_router.txt             0   1   4  
-;     2    amplifier/node_manifest_amplifier.txt          0   1   5    
-;     2    modulator/node_manifest_modulator.txt          0   1   6    
-;     2  demodulator/node_manifest_demodulator.txt        0   1   7    
-;     2     filter2D/node_manifest_filter2D.txt           0   1   8    
-    3      detector/node_manifest_detector.txt           0   1    9   
-;    3    detector2D/node_manifest_detector2D.txt         0   1  10    
-;    3     resampler/node_manifest_resampler.txt          0   1  11    
-;    3    compressor/node_manifest_compressor.txt         0   1  12    
-;    3  decompressor/node_manifest_decompressor.txt       0   1  13    
+     2       filter/node_manifest_filter.txt             0   1    2   
+;     4      JPEGENC/node_manifest_bitbank_JPEGENC.txt    0   1   3    
+;    5       TJpgDec/node_manifest_TjpgDec.txt            0   1   4   
+;     2       router/node_manifest_router.txt             0   1   5  
+;     2    amplifier/node_manifest_amplifier.txt          0   1   6    
+;     2    modulator/node_manifest_modulator.txt          0   1   7    
+;     2  demodulator/node_manifest_demodulator.txt        0   1   8    
+;     2     filter2D/node_manifest_filter2D.txt           0   1   9    
+    3      detector/node_manifest_detector.txt           0   1   10   
+;    3    detector2D/node_manifest_detector2D.txt         0   1  11    
+;    3     resampler/node_manifest_resampler.txt          0   1  12    
+;    3    compressor/node_manifest_compressor.txt         0   1  13    
+;    3  decompressor/node_manifest_decompressor.txt       0   1  14    
 ;                                                                
 end  ; the platform manifest ends here
 ;=================================================================

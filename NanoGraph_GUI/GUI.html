@@ -39,7 +39,7 @@ p.func {padding-bottom:0; margin:0px}
 p.desc {padding-left:2em; margin:0px; padding-top:0.2em; padding-bottom:0.8em; font-size:0.75em}
 p.exam {padding-left:2em; text-indent:-1.2em; margin:0px; padding-top:0; padding-bottom:0.5em; font-size:0.75em; font-weight:bold}
 pre.desc {padding-left:3em; margin:0px; padding-top:0em; padding-bottom:0.8em; font-size:0.75em;
-	background-color:#FFFFFF; border:0px; line-height:100%;
+    background-color:#FFFFFF; border:0px; line-height:100%;
 }
 span.indent {padding-left:2em}
 span.literal {color: #006699}
@@ -360,7 +360,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-tips">
             <label for="node-input-cmsis" style="font-size: 13px; padding: 2px 0px 0px 4px;">
                 <input style="margin-bottom: 4px; margin-right: 4px;" type="checkbox" id="node-input-cmsis" checked="checked" class="input-block-level" />
-                    &nbsp;Import code 
+                    &nbsp;Import code
             </label>
         </div>
     </script>
@@ -388,21 +388,6 @@ span.mainfunction {color: #993300; font-weight: bolder}
     <script src="red/ui/notifications.js"></script>
     <script src="red/ui/touch/radialMenu.js"></script>
 
-    <!--
-     TODO: generate some or all of this automatically from the C++ source
-    -->
-    <!--
-     TODO: add a field for maximum instance count
-    -->
-    <!--
-     TODO: add a field for exclusive to other objects (not allowed if they're used)
-    -->
-    <!--
-     TODO: add "parameters" fields, to replace the form html stuff
-    -->
-    <!-- TODO Investigate why having this field unpopulated causes a breakdown in the graph engine:
-    Without this section being defined connections can no longer be drawn, nodes cannot be deleted and
-    multiple nodes of same type cannot be created-->
     <script type="text/x-red" data-container-name="InputOutputCompatibilityMetadata">
         {"requirements":[
 
@@ -415,11 +400,10 @@ span.mainfunction {color: #993300; font-weight: bolder}
     Note that dataformats are specified here as strings which are later changed to actual datatypes during YML->Graph generation.
 
     Data fields configured by drop-downs must match exactly with fields in individual node descriptions below
-    -->
-    TODO Add support for multiple IO for more nodes. Currently only those required for DSP-App demo are fully functional but support for nodes with multiple IO may require more work to maintain exportability. This file should be treated as a work in progress.
+    -->
 
-    <!-- INPUT                                  
-         {"type":             "XXXXXXX_in", 
+    <!-- INPUT
+         {"type":             "XXXXXXX_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"YYYYY", "required": "true" },  ======>>> YYYYY default value (if any)
                   "shortName":"XXXXXXX_in","inputs":0,"outputs":1,
@@ -429,10 +413,10 @@ span.mainfunction {color: #993300; font-weight: bolder}
          OUPUT
                   "shortName":"XXXXXX","inputs":1,"outputs":0,      <<<<===== category
                   "category":"output-function",                     <<<<===== category
-                  "color":"#ffeaf1","icon":"arrow-in.png"}},        <<<<===== nb of IOs   / 000000 arrow-in_OFF.png / BLUE ffeaf1     
+                  "color":"#ffeaf1","icon":"arrow-in.png"}},        <<<<===== nb of IOs   / 000000 arrow-in_OFF.png / BLUE ffeaf1
          NODES
                   "shortName":"XXXXXX","inputs":1,"outputs":1,
-                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},   / 000000 arrow-in_OFF.png / grey f1f1f1  
+                  "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},   / 000000 arrow-in_OFF.png / grey f1f1f1
     -->
     <script type="text/x-red" data-container-name="NodeDefinitions">
          {"nodes":[
@@ -505,37 +489,37 @@ span.mainfunction {color: #993300; font-weight: bolder}
          {"type":             "io_data_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_data_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_data_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_ui_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_ui_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_ui_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_serial_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_serial_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_serial_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_analog_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_analog_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_analog_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_audio_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_audio_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_audio_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_2d_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_2d_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_2d_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_data_ext_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_data_ext_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},                  
+                  "shortName":"io_data_ext_out","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
 
 
@@ -561,7 +545,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
                   "shortName":"arm_filter","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-   
+
          {"type":             "arm_modulator",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
@@ -581,17 +565,17 @@ span.mainfunction {color: #993300; font-weight: bolder}
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
                   "shortName":"sigp_detector","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-   
+
          {"type":             "sigp_detector2D",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
                   "shortName":"sigp_detector2D","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-   
+
          {"type":             "sigp_resampler",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
                   "shortName":"sigp_resampler","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
-   
+
          {"type":             "sigp_compressor",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
@@ -616,7 +600,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
          ]}
     </script>
 
-    <!-- 
+    <!--
     #Critical Section
 
     data-template-name must match 'type' field from node-definitions for node to connect the two.
@@ -631,9 +615,9 @@ span.mainfunction {color: #993300; font-weight: bolder}
     data-help-name section is for adding instructions/description of the node.
     Information/text to be displayed should be added inside <p> and </p>
     -->
-    
-    
-    
+
+
+
    <!----------------------------------- Platform Computer ------------------------------------------->
 
     <script type="text/x-red" data-help-name="Computer">
@@ -686,8 +670,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_data_in">  
+
+    </script><script type="text/x-red" data-help-name="io_data_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>General purpose graph input (from platform I/O or the main application) </p>
         </div> </script>
@@ -706,8 +690,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_sensor_in">  
+
+    </script><script type="text/x-red" data-help-name="io_sensor_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>General purpose graph input (from platform I/O or the main application) </p>
         <p>reserved for motion, temperature, proximity, CO2, PIR ("motion", "analog_in" or "gpio" domains) </p>
@@ -726,8 +710,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_timer">  
+
+    </script><script type="text/x-red" data-help-name="io_timer">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port connected to timers at 100ms, 1s or other tunable values from 1 micro second to periods in days ("timer" domain, hardware or systick timers) </p>
         </div> </script>
@@ -745,8 +729,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_ui_in">  
+
+    </script><script type="text/x-red" data-help-name="io_ui_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to buttons, slider ("user_interface" domain) </p>
         </div> </script>
@@ -764,8 +748,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_serial_in">  
+
+    </script><script type="text/x-red" data-help-name="io_serial_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to communication RX and remote controls ("general" domain) </p>
         </div> </script>
@@ -783,8 +767,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_analog_in">  
+
+    </script><script type="text/x-red" data-help-name="io_analog_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to analog A/D input ("motion", "analog_in" or "gpio" domain)</p>
         </div> </script>
@@ -802,8 +786,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_audio_in">  
+
+    </script><script type="text/x-red" data-help-name="io_audio_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to microphone, PDM, line-in, modem, USB audio ("audio_in" domain) </p>
         </div> </script>
@@ -821,11 +805,11 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_2d_in">  
+
+    </script><script type="text/x-red" data-help-name="io_2d_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to camera ("2d_in" domain) </p>
-        </div> </script>   
+        </div> </script>
     <!----------------------------------- io_data_ext_in ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_data_ext_in">
 
@@ -840,20 +824,20 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_data_ext_in">  
+
+    </script><script type="text/x-red" data-help-name="io_data_ext_in">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>general purpose IO   </p>
         </div> </script>
-        
 
 
 
 
-        
+
+
     <!----------------------------------- io_data_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_data_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -866,15 +850,15 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_data_out">  
+
+    </script><script type="text/x-red" data-help-name="io_data_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>General purpose input to gpio/application </p>
         </div> </script>
-        
+
     <!----------------------------------- io_ui_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_ui_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -887,14 +871,14 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_ui_out">  
+
+    </script><script type="text/x-red" data-help-name="io_ui_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to LED, LCD, Digits, Metadata ("user_interface" domain) </p>
         </div> </script>
            <!----------------------------------- io_serial_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_serial_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -907,14 +891,14 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_serial_out">  
+
+    </script><script type="text/x-red" data-help-name="io_serial_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to communication TX for debug / trace and remote control ("general" domain) </p>
         </div> </script>
            <!----------------------------------- io_analog_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_analog_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -927,14 +911,14 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_analog_out">  
+
+    </script><script type="text/x-red" data-help-name="io_analog_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to analog D/A output ("analog_out" or "gpio" domain) </p>
         </div> </script>
            <!----------------------------------- io_audio_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_audio_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -947,14 +931,14 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_audio_out">  
+
+    </script><script type="text/x-red" data-help-name="io_audio_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to buzzer, class-D, earphone, line-out, ultrasound ("audio_out" domain) </p>
         </div> </script>
            <!----------------------------------- io_2d_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_2d_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -967,14 +951,14 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_2d_out">  
+
+    </script><script type="text/x-red" data-help-name="io_2d_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>io port assigned to display ("2d_out" domain)</p>
         </div> </script>
            <!----------------------------------- io_data_ext_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_data_ext_out">
-    
+
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
@@ -987,14 +971,14 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label  for="node-input-samprt">
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
-                    
-    </script><script type="text/x-red" data-help-name="io_data_ext_out">  
+
+    </script><script type="text/x-red" data-help-name="io_data_ext_out">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>General purpose input to gpio/application, usually reserved for the LED </p>
         </div> </script>
-               
-        
-        
+
+
+
 
 
     <!---------------------------------------------------- arm_script ------------------------------------------->
@@ -1002,11 +986,11 @@ span.mainfunction {color: #993300; font-weight: bolder}
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
-        
-        </script> <script type="text/x-red" data-help-name="arm_script">  
+
+        </script> <script type="text/x-red" data-help-name="arm_script">
         <h4>Description</h4> <div class=tooltipinfo>
-        <p> 
-Scripts are nodes interpreted from byte code declared in the graph. This is a virtual machine programmed like a pocket calculator. There are 14 registers used as data or pointers. Computations are made in floating point (E8M32, 8bits exponent, 32bits mantissa). The programming language supports several data addressing mode (stack, heap, scatter/gather, bit-fields). 
+        <p>
+Scripts are nodes interpreted from byte code declared in the graph. This is a virtual machine programmed like a pocket calculator. There are 14 registers used as data or pointers. Computations are made in floating point (E8M32, 8bits exponent, 32bits mantissa). The programming language supports several data addressing mode (stack, heap, scatter/gather, bit-fields).
 </p><p>
 The main use-cases of scripts are
 </p><p>
@@ -1015,7 +999,7 @@ The main use-cases of scripts are
 </p><p>- characters string processing (AT commands and JSON string generation, Modbus control, debug traces)
 </p><p>- control the execution of a sequence of nodes (loop, by-pass, exit the graph)
 </p><p>
-Script nodes data/stack/parameters and registers context are in a RAM section declared as a dummy output FIFO. 
+Script nodes data/stack/parameters and registers context are in a RAM section declared as a dummy output FIFO.
 </p><p>
 The default memory configuration is "not shared", meaning that memory associated with scripts do not share the same memory buffer.
 
@@ -1030,10 +1014,10 @@ The default memory configuration is "not shared", meaning that memory associated
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_router">  
+        </script> <script type="text/x-red" data-help-name="arm_router">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
-This node receives up to four input streams (arcs) and generates up to four output streams.  
+        <p>
+This node receives up to four input streams (arcs) and generates up to four output streams.
 </p><p>
 Each stream may be multichannel.
 </p><p>
@@ -1041,24 +1025,24 @@ Each stream may be multichannel.
 The format of the streams is known by the node during the reset and set-parameter commands.
 </p><p>
 
-Input streams may be asynchronous and include time stamps.  
+Input streams may be asynchronous and include time stamps.
 </p><p>
 Output streams are isochronous with other graph streams and have a defined sampling rate.
 </p><p>
 
-The first parameters specify the number of arcs and identify the input arc to be used with high quality of service (HQoS), or −1 if none is used.  
+The first parameters specify the number of arcs and identify the input arc to be used with high quality of service (HQoS), or −1 if none is used.
 </p><p>
 These parameters are followed by a list of routing and mixing rules.
 </p><p>
 
-When an HQoS arc is defined, data movement is aligned to that arc in the time domain.  
+When an HQoS arc is defined, data movement is aligned to that arc in the time domain.
 </p><p>
 Other arcs are synchronized accordingly, and data is interpolated or zeroed in case of flow issues.
             </p>
 When no HQoS arc is defined, the node evaluates all input and output arcs and determines the minimum amount of data that can be processed consistently across all arcs in the time domain.
 
 
-        <h4>Use-cases</h4> <div class=tooltipinfo> 
+        <h4>Use-cases</h4> <div class=tooltipinfo>
 The following use-cases can be combined:
 </p><p>
 1. Router, deinterleaving, interleaving, channels recombination: the input arc data is processed deinterleaved, and the output arc is the result of recombination of any input arc. Audio example with two stereo input arcs using 5ms and 12ms frame lengths, recombined to create a stereo stream interleaved output using 20ms frame length, the left channel from the first arc and the left channel of the second arc.
@@ -1084,7 +1068,7 @@ The list of routing and mixing information is :
 </p><p>- index of the input arc (<= 4)
 </p><p>- index of the channels (1 Byte to 31 Bytes)
 </p><p>- index of the output destination arc (<=4)
-</p><p>- index of the channels (1 Byte to 31 Bytes) 
+</p><p>- index of the channels (1 Byte to 31 Bytes)
 </p>   - mixer gain to apply (fp32) and convergence speed (fp32)
 
             </p>
@@ -1097,20 +1081,20 @@ The list of routing and mixing information is :
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_amplifier">  
+        </script> <script type="text/x-red" data-help-name="arm_amplifier">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
-</p><p>Operation : rescale and control of the amplitude of the input stream with controlled time of ramp-up/ramp-down. 
+        <p>
+</p><p>Operation : rescale and control of the amplitude of the input stream with controlled time of ramp-up/ramp-down.
 </p><p>The gain control “mute” is used to store the current gain setting, being reloaded with the command “unmute”
 </p><p>Option : either the same gain/controls for all channels or list of parameters for each channel
 </p><p>
-</p><p>Parameters :  new gain/mute/unmute, ramp-up/down slope, delay before starting the slope. 
+</p><p>Parameters :  new gain/mute/unmute, ramp-up/down slope, delay before starting the slope.
 </p><p>Use-cases :
-</p><p>    Features : adaptive gain control (range compressor, expander, AGC) under a script control with energy polling 
+</p><p>    Features : adaptive gain control (range compressor, expander, AGC) under a script control with energy polling
 </p><p>    Metadata features : "saturation occurred" "energy"
 </p><p>    Mixed-Signal glitches : remove the first seconds of an IR sensor until it was self-calibrated (same for audio Class-D)
 </p><p>
-</p><p>parameters of amplifier (variable size): 
+</p><p>parameters of amplifier (variable size):
 </p><p>TAG_CMD = 1, uint8_t, 1st-order shifter slope time (as stream_mixer, 0..75k samples)
 </p><p>TAG_CMD = 2, uint16_t, desired gain
 </p><p>TAG_CMD = 3, uint8_t, set/reset mute state
@@ -1118,7 +1102,7 @@ The list of routing and mixing information is :
 </p><p>TAG_CMD = 5, uint16_t, delay before applying mute, in samples
 </p><p>
 </p><p>Slopes of rising and falling gains, identical to all channels
-</p><p> Operation : applies vq = **interp1**(x,v,xq) 
+</p><p> Operation : applies vq = **interp1**(x,v,xq)
 </p><p> Following https://fr.mathworks.com/help/matlab/ref/interp1.html
 </p><p>   linear of polynomial interpolation (implementation)
 </p><p> **Parameters : X,V vectors, size max = 32 points**
@@ -1132,16 +1116,16 @@ The list of routing and mixing information is :
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_filter">  
+        </script> <script type="text/x-red" data-help-name="arm_filter">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
         Parameters to write in the "params" box:
         <ul>
           <li>filter type (lowpass=1, highpass=2, notch=3, bandpass=4, allpass=5, peak=6, lowshelf=7, highshelf=8) </li>
           <li>nomalized frequency (Nyquist=0.5)</li>
           <li>Q-factor</li>
           <li>gain in dB</li>
-        </ul>  
+        </ul>
         <p>Example for a low-pass filter at 1kHz when the sampling rate is 16kHz : </p>
         <p>1 0.0625 1.414 24</p>
             </p>
@@ -1155,9 +1139,9 @@ The list of routing and mixing information is :
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_modulator">  
+        </script> <script type="text/x-red" data-help-name="arm_modulator">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
  sine, noise, square, saw tooth with amplitude or frequency modulation
  use-case : ring modulator, sweep generation with a cascade of a ramp generator and a frequency modulator
             </p>
@@ -1170,16 +1154,16 @@ The list of routing and mixing information is :
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_demodulator">  
+        </script> <script type="text/x-red" data-help-name="arm_demodulator">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
 decode a bit-stream from analog data. Use-case: IR decoder, CAN/UART on SPI/I2S audio (Arduino-IRremote)
 </p><p>
 sinewave frequency recognition for alarm detector.
 </p><p>
 Parameters : clock and parity setting or let the algorithm discover the frame setting after some time
 </p><p>
-        </div> </script>        
+        </div> </script>
     <!---------------------------------------------------- arm_filter2D ------------------------------------------->
     <script type="text/x-red" data-template-name=         "arm_filter2D">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -1188,10 +1172,10 @@ Parameters : clock and parity setting or let the algorithm discover the frame se
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_filter2D">  
+        </script> <script type="text/x-red" data-help-name="arm_filter2D">
         <h4>Operation</h4> <div class=tooltipinfo>
 </p><p>
-Filter, rescale/zoom/extract, rotate, exposure compensation, background removal. 
+Filter, rescale/zoom/extract, rotate, exposure compensation, background removal.
 </p><p>
 
 Channel mixer : insert a portion of the processed image in a larger frame buffer.
@@ -1200,7 +1184,7 @@ Channel mixer : insert a portion of the processed image in a larger frame buffer
 Parameters : spatial and temporal filtering, decimation, distortion, color mapping/log-effect
 </p><p>
             </p>
-        </div> </script>        
+        </div> </script>
 
     <!-------------------------------------------------- sigp_detector ------------------------------------------->
     <script type="text/x-red" data-template-name=       "sigp_detector">
@@ -1210,7 +1194,7 @@ Parameters : spatial and temporal filtering, decimation, distortion, color mappi
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script><script type="text/x-red" data-help-name="sigp_detector">  
+        </script><script type="text/x-red" data-help-name="sigp_detector">
         <h4>Summary</h4> <div class=tooltipinfo>
             <div class=tooltipinfo>
         <p>Signal sigp_detector PRESET. </p>
@@ -1234,9 +1218,9 @@ Parameters : spatial and temporal filtering, decimation, distortion, color mappi
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="sigp_detector2D">  
+        </script> <script type="text/x-red" data-help-name="sigp_detector2D">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
 Motion and pattern detector. Counting moving object and build a text report (object sizes, shape, speed, color, ..) to be later processed by SLM on the application processor.
 </p><p>
 
@@ -1247,7 +1231,7 @@ Parameters : sensitivity, floor-noise smoothing factors
 Metadata : decimated map of movement detection
 </p><p>
             </p>
-        </div> </script>        
+        </div> </script>
 
     <!---------------------------------------------------- sigp_resampler ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_resampler">
@@ -1257,10 +1241,10 @@ Metadata : decimated map of movement detection
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="sigp_resampler">  
+        </script> <script type="text/x-red" data-help-name="sigp_resampler">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
-Operation : high quality conversion of multichannel input data rate to the rate of the output arcs 
+        <p>
+Operation : high quality conversion of multichannel input data rate to the rate of the output arcs
 </p><p>
 
   + asynchronous rate conversion within +/- 1% adjustment
@@ -1273,7 +1257,7 @@ ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) 
 
 
             </p>
-        </div> </script>        
+        </div> </script>
 
     <!---------------------------------------------------- sigp_compressor ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_compressor">
@@ -1283,12 +1267,12 @@ ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="sigp_compressor">  
+        </script> <script type="text/x-red" data-help-name="sigp_compressor">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
 Operation : wave compression using IMADPCM(4bits/sample)
 </p><p>
-Parameters : coding scheme 
+Parameters : coding scheme
 </p><p>
 
 presets (provision codes):
@@ -1298,14 +1282,14 @@ presets (provision codes):
 </p><p>
 - 2 : coder LPC
 </p><p>
-- 4 : coder CVSD for BT speech 
+- 4 : coder CVSD for BT speech
 </p><p>
 - 5 : coder SBC
 </p><p>
 - 6 : coder MP3
 </p><p>
             </p>
-        </div> </script>        
+        </div> </script>
 
     <!---------------------------------------------------- sigp_decompressor ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_decompressor">
@@ -1315,15 +1299,15 @@ presets (provision codes):
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="sigp_decompressor">  
+        </script> <script type="text/x-red" data-help-name="sigp_decompressor">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
 decompression of encoded data
 </p><p>
 Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD threshold and silence frame format (w/wo time-stamps)
 </p><p>
 
-​	dynamic parameters : pause, stop, fast-forward x2 and x4.
+​    dynamic parameters : pause, stop, fast-forward x2 and x4.
 </p><p>
 - 1 : decoder IMADPCM
 </p><p>
@@ -1331,14 +1315,14 @@ Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD thr
 </p><p>
 - 3 : MIDI player
 </p><p>
-- 4 : decoder CVSD for BT speech 
+- 4 : decoder CVSD for BT speech
 </p><p>
 - 5 : decoder SBC
 </p><p>
 - 6 : decoder MP3
 </p><p>
             </p>
-        </div> </script>        
+        </div> </script>
 
     <!---------------------------------------------------- JPEGENC ------------------------------------------->
     <script type="text/x-red" data-template-name=         "JPEGENC">
@@ -1348,12 +1332,12 @@ Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD thr
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="JPEGENC">  
+        </script> <script type="text/x-red" data-help-name="JPEGENC">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
 From "bitbank" https://github.com/google/jpegli/tree/main
             </p>
-        </div> </script>        
+        </div> </script>
 
     <!---------------------------------------------------- TjpgDec ------------------------------------------->
     <script type="text/x-red" data-template-name=         "TjpgDec">
@@ -1363,12 +1347,12 @@ From "bitbank" https://github.com/google/jpegli/tree/main
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="TjpgDec">  
+        </script> <script type="text/x-red" data-help-name="TjpgDec">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p> 
+        <p>
 From "EML" Use-case : images decompression, pattern generation.
             </p>
-        </div> </script>        
+        </div> </script>
 
 
 
@@ -1379,65 +1363,65 @@ From "EML" Use-case : images decompression, pattern generation.
 <!-- Template for UI Boxes:
 
 <!-- <form id="dialog-form" class="form-horizontal" autocomplete="off" style="height: 438px;"><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-user" type="text" autocomplete="off"></span><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-username" type="text" autocomplete="off"></span><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-password" type="password" autocomplete="off"></span>
-		<div class="form-row">
-			<label for="node-input-group"><i class="fa fa-table"></i> Group</label>
-			<div style="width: 70%; display: inline-flex;"><select id="node-input-group" style="flex-grow: 1;" class="input-error"><option value="138f1c9eb86904ea" selected="">[unassigned] sin chart</option><option value="a25e3f35.7e46c">[Files] Group 2</option><option value="ab397e95.29ebe">[Charts] Inputs</option><option value="89749fb7.87f01">[Charts] Charts</option><option value="4e7edda4.417004">[Charts] Group 3</option><option value="b14e0265.d6fc1">[Weegschaal] Weegschaal</option><option value="e250c38c.04261">[Charts] Graph</option><option value="a0e246d1b4737443">[Node-Red Dashboard]  Signal-Generator</option><option value="5d218c05f4088ef2">[SinChart] SinChart</option><option value="afe97566.fbda58">[Charts] Inputs</option><option value="44d9222c.07961c">[Charts] Charts</option><option value="ef33233b.dd28f">[Charts] Group 3</option><option value="2257ffde.e0372">[Tab1] Group 1</option><option value="dcb5c39c85066c72">[Files] json</option><option value="c77b04401d9c2692">[Tab1] OutputSignal</option><option value="_ADD_">Add new dashboard group...</option>
-			Note: This is for the pencil to create additional custom option in dropdown
-			</select><a id="node-input-lookup-group" class="red-ui-button" style="margin-left: 10px;"><i class="fa fa-pencil"></i></a></div>
-		</div>
-		<div class="form-row">
-			<label><i class="fa fa-object-group"></i> Size</label>
-			<input type="hidden" id="node-input-width" autocomplete="off" value="0" dir="">
-			<input type="hidden" id="node-input-height" autocomplete="off" value="0" dir="">
-			<button class="editor-button" id="node-input-size" style="min-width: 36px;">auto</button>
-		</div>
-		<div class="form-row">
-			<label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
-			<input type="text" id="node-input-label" autocomplete="off" dir="">
-		</div>
-		<div class="form-row">
-			<label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
-			<input type="text" id="node-input-tooltip" placeholder="optional tooltip" autocomplete="off" dir="">
-		</div>
-		<div class="form-row">
-			<label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
-			<input type="text" id="node-input-format" placeholder="{{value}}" autocomplete="off" dir="">
-		</div>
-		<div class="form-row">
-			<label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
-			<span for="node-input-min">min</span>
-			<input type="text" id="node-input-min" style="width:60px" autocomplete="off" dir="">
-			<span for="not-input-max" style="margin-left:22px;">max</span>
-			<input type="text" id="node-input-max" style="width:60px" autocomplete="off" dir="">
-			<span for="not-input-step" style="margin-left:22px;">step</span>
-			<input type="text" id="node-input-step" style="width:60px" autocomplete="off" dir="">
-		</div>
-		<div class="form-row">
-			<label style="width:auto" for="node-input-wrap"><i class="fa fa-refresh"></i> Wrap value from max to min and min to max.</label>
-			<input type="checkbox" id="node-input-wrap" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
-		</div>
-		<div class="form-row">
-			<label style="width:auto" for="node-input-passthru"><i class="fa fa-arrow-right"></i> If <code>msg</code> arrives on input, pass through to output: </label>
-			<input type="checkbox" checked="" id="node-input-passthru" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
-		</div>
-		<div class="form-row">
-			<label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> When changed, send:</label>
-		</div>
-		<div class="form-row">
-			<label style="padding-left:25px; margin-right:-25px">Payload</label>
-			<label style="width:auto">Current value</label>
-		</div>
-		<div class="form-row">
-			<label for="node-input-topic" style="padding-left:25px; margin-right:-25px">Topic</label>
-			<input type="hidden" id="node-input-topic" autocomplete="off" dir="" class="red-ui-typedInput" value="topic">
-			<input type="hidden" id="node-input-topicType" autocomplete="off" value="msg" dir="" style="display: none;">
-		<div style="width: 331.717px; margin-right: 0px; margin-left: 0px;" class="red-ui-typedInput-container"><button type="button" class="red-ui-typedInput-type-select" tabindex="0" title="msg."><i class="red-ui-typedInput-icon fa fa-caret-down"></i><span class="red-ui-typedInput-type-label">msg.</span></button><div class="red-ui-typedInput-input-wrap"><input class="red-ui-typedInput-input red-ui-autoComplete" type="text" style="margin-right: 0px; margin-left: 0px;" autocomplete="off"></div><div class="red-ui-typedInput-value-label" style="display: none;"></div><button type="button" tabindex="0" class="red-ui-typedInput-option-trigger" style="display: none;"><span class="red-ui-typedInput-option-label"></span><span class="red-ui-typedInput-option-caret"><i class="red-ui-typedInput-icon fa fa-caret-down"></i></span></button><button type="button" tabindex="0" class="red-ui-typedInput-option-expand" style="display: none;"><i class="red-ui-typedInput-icon fa fa-ellipsis-h"></i></button></div></div>
-		<div class="form-row">
-			<label for="node-input-className"><i class="fa fa-code"></i>  Class</label>
-			<input type="text" id="node-input-className" placeholder="Optional CSS class name(s) for widget" autocomplete="off" dir="">
-		</div>
-		<div class="form-row">
-			<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-			<input type="text" id="node-input-name" autocomplete="off" dir="">
-		</div>
-	</form> -->-->
+        <div class="form-row">
+            <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+            <div style="width: 70%; display: inline-flex;"><select id="node-input-group" style="flex-grow: 1;" class="input-error"><option value="138f1c9eb86904ea" selected="">[unassigned] sin chart</option><option value="a25e3f35.7e46c">[Files] Group 2</option><option value="ab397e95.29ebe">[Charts] Inputs</option><option value="89749fb7.87f01">[Charts] Charts</option><option value="4e7edda4.417004">[Charts] Group 3</option><option value="b14e0265.d6fc1">[Weegschaal] Weegschaal</option><option value="e250c38c.04261">[Charts] Graph</option><option value="a0e246d1b4737443">[Node-Red Dashboard]  Signal-Generator</option><option value="5d218c05f4088ef2">[SinChart] SinChart</option><option value="afe97566.fbda58">[Charts] Inputs</option><option value="44d9222c.07961c">[Charts] Charts</option><option value="ef33233b.dd28f">[Charts] Group 3</option><option value="2257ffde.e0372">[Tab1] Group 1</option><option value="dcb5c39c85066c72">[Files] json</option><option value="c77b04401d9c2692">[Tab1] OutputSignal</option><option value="_ADD_">Add new dashboard group...</option>
+            Note: This is for the pencil to create additional custom option in dropdown
+            </select><a id="node-input-lookup-group" class="red-ui-button" style="margin-left: 10px;"><i class="fa fa-pencil"></i></a></div>
+        </div>
+        <div class="form-row">
+            <label><i class="fa fa-object-group"></i> Size</label>
+            <input type="hidden" id="node-input-width" autocomplete="off" value="0" dir="">
+            <input type="hidden" id="node-input-height" autocomplete="off" value="0" dir="">
+            <button class="editor-button" id="node-input-size" style="min-width: 36px;">auto</button>
+        </div>
+        <div class="form-row">
+            <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+            <input type="text" id="node-input-label" autocomplete="off" dir="">
+        </div>
+        <div class="form-row">
+            <label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
+            <input type="text" id="node-input-tooltip" placeholder="optional tooltip" autocomplete="off" dir="">
+        </div>
+        <div class="form-row">
+            <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
+            <input type="text" id="node-input-format" placeholder="{{value}}" autocomplete="off" dir="">
+        </div>
+        <div class="form-row">
+            <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
+            <span for="node-input-min">min</span>
+            <input type="text" id="node-input-min" style="width:60px" autocomplete="off" dir="">
+            <span for="not-input-max" style="margin-left:22px;">max</span>
+            <input type="text" id="node-input-max" style="width:60px" autocomplete="off" dir="">
+            <span for="not-input-step" style="margin-left:22px;">step</span>
+            <input type="text" id="node-input-step" style="width:60px" autocomplete="off" dir="">
+        </div>
+        <div class="form-row">
+            <label style="width:auto" for="node-input-wrap"><i class="fa fa-refresh"></i> Wrap value from max to min and min to max.</label>
+            <input type="checkbox" id="node-input-wrap" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
+        </div>
+        <div class="form-row">
+            <label style="width:auto" for="node-input-passthru"><i class="fa fa-arrow-right"></i> If <code>msg</code> arrives on input, pass through to output: </label>
+            <input type="checkbox" checked="" id="node-input-passthru" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
+        </div>
+        <div class="form-row">
+            <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> When changed, send:</label>
+        </div>
+        <div class="form-row">
+            <label style="padding-left:25px; margin-right:-25px">Payload</label>
+            <label style="width:auto">Current value</label>
+        </div>
+        <div class="form-row">
+            <label for="node-input-topic" style="padding-left:25px; margin-right:-25px">Topic</label>
+            <input type="hidden" id="node-input-topic" autocomplete="off" dir="" class="red-ui-typedInput" value="topic">
+            <input type="hidden" id="node-input-topicType" autocomplete="off" value="msg" dir="" style="display: none;">
+        <div style="width: 331.717px; margin-right: 0px; margin-left: 0px;" class="red-ui-typedInput-container"><button type="button" class="red-ui-typedInput-type-select" tabindex="0" title="msg."><i class="red-ui-typedInput-icon fa fa-caret-down"></i><span class="red-ui-typedInput-type-label">msg.</span></button><div class="red-ui-typedInput-input-wrap"><input class="red-ui-typedInput-input red-ui-autoComplete" type="text" style="margin-right: 0px; margin-left: 0px;" autocomplete="off"></div><div class="red-ui-typedInput-value-label" style="display: none;"></div><button type="button" tabindex="0" class="red-ui-typedInput-option-trigger" style="display: none;"><span class="red-ui-typedInput-option-label"></span><span class="red-ui-typedInput-option-caret"><i class="red-ui-typedInput-icon fa fa-caret-down"></i></span></button><button type="button" tabindex="0" class="red-ui-typedInput-option-expand" style="display: none;"><i class="red-ui-typedInput-icon fa fa-ellipsis-h"></i></button></div></div>
+        <div class="form-row">
+            <label for="node-input-className"><i class="fa fa-code"></i>  Class</label>
+            <input type="text" id="node-input-className" placeholder="Optional CSS class name(s) for widget" autocomplete="off" dir="">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" autocomplete="off" dir="">
+        </div>
+    </form> -->-->

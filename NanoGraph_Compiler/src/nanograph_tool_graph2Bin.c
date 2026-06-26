@@ -137,8 +137,12 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
     sprintf(tmpstring, "bank 4-7  (banks of long_offset[4-7])");                    GTEXT(tmpstring); GWORDINC(0);
     sprintf(tmpstring, "bank 8-11 ");                                               GTEXT(tmpstring); GWORDINC(0);
     sprintf(tmpstring, "bank 12-15");                                               GTEXT(tmpstring); GWORDINC(0);
-    j = rand(); sprintf(tmpstring, "graph ID 0"); GTEXT(tmpstring); GWORDINC(j);
-    j = rand(); sprintf(tmpstring, "graph ID 1"); GTEXT(tmpstring); GWORDINC(j);
+    {
+        long int r;
+        srand(time(NULL));
+        r = rand(); r *= rand(); sprintf(tmpstring, "graph ID 0"); GTEXT(tmpstring); GWORDINC(r);
+        r = rand(); r *= rand(); sprintf(tmpstring, "graph ID 1"); GTEXT(tmpstring); GWORDINC(r);
+    }
 
     addrW32s = GRAPH_HEADER_POINTERS_NBWORDS;   // 22
     /*  ----------------------------------------------------------------------------------------------------------------------------------   
@@ -1029,17 +1033,17 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
         GTEXTINC(tmpstring); 
         strcpy(tmpstring, "");
 
-        ST(ARCW[WR_ARCW3], ALIGNBLCK_ARCW3, 0);
-        ST(ARCW[WR_ARCW3],     WRITE_ARCW3, 0);
+        ST(ARCW[WR_ARCW4], ALIGNBLCK_ARCW4, 0);
+        ST(ARCW[WR_ARCW4],     WRITE_ARCW4, 0);
 
         sprintf(tmpstring, "      fmtCons %d fmtProd %d %s", graph->arc[iarc].fmtCons, graph->arc[iarc].fmtProd, 
             (graph->arc[iarc].HQoS==0)?" ":"HQoS"); 
         GTEXTINC(tmpstring); 
 
-        ST(ARCW[FMT_ARCW4], SCRIPTSEL_ARCW4, graph->arc[iarc].script_sel);
-        ST(ARCW[FMT_ARCW4], SCRIPT_ARCW4,    graph->arc[iarc].script);
-        ST(ARCW[FMT_ARCW4], PRODUCFMT_ARCW4, graph->arc[iarc].fmtProd);
-        ST(ARCW[FMT_ARCW4], CONSUMFMT_ARCW4, graph->arc[iarc].fmtCons);
+        ST(ARCW[FMT_ARCW3], SCRIPTSEL_ARCW3, graph->arc[iarc].script_sel);
+        ST(ARCW[FMT_ARCW3], SCRIPT_ARCW3,    graph->arc[iarc].script);
+        ST(ARCW[FMT_ARCW3], PRODUCFMT_ARCW3, graph->arc[iarc].fmtProd);
+        ST(ARCW[FMT_ARCW3], CONSUMFMT_ARCW3, graph->arc[iarc].fmtCons);
 
         sprintf(tmpstring, "      log producer/consumer flow errors"); 
         GTEXTINC(tmpstring); 
