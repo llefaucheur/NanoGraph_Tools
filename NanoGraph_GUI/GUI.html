@@ -99,6 +99,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
                     </ul>
                 </div>
                 <div class="btn-group pull-left">
+                    <a id="btn-parent-graph" class="btn" href="#" style="display:none" title="Return to the graph containing this subgraph"><i class="icon-arrow-left"></i> Back to Parent Graph</a>
                     <a id="btn-deploy" class="btn action-deploy disabled" href="#"><i id="btn-icn-deploy" class="icon-upload"></i>Export Graph</a>
                     <!-- <a id="btn-import" class="btn action-import disabled" href="#"><i id="btn-icn-download" class="icon-download"></i>Import</a> -->
                 </div>
@@ -371,6 +372,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
     <script src="jquery/js/jquery.ui.touch-punch.min.js"></script>
     <script src="orion/built-editor.min.js"></script>
     <script src="red/d3/d3.v3.min.js"></script>
+    <script src="red/node-manifests.js"></script>
     <script src="red/main.js"></script>
     <script src="red/ui/state.js"></script>
     <script src="red/nodes.js"></script>
@@ -400,7 +402,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
     Note that dataformats are specified here as strings which are later changed to actual datatypes during YML->Graph generation.
 
     Data fields configured by drop-downs must match exactly with fields in individual node descriptions below
-    -->
+    -->
+
 
     <!-- INPUT
          {"type":             "XXXXXXX_in",
@@ -1110,26 +1113,18 @@ The list of routing and mixing information is :
         </div> </script>
     <!---------------------------------------------------- arm_filter ------------------------------------------->
     <script type="text/x-red" data-template-name=         "arm_filter">
-        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">  </div>
-
-        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
-        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
-        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <!-- Parameter controls are generated from manifests/arm_filter.yaml -->
         </script> <script type="text/x-red" data-help-name="arm_filter">
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-        Parameters to write in the "params" box:
-        <ul>
-          <li>filter type (lowpass=1, highpass=2, notch=3, bandpass=4, allpass=5, peak=6, lowshelf=7, highshelf=8) </li>
-          <li>nomalized frequency (Nyquist=0.5)</li>
-          <li>Q-factor</li>
-          <li>gain in dB</li>
-        </ul>
-        <p>Example for a low-pass filter at 1kHz when the sampling rate is 16kHz : </p>
-        <p>1 0.0625 1.414 24</p>
-            </p>
-        </div> </script>
+        <h4>arm_filter</h4>
+        <div class="tooltipinfo">
+          <p>This node is driven by the Common Node Manifest <code>manifests/arm_filter.yaml</code>.</p>
+          <p>Double-click the node to edit its parameters. Selecting a parameter displays its <code>help:</code> text in this right-hand column.</p>
+        </div>
+        </script>
 
     <!---------------------------------------------------- arm_modulator ------------------------------------------->
     <script type="text/x-red" data-template-name=         "arm_modulator">

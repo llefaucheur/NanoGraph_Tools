@@ -42,6 +42,64 @@ RED.sidebar.info = (function() {
         return value;
     }
 
+    function escapeHtml(text) {
+        return String(text == null ? "" : text)
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;")
+            .replace(/"/g,"&quot;");
+    }
+
+    function getManifest(node) {
+        return (window.NG_NODE_MANIFESTS || {})[node.type] || null;
+    }
+
+    function getManifestParameter(node, property) {
+        var manifest = getManifest(node);
+        if (!manifest || !manifest.parameters) return null;
+        for (var i=0; i<manifest.parameters.length; i++) {
+            if (manifest.parameters[i].name === property) return manifest.parameters[i];
+        }
+        return null;
+    }
+
+    function manifestOverview(node) {
+        var manifest = getManifest(node);
+        if (!manifest || !manifest.parameters || !manifest.parameters.length) return "";
+
+        var html = '<div class="manifest-sidebar"><h4>Common Node Manifest</h4>';
+        if (manifest.description) html += '<p>'+escapeHtml(manifest.description)+'</p>';
+        html += '<table class="node-info"><tbody>';
+        html += '<tr><td><b>Parameter</b></td><td><b>Value</b></td></tr>';
+        for (var i=0; i<manifest.parameters.length; i++) {
+            var p = manifest.parameters[i];
+            var value = node[p.name];
+            if (value == null || value === "") value = p["default"] == null ? "" : p["default"];
+            html += '<tr><td>'+escapeHtml(p.name)+'</td><td>'+escapeHtml(value)+(p.unit?' '+escapeHtml(p.unit):'')+'</td></tr>';
+        }
+        html += '</tbody></table><p class="manifest-sidebar-note">Double-click the node and select a parameter to see its help here.</p></div>';
+        return html;
+    }
+
+    function showParameterHelp(node, property) {
+        var p = getManifestParameter(node, property);
+        if (!p) return;
+
+        var html = '<div class="manifest-parameter-help">';
+        html += '<h3>'+escapeHtml(node.type)+'</h3>';
+        html += '<h4><i class="fa fa-sliders"></i> '+escapeHtml(p.name)+'</h4>';
+        if (p.help) html += '<p class="manifest-help-text">'+escapeHtml(p.help)+'</p>';
+        html += '<table class="node-info"><tbody>';
+        html += '<tr><td>Type</td><td>'+escapeHtml(p.type || "string")+'</td></tr>';
+        if (p["default"] != null) html += '<tr><td>Default</td><td>'+escapeHtml(p["default"])+'</td></tr>';
+        if (p.unit) html += '<tr><td>Unit</td><td>'+escapeHtml(p.unit)+'</td></tr>';
+        if (p.min != null) html += '<tr><td>Minimum</td><td>'+escapeHtml(p.min)+'</td></tr>';
+        if (p.max != null) html += '<tr><td>Maximum</td><td>'+escapeHtml(p.max)+'</td></tr>';
+        if (p.values) html += '<tr><td>Values</td><td>'+escapeHtml(p.values.join(", "))+'</td></tr>';
+        html += '</tbody></table></div>';
+        $("#tab-info").html(html);
+    }
+
     function refresh(node) {
         var table = '<table class="node-info"><tbody>';
 
@@ -78,6 +136,7 @@ RED.sidebar.info = (function() {
             }
         }
         table += "</tbody></table><br/>";
+        table += manifestOverview(node);
         this.setHelpContent(table, node.type);
     }
 
@@ -105,6 +164,7 @@ RED.sidebar.info = (function() {
         clear: function() {
             $("#tab-info").html("");
         },
-        setHelpContent: setHelpContent
+        setHelpContent: setHelpContent,
+        showParameterHelp: showParameterHelp
     }
 })();

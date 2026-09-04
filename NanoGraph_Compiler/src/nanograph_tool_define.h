@@ -38,6 +38,8 @@
 #define MAX_NB_ARCS MAX_NB_NODES
 #define MAX_NB_FORMAT 32
 
+#define MAX_GRAPH_NB_HW_IO  64
+
 #define MAXINPUT 100000
 #define MAXOUTPUT 100000
 #define MAXBINARYGRAPHW32 200000
@@ -74,6 +76,14 @@
 
 #define MAX_VID_FOR_MALLOC 254
 
+#define BYTE_3_MSB 31u
+#define BYTE_3_LSB 24u
+#define BYTE_2_MSB 23u
+#define BYTE_2_LSB 16u
+#define BYTE_1_MSB 15u
+#define BYTE_1_LSB  8u
+#define BYTE_0_MSB  7u
+#define BYTE_0_LSB  0u
 
 /*----------------------------------------------------------------------- IO MANIFESTS ------------- */
 #define io_set0copy1				"io_set0copy1"

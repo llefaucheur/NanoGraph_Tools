@@ -123,11 +123,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\NanoGraph_Computer\NanoGraph_Interpreter\nanograph_const.h" />
     <ClInclude Include="..\..\..\nanograph_common_included_in_tools.h" />
     <ClInclude Include="..\..\..\nanograph_interpreter_included_in_tools.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_define.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_include.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_types.h" />
+    <ClInclude Include="..\..\..\src\nanograph_tool_yaml.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nanograph_tool_graph2Bin.c" />
@@ -137,6 +139,7 @@
     <ClCompile Include="..\..\..\src\nanograph_tool_read_graph.c" />
     <ClCompile Include="..\..\..\src\nanograph_tool_read_gui.c" />
     <ClCompile Include="..\..\..\src\nanograph_tool_read_script.c" />
+    <ClCompile Include="..\..\..\src\nanograph_tool_yaml.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

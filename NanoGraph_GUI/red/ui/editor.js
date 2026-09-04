@@ -339,7 +339,29 @@ RED.editor = (function() {
         });
     }
 
-    function ensurePropertyEditor(property,prefix) {
+    function getManifestParameter(node, property) {
+        var manifests = window.NG_NODE_MANIFESTS || {};
+        var manifest = manifests[node.type];
+        if (!manifest || !manifest.parameters) {
+            return null;
+        }
+        for (var i=0; i<manifest.parameters.length; i++) {
+            if (manifest.parameters[i].name === property) {
+                return manifest.parameters[i];
+            }
+        }
+        return null;
+    }
+
+    function escapeHtml(text) {
+        return String(text == null ? "" : text)
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;")
+            .replace(/"/g,"&quot;");
+    }
+
+    function ensurePropertyEditor(node,property,prefix) {
         if (property === "kind") {
             return;
         }
@@ -348,6 +370,8 @@ RED.editor = (function() {
         } else if ($("#"+prefix+"-"+property).length !== 0) {
             return;
         }
+
+        var parameter = getManifestParameter(node, property);
         var labels = {
             domain: "domain",
             framel: "framel",
@@ -368,25 +392,36 @@ RED.editor = (function() {
             maxopp: "maxopp",
             script: "script"
         };
-        var label = labels[property] || property;
+        var label = parameter ? (parameter.label || parameter.name) : (labels[property] || property);
         var formId = (prefix === "node-config-input") ? "dialog-config-form" : "dialog-form";
         var editor = '<input type="text" id="'+prefix+'-'+property+'">';
-        if (property === "domain") {
+        var unit = "";
+
+        if (parameter) {
+            var ptype = parameter.type || "string";
+            if (ptype === "enum") {
+                editor = '<select id="'+prefix+'-'+property+'">';
+                var values = parameter.values || [];
+                for (var ev=0; ev<values.length; ev++) {
+                    editor += '<option value="'+escapeHtml(values[ev])+'">'+escapeHtml(values[ev])+'</option>';
+                }
+                editor += '</select>';
+            } else if (ptype === "bool" || ptype === "boolean") {
+                editor = '<input type="checkbox" id="'+prefix+'-'+property+'" style="width:auto;">';
+            } else if (ptype === "int" || ptype === "float" || ptype === "number") {
+                var step = (ptype === "int") ? "1" : "any";
+                var minAttr = (parameter.min == null) ? "" : ' min="'+escapeHtml(parameter.min)+'"';
+                var maxAttr = (parameter.max == null) ? "" : ' max="'+escapeHtml(parameter.max)+'"';
+                editor = '<input type="number" step="'+step+'"'+minAttr+maxAttr+' id="'+prefix+'-'+property+'">';
+            }
+            if (parameter.unit) {
+                unit = '<span class="manifest-param-unit">'+escapeHtml(parameter.unit)+'</span>';
+            }
+        } else if (property === "domain") {
             var domains = [
-                "",
-                "general",
-                "audio_in",
-                "audio_out",
-                "gpio",
-                "motion",
-                "2d_in",
-                "2d_out",
-                "analog_in",
-                "analog_out",
-                "user_interface",
-                "time",
-                "platform_0",
-                "platform_1"
+                "", "general", "audio_in", "audio_out", "gpio", "motion",
+                "2d_in", "2d_out", "analog_in", "analog_out", "user_interface",
+                "time", "platform_0", "platform_1"
             ];
             editor = '<select id="'+prefix+'-'+property+'">';
             for (var i=0; i<domains.length; i++) {
@@ -394,12 +429,30 @@ RED.editor = (function() {
             }
             editor += '</select>';
         }
+
+        if (parameter && $("#"+formId+" .manifest-parameters-title").length === 0) {
+            $("#"+formId).append(
+                '<div class="manifest-parameters-title">' +
+                '<i class="fa fa-sliders"></i> Parameters from Common Node Manifest' +
+                '<div class="manifest-parameters-hint">Select a field to display its help on the right.</div>' +
+                '</div>'
+            );
+        }
+
         $("#"+formId).append(
-            '<div class="form-row generated-form-row">' +
-            '<label for="'+prefix+'-'+property+'"><i class="fa fa-tag"></i> '+label+'</label>' +
-            editor +
+            '<div class="form-row generated-form-row'+(parameter?' manifest-parameter-row':'')+'">' +
+            '<label for="'+prefix+'-'+property+'"><i class="fa fa-tag"></i> '+escapeHtml(label)+'</label>' +
+            editor + unit +
             '</div>'
         );
+
+        if (parameter && prefix === "node-input") {
+            $("#"+prefix+"-"+property).on("focus click change", function() {
+                if (RED.sidebar && RED.sidebar.info && RED.sidebar.info.showParameterHelp) {
+                    RED.sidebar.info.showParameterHelp(node, property);
+                }
+            });
+        }
     }
 
     /**
@@ -478,7 +531,7 @@ RED.editor = (function() {
     function prepareEditDialog(node,definition,prefix) {
         for (var d in definition.defaults) {
             if (definition.defaults.hasOwnProperty(d)) {
-                ensurePropertyEditor(d,prefix);
+                ensurePropertyEditor(node,d,prefix);
                 if (definition.defaults[d].type) {
                     prepareConfigNodeSelect(node,d,definition.defaults[d].type);
                 } else {

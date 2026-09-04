@@ -191,9 +191,20 @@ RED.view = (function() {
     var gridScale = d3.scale.linear().range([0,2000]).domain([0,2000]);
     var drag_line = vis.append("svg:path").attr("class", "drag_line");
 
+    /*
+     * Explicit navigation map for temporary subgraph editor workspaces.
+     * Do not depend on looking-up the owner node when navigating back: the
+     * parent workspace is known when the subgraph is opened and is stored
+     * directly here. This is deliberately simple and browser-independent.
+     */
+    var subgraphParentWorkspace = {};
+
     var workspace_tabs = RED.tabs.create({
         id: "workspace-tabs",
         onchange: function(tab) {
+            /* Visible navigation for subgraphs. */
+            $("#btn-parent-graph").toggle(!!subgraphParentWorkspace[tab.id] || !!tab.subgraphOwner);
+
             if (tab.type == "subflow") {
                 $("#workspace-toolbar").show();
             } else {
@@ -261,6 +272,24 @@ RED.view = (function() {
     });
 
     var workspaceIndex = 0;
+
+    /*
+     * The original PJRC/Node-RED-derived GUI used workspace id 0 as an
+     * implicit canvas.  That makes parent navigation impossible because
+     * there is no tab to activate.  Create one real, persistent root
+     * workspace instead.  It is also the visible "main_graph" folder/tab
+     * requested by the graph designer.
+     */
+    function ensureMainWorkspace() {
+        var ws = RED.nodes.workspace("main_graph");
+        if (!ws) {
+            ws = {type:"tab", id:"main_graph", label:"main_graph", mainGraph:true};
+            RED.nodes.addWorkspace(ws);
+            workspace_tabs.addTab(ws);
+        }
+        workspace_tabs.activateTab("main_graph");
+        return ws;
+    }
 
     function addWorkspace() {
         var tabId = RED.nodes.id();
@@ -849,9 +878,176 @@ RED.view = (function() {
         }
     }
 
+
+    function subgraphMangle(parentNode, localName) {
+        var parentName = parentNode.name || parentNode.type || parentNode.id;
+        parentName = String(parentName).replace(/\[([0-9]+)\]$/, "_$1");
+        parentName = parentName.replace(/[^A-Za-z0-9_]+/g, "_");
+        if (parentName === "new" || parentName === "") {
+            parentName = parentNode.type + "_" + String(parentNode.id).replace(/[^A-Za-z0-9_]+/g,"_");
+        }
+        return parentName + "__" + localName;
+    }
+
+    function openSubgraph(parentNode) {
+        var manifests = window.NG_NODE_MANIFESTS || {};
+        var manifest = manifests[parentNode.type];
+        if (!manifest || manifest.component_kind !== "subgraph" || !manifest.graph) {
+            RED.notify("No subgraph definition for "+parentNode.type,"error");
+            return;
+        }
+
+        var workspaceId = "subgraph_" + parentNode.id;
+        var existing = RED.nodes.workspace(workspaceId);
+
+        /*
+         * Store the workspace that is ACTUALLY visible when the subgraph is
+         * opened.  Do not derive it from parentNode.z: old/imported node
+         * records may have a stale or missing z value.  activeWorkspace is
+         * the authoritative UI parent at this instant.
+         */
+        subgraphParentWorkspace[workspaceId] = activeWorkspace;
+
+        if (existing) {
+            /* Keep the direct relationship on the workspace object itself.
+             * This survives any loss of the auxiliary map during UI actions. */
+            existing.parentWorkspaceId = String(activeWorkspace);
+            workspace_tabs.activateTab(workspaceId);
+            return;
+        }
+
+        var ws = {
+            type:"tab",
+            id:workspaceId,
+            label:(parentNode.name && parentNode.name !== "new") ? parentNode.name : parentNode.type,
+            subgraphOwner:parentNode.id,
+            subgraphType:parentNode.type,
+            parentWorkspaceId:String(activeWorkspace)
+        };
+        RED.nodes.addWorkspace(ws);
+        workspace_tabs.addTab(ws);
+
+        var records = [];
+        var recordByLocalName = {};
+        var graph = manifest.graph || {};
+        var inputs = (manifest.ports && manifest.ports.inputs) || [];
+        var outputs = (manifest.ports && manifest.ports.outputs) || [];
+        var i;
+
+        /* Published input ports become source boundary nodes. */
+        for (i=0; i<inputs.length; i++) {
+            var inLocal = "$in." + String(inputs[i].index == null ? i : inputs[i].index);
+            var inId = parentNode.id + "__in_" + String(i);
+            var inRec = {
+                id:inId,
+                type:"subgraph_input",
+                name:subgraphMangle(parentNode,"input_"+String(i)),
+                x:90,
+                y:170 + i*80,
+                z:workspaceId,
+                wires:[[]]
+            };
+            records.push(inRec);
+            recordByLocalName[inLocal] = inRec;
+        }
+
+        var graphNodes = graph.nodes || [];
+        for (i=0; i<graphNodes.length; i++) {
+            var gn = graphNodes[i];
+            var localName = gn.node || gn.subgraph;
+            var baseType = String(localName).replace(/_[0-9]+$/,"");
+            var pos = gn.position || [300 + i*220, 220];
+            var rec = {
+                id:parentNode.id + "__" + localName,
+                type:baseType,
+                name:subgraphMangle(parentNode,localName),
+                x:pos[0], y:pos[1], z:workspaceId,
+                wires:[]
+            };
+            var def = RED.nodes.getType(baseType);
+            var outCount = def ? (def.outputs || 0) : 0;
+            var op;
+            for (op=0; op<outCount; op++) rec.wires.push([]);
+
+            var params = gn.parameters || {};
+            $.each(params,function(k,v){ rec[k]=v; });
+            records.push(rec);
+            recordByLocalName[localName] = rec;
+        }
+
+        /* Published output ports become sink boundary nodes. */
+        for (i=0; i<outputs.length; i++) {
+            var outLocal = "$out." + String(outputs[i].index == null ? i : outputs[i].index);
+            var outId = parentNode.id + "__out_" + String(i);
+            var outRec = {
+                id:outId,
+                type:"subgraph_output",
+                name:subgraphMangle(parentNode,"output_"+String(i)),
+                x:760,
+                y:170 + i*80,
+                z:workspaceId,
+                wires:[]
+            };
+            records.push(outRec);
+            recordByLocalName[outLocal] = outRec;
+        }
+
+        function splitRef(ref) {
+            ref = String(ref);
+            if (ref.indexOf("$in.") === 0 || ref.indexOf("$out.") === 0) {
+                return {name:ref, port:0};
+            }
+            var m = ref.match(/^(.*)\.([0-9]+)$/);
+            if (!m) throw new Error("Invalid subgraph endpoint: "+ref);
+            return {name:m[1], port:parseInt(m[2],10)};
+        }
+
+        var arcs = graph.arcs || [];
+        for (i=0; i<arcs.length; i++) {
+            var a = arcs[i];
+            var sr = splitRef(a.from);
+            var dr = splitRef(a.to);
+            var srec = recordByLocalName[sr.name];
+            var drec = recordByLocalName[dr.name];
+            if (!srec || !drec) throw new Error("Unknown subgraph endpoint in arc "+i);
+            while (srec.wires.length <= sr.port) srec.wires.push([]);
+            srec.wires[sr.port].push({
+                target:drec.id,
+                targetPort:dr.port,
+                bufferSize:a.buffer_size || "",
+                arcName:a.arc_name || "",
+                dataType:a.data_type || "",
+                refresh:a.refresh || "",
+                jitterPercent:a.jitter_percent || "",
+                overlayWith:"",
+                script:a.script || ""
+            });
+        }
+
+        var imported = RED.nodes.import(records,false);
+
+        /*
+         * These nodes exist only to visualize/edit the subgraph. They must
+         * never be considered top-level compiler input.
+         */
+        if (imported && imported[0]) {
+            $.each(imported[0], function(index, editorNode) {
+                editorNode._subgraphEditorOwner = parentNode.id;
+                editorNode._subgraphEditorWorkspace = workspaceId;
+            });
+        }
+
+        workspace_tabs.activateTab(workspaceId);
+        redraw();
+    }
+
     function nodeMouseUp(d) {
         if (dblClickPrimed && mousedown_node == d && clickElapsed > 0 && clickElapsed < 750) {
-            RED.editor.edit(d);
+            if (d._def && d._def.subgraph) {
+                openSubgraph(d);
+            } else {
+                RED.editor.edit(d);
+            }
             clickElapsed = 0;
             d3.event.stopPropagation();
             return;
@@ -1879,6 +2075,38 @@ RED.view = (function() {
 
     });
 
+    function showParentWorkspace() {
+        var ws = RED.nodes.workspace(activeWorkspace);
+        var parentWorkspace = ws && ws.parentWorkspaceId != null ?
+                              ws.parentWorkspaceId : subgraphParentWorkspace[activeWorkspace];
+        var owner;
+
+        /* Direct relationship recorded when the subgraph was opened. */
+        if (parentWorkspace != null && workspace_tabs.contains(String(parentWorkspace))) {
+            workspace_tabs.activateTab(String(parentWorkspace));
+            return true;
+        }
+
+        /* Compatibility fallback for a workspace created by an older build. */
+        if (ws && ws.subgraphOwner) {
+            owner = RED.nodes.node(ws.subgraphOwner);
+            if (owner && owner.z != null && workspace_tabs.contains(String(owner.z))) {
+                ws.parentWorkspaceId = String(owner.z);
+                subgraphParentWorkspace[activeWorkspace] = String(owner.z);
+                workspace_tabs.activateTab(String(owner.z));
+                return true;
+            }
+        }
+
+        RED.notify("Back to Parent Graph is unavailable for this workspace","warning");
+        return false;
+    }
+
+    $("#btn-parent-graph").click(function(evt) {
+        evt.preventDefault();
+        showParentWorkspace();
+    });
+
     return {
         state:function(state) {
             if (state == null) {
@@ -1887,6 +2115,7 @@ RED.view = (function() {
                 mouse_mode = state;
             }
         },
+        ensureMainWorkspace: ensureMainWorkspace,
         addWorkspace: function(ws) {
             workspace_tabs.addTab(ws);
             workspace_tabs.resize();
@@ -1900,6 +2129,7 @@ RED.view = (function() {
         showWorkspace: function(id) {
             workspace_tabs.activateTab(id);
         },
+        showParentWorkspace: showParentWorkspace,
         redraw: redraw,
         dirty: function(d) {
             if (d == null) {

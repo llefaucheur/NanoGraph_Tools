@@ -39,8 +39,14 @@
 #include "nanograph_tool_define.h"
 #include "nanograph_tool_types.h"
 #include "nanograph_tool_include.h"
+#include "nanograph_tool_yaml.h"
 
 
+#if YAML_READER
+
+
+
+#else
 /* avoid stack overflow */
 char  ctmp1[NBCHAR_LINE], ctmp2[NBCHAR_LINE], io_or_node[NBCHAR_LINE];
 char  ctmp3[NBCHAR_LINE], ctmp4[NBCHAR_LINE], io_or_node2[NBCHAR_LINE];
@@ -69,6 +75,7 @@ typedef struct {
 #define MAX_ARC_GUI 100
 arc_gui_t arcs[MAX_ARC_GUI];
 
+extern int yg_read_file(const char* filename, YG_Graph* graph);
 
 /**=================================================================================================
   @brief            (main) 
@@ -88,8 +95,11 @@ void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform,
 
     char* pt_line;
     uint32_t preset, node_instance, node_instance2, IO_instance, nformat, iHWio, nHWio, iNode, nNode, iArc, nArc;
-    uint32_t inputPort, outputPort, nb_input_arc;
-    
+    uint32_t inputPort, outputPort, nb_input_arc, iparam, domain, framel, nbchan;
+    float param1, param2, param3, samprt, period, per_hr, per_day, samprt_percent_accuracy, scale;
+    char unit[NBCHAR_LINE], data_type[NBCHAR_LINE], time_stamp[NBCHAR_LINE], interleaving[NBCHAR_LINE], paramtxt[NBCHAR_LINE];
+    char Name[NBCHAR_LINE];
+
     nformat = nHWio = nNode = nArc = 0;
     pt_line = ggraph_gui;
     
@@ -107,7 +117,7 @@ L_next_node:
         goto L_arcs;
     }
 
-    sscanf(pt_line, "  - %s %s", io_or_node, ctmp2);
+    sscanf(pt_line, "  - %s %s", io_or_node, Name);
     jump2next_valid_line(&pt_line);
 
     /* nodes:
@@ -118,34 +128,91 @@ L_next_node:
        - IO:   gpio_out_1_1  */
     if (COMPARE2("IO", io_or_node))
     {
-        ctmp2[strlen(ctmp2) - 1] = '\0';                // remove the ']
-        IO_instance = atoi(&(ctmp2[strlen(ctmp2)-1]));  // extract the instance index (TODO:this can be 2 digits)
-        ctmp2[strlen(ctmp2) - 2] = '_';                 // replace the IO name as xxxxx_i
-
         for (iArc = 0; iArc < MAX_GRAPH_NB_HW_IO; iArc++)
         {
-            if (0 == strcmp(platform->IO_arc[iArc].IO_name, ctmp2))
+            if (0 == strncmp(platform->IO_arc[iArc].IO_name, Name, strlen(Name)))
             {
                 list_of_IO_HWIDX[nHWio] = nHWio; // platform->IO_arc[iArc].fw_io_idx;
                 list_of_IO_HW[nHWio] = platform->IO_arc[iArc].fw_io_idx;  // stream_io_graph iArc idx_graph
-                strcpy(list_of_IO_HW_name[nHWio], ctmp2);
+                strcpy(list_of_IO_HW_name[nHWio], Name);
                 FORMATS[nformat++] = platform->IO_arc[iArc].IO_FMT_manifest;
                 nHWio++;
                 break;
             }
         }
+
+        if (COMPARE("framel"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //platform->IO_arc[iArc].format_idx = n++;
+        }
+        if (COMPARE("period"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("per_hr"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("per_day"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("domain"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("nbchan"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("samprt"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("samprt_percent_accuracy"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("unit"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("scale"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("data_type"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("time_stamp"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("interleaving"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("params"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("paramtxt"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
     }
     
     if (COMPARE2("node", io_or_node))
     {
-        ctmp2[strlen(ctmp2) - 1] = '\0';                // remove the ']
-        node_instance = atoi(&(ctmp2[strlen(ctmp2)-1]));// extract the instance index
-        ctmp2[strlen(ctmp2) - 2] = '\0';                // remove the instance index "[n"
-        
+        node_instance = atoi(&(Name[strlen(Name)-1]));// extract the instance index
+        Name[strlen(Name) - 2] = '\0';                // remove the instance index "_x"
+
+
         /* find the node from the platform */
         for (iNode = 0; iNode < MAX_GRAPH_NB_HW_IO; iNode++)
         {
-            if (0 == strcmp(platform->all_nodes[iNode].nodeName, ctmp2))
+            if (0 == strcmp(platform->all_nodes[iNode].nodeName, Name))
             {
                 NODES[nNode] = platform->all_nodes[iNode];
                 NODES[nNode].graph_instance = node_instance;
@@ -154,21 +221,24 @@ L_next_node:
         }
 
         if (COMPARE("preset"))
-        {   sscanf(pt_line, "%s %d", PRESET, &preset);
+        {   sscanf(pt_line, "%s %d", PRESET, &preset); jump2next_valid_line(&pt_line);
             NODES[nNode].preset = preset;
-            jump2next_valid_line(&pt_line);
-        }
-        if (COMPARE("script"))
-        {
-            sscanf(pt_line, "%s %s", ctmp1, NODES[nNode].node_script.fileName);
- 
-            //NODES[nNode].TAG = preset;
-            jump2next_valid_line(&pt_line);
         }
         if (COMPARE("params"))
-        {   sscanf(pt_line, "%s %s", ctmp1, &fileName);
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
             //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
-            jump2next_valid_line(&pt_line);
+        }
+        if (COMPARE("paramtxt"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("maxopp"))
+        {   sscanf(pt_line, "%s %s", ctmp1, &fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].trace_ID = preset;               // compute coefficients of the filter @@@ TODO
+        }
+        if (COMPARE("script"))
+        {   sscanf(pt_line, "%s %s", ctmp1, NODES[nNode].node_script.fileName); jump2next_valid_line(&pt_line);
+            //NODES[nNode].TAG = preset;
         }
         nNode++;
     }
@@ -194,6 +264,7 @@ L_arcs:
     if (0 >= sscanf(pt_line, "  - %s %s %s", ctmp1, io_or_node, ctmp2))
     {  goto L_endGui;
     }
+
     jump2next_valid_line(&pt_line);
     if (0 >= sscanf(pt_line, "  %s %s %s", ctmp3, io_or_node2, ctmp4))
     {  goto L_endGui;
@@ -271,8 +342,6 @@ L_arcs:
         strcpy(arcs[nArc].node1, ctmp2);
         strcpy(arcs[nArc].node2, ctmp4);
 
-
-
         /* find the nb of input arcs of the node from the platform */
         ctmp2[strlen(ctmp2) - 1] = '\0';                // remove the ']
         node_instance = atoi(&(ctmp2[strlen(ctmp2) - 1]));// extract the instance index
@@ -301,10 +370,10 @@ L_endGui:
     fprintf(ggraph_txt_result, ";--------------------------------------------------------------------------\n");
     fprintf(ggraph_txt_result, ";  DATE %s", asctime(timeinfo));
     fprintf(ggraph_txt_result, ";  AUTOMATICALLY GENERATED CODES\n");
-    fprintf(ggraph_txt_result, ";  DO NOT MODIFY !\n");
+    fprintf(ggraph_txt_result, ";  DO NOT MODIFY !\n"); 
     fprintf(ggraph_txt_result, ";\n");
     fprintf(ggraph_txt_result, "; --- HEADER --------------------------------------------------------------\n");
-    fprintf(ggraph_txt_result, "graph_locations -1 -1 -1 -1 -1 0 0 0 0 \n");
+    fprintf(ggraph_txt_result, "graph_locations -1 -1  0 0 \n");
     fprintf(ggraph_txt_result, ";\n");
     fprintf(ggraph_txt_result, "; --- FORMAT -----------------------------------------------------------\n");
 //    for (iformat = 0; iformat < nformat; iformat++)
@@ -418,6 +487,9 @@ L_endGui:
     fprintf(ggraph_txt_result, ";\n");
     fprintf(ggraph_txt_result, "end ; \n");
 }
+
+#endif // YAML_READER
+
 
 #ifdef __cplusplus
 }

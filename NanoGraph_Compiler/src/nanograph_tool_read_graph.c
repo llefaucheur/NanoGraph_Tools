@@ -650,7 +650,14 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         if (COMPARE(graph_locations))        // graph_locations x
         {   
             #define m(i) graph->option_graph_locations[i]
-            fields_extract(&pt_line, "ciiiiiiii", ctmp, &(m(GRAPH_PIO_HW)), &(m(GRAPH_PIO_GRAPH)), &(m(GRAPH_NODE_LOCATION)), &(m(GRAPH_SCRIPTS)), &(m(GRAPH_LINKED_LIST)), &(m(GRAPH_FORMATS)), &(m(GRAPH_ASYNCPROT)), &(m(GRAPH_ARCS)));
+            fields_extract(&pt_line, "ciiii", ctmp, &(m(GRAPH_SCRIPTS)), &(m(GRAPH_LINKED_LIST)), &(m(GRAPH_FORMATS)), &(m(GRAPH_ARCS)));
+
+            m(GRAPH_PIO_HW) = -1;
+            m(GRAPH_PIO_GRAPH)     = m(GRAPH_PIO_HW);
+            m(GRAPH_NODE_LOCATION) = m(GRAPH_PIO_HW);
+            m(GRAPH_INSTANCE_LIST) = m(GRAPH_PIO_HW);
+            m(GRAPH_ASYNCPROT) = m(GRAPH_ARCS);
+
             #undef m
         }
         if (COMPARE(debug_script_fields))   //  LSB set means "call the debug script before each nanoAppsRT is called"
@@ -951,8 +958,9 @@ void arm_nanograph_read_graph (struct nanograph_platform_manifest *platform,
         }
 
         /* --------------------------------------------- ARCS ----------------------------------------------------------------------*/
-        if (COMPARE(arc_input))              //arc_input    idx_nanograph_io fmtProd     node_name instance arc_index Format (+HQOS)
-        {   uint32_t instCons, inPort, fmtCons, fmtProd, arcIO, SwcConsGraphIdx;
+        if (COMPARE(arc_input))                 //arc_input    idx_nanograph_io fmtProd     node_name instance arc_index Format (+HQOS)
+        {
+            uint32_t instCons, inPort, fmtCons, fmtProd, arcIO, SwcConsGraphIdx;
             struct nanograph_node_manifest *graph_node_Cons;
             char Consumer[NBCHAR_LINE], HQOS[NBCHAR_LINE];
 

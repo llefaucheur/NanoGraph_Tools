@@ -1,0 +1,48 @@
+node: arm_filter
+version: 1
+description: CMSIS-DSP based filtering node
+
+ports:
+  inputs:
+    - name: input
+      index: 0
+      data_type: float32
+      consume: 16
+  outputs:
+    - name: output
+      index: 0
+      data_type: float32
+      produce: 16
+
+parameters:
+  - name: mode
+    type: enum
+    default: lowpass
+    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
+    help: Filter type / operating mode
+
+  - name: cutoff
+    type: float
+    default: 0.0625
+    min: 0.0
+    max: 0.5
+    unit: normalized
+    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
+
+  - name: q
+    type: float
+    default: 1.414
+    min: 0.01
+    help: Quality factor of the filter.
+
+  - name: gain_db
+    type: float
+    default: 20
+    unit: dB
+    help: Gain used by peak and shelf filters.
+
+implementation:
+  language: C
+  header: arm_filter.h
+  init: arm_filter_init
+  process: arm_filter_process

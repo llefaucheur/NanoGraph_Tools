@@ -21,6 +21,21 @@ RED.keyboard = (function() {
 
     d3.select(window).on("keydown",function() {
         if (!active) { return; }
+
+        /*
+         * Subgraph navigation: Alt+Left returns to the workspace containing
+         * the current subgraph instance. Handle it before the normal Left
+         * arrow handler, which is also used to move selected nodes.
+         */
+        if (d3.event.keyCode === 37 && d3.event.altKey &&
+            RED.view && RED.view.showParentWorkspace) {
+            if (RED.view.showParentWorkspace()) {
+                d3.event.preventDefault();
+                d3.event.stopPropagation();
+                return;
+            }
+        }
+
         var handler = handlers[d3.event.keyCode];
         if (handler && handler.ondown) {
             if (!handler.modifiers ||

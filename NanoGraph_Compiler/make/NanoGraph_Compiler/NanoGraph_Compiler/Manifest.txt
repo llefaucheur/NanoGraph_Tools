@@ -5,7 +5,7 @@
 ;   - list of processors and their private memories and IOs
 ;   - list of the nodes installed in each processor and/or architectures
 ;=================================================================
-    4                      six file paths
+    4                      four file paths
 
     0 .                   
     1 ../../../../../NanoGraph_Computer/NanoGraph_Platform/io_manifest/ 
@@ -34,11 +34,24 @@
    12    2000   0 0 1 -1    shared memory SRAM3
 
 ;=================================================================
+;   list of instances and their mapping to this platform
+;       any instance is checked for "create" from graph data
+;
+;   example in the : 
+;       InstID  Proc    Arch    Prio
+;       0       1       1       0 any    instance 0 is the main one 
+;       1       2       1       0
+;       2       1       2       0
+;       3       1       1       1
+;       4       1       2       0
+
+
+;=================================================================
 ;   Processor #1 - architecture #1 
 ;   proc ID, arch ID, main proc, nb mem, service mask, I/O, CacheLine
     1        1        1          2       15            13   0
 
-;---MEMID SIZE  A S T SWAP  Comments 
+;---MEMID SIZE  A S T SWAP  Comments - NOT SHARED memory 
     3    1000   1 2 0 -1    simulates DTCM 
     4    1000   1 2 1 -1    simulates ITCM
 

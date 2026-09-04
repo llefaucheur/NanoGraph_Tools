@@ -73,11 +73,28 @@ RED.nodes = (function() {
             ensureDefault(def, "params", "", false);
             ensureDefault(def, "paramtxt", "", false);
         } else if (def.category !== "config" && ((def.inputs || 0) > 0 || (def.outputs || 0) > 0)) {
+            var manifest = (window.NG_NODE_MANIFESTS || {})[type];
+
             ensureDefault(def, "preset", "", false);
-            ensureDefault(def, "params", "", false);
-            ensureDefault(def, "paramtxt", "", false);
             ensureDefault(def, "maxopp", "", false, RED.validators.positiveInteger());
             ensureDefault(def, "script", "", false);
+
+            if (manifest && manifest.parameters && manifest.parameters.length) {
+                /* Remove the legacy unstructured parameter boxes when a manifest exists. */
+                if (def.defaults) {
+                    delete def.defaults.params;
+                    delete def.defaults.paramtxt;
+                }
+
+                $.each(manifest.parameters, function(index, parameter) {
+                    var defaultValue = (parameter["default"] == null) ? "" : parameter["default"];
+                    ensureDefault(def, parameter.name, defaultValue, parameter.required === true);
+                });
+            } else {
+                /* Backward-compatible nodes that do not yet have a manifest. */
+                ensureDefault(def, "params", "", false);
+                ensureDefault(def, "paramtxt", "", false);
+            }
         }
     }
 
@@ -376,7 +393,8 @@ RED.nodes = (function() {
             nns.push(convertedNode);
         }
         return nns;
-    }
+    }
+
     function createCompleteNodeSet() {
         var nns = [];
         var i;
@@ -610,8 +628,10 @@ RED.nodes = (function() {
             }
             var unknownTypes = [];
             for (i=0;i<newNodes.length;i++) {
-                n = newNodes[i];
-                if (n.type != "workspace" && n.type != "tab" && !getType(n.type)) {
+                n = newNodes[i];
+
+                if (n.type != "workspace" && n.type != "tab" && !getType(n.type)) {
+
                     n.name = n.type;
                     n.type = "unknown";
                     if (unknownTypes.indexOf(n.name)==-1) {
@@ -629,7 +649,8 @@ var node_map = {};
             var new_links = [];
 
             for (i=0;i<newNodes.length;i++) {
-                n = newNodes[i];
+                n = newNodes[i];
+
                 if (n.type !== "workspace" && n.type !== "tab") {
                     var def = getType(n.type);
                     if (def && def.category == "config") {
@@ -728,7 +749,8 @@ var node_map = {};
                 delete n.wires;
             }
             return [new_nodes,new_links];
-        } catch(error) {
+        } catch(error) {
+
             RED.notify("<strong>Error</strong>: "+error,"error");
             return null;
         }

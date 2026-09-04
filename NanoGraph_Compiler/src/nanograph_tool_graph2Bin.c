@@ -139,21 +139,29 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
     sprintf(tmpstring, "bank 12-15");                                               GTEXT(tmpstring); GWORDINC(0);
     {
         long int r;
-        srand(time(NULL));
+        srand((unsigned int)time(NULL));
         r = rand(); r *= rand(); sprintf(tmpstring, "graph ID 0"); GTEXT(tmpstring); GWORDINC(r);
         r = rand(); r *= rand(); sprintf(tmpstring, "graph ID 1"); GTEXT(tmpstring); GWORDINC(r);
+        r = rand(); r *= rand(); sprintf(tmpstring, "graph ID 2"); GTEXT(tmpstring); GWORDINC(r);
+        r = rand(); r *= rand(); sprintf(tmpstring, "graph ID 3"); GTEXT(tmpstring); GWORDINC(r);
     }
 
-    addrW32s = GRAPH_HEADER_POINTERS_NBWORDS;   // 22
+    addrW32s = GRAPH_HEADER_POINTERS_NBWORDS;   // 26 0x1A
     /*  ----------------------------------------------------------------------------------------------------------------------------------   
-        [0] PIO HW decoding table
+        [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-            [2] Directory of nodes positions (two words per node)    
-            [3] Scripts (when used with indexes)
-            [4] Graph Linked-list of nodes
-            [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read)  
-            [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
         
         translation table HW->graph (platform_io_al_idx_to_stream)
         size in NBHWIOIDX_GR0
@@ -205,12 +213,18 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
    
             [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
         [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-            [2] Directory of nodes positions (two words per node)    
-            [3] Scripts (when used with indexes)
-            [4] Graph Linked-list of nodes
-            [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read) 
-            [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
         ----------------------------------------------------------------------------------------------------------------------------------
     */
     for (NBarcIO = iarc = 0; iarc < graph->nb_arcs; iarc++)
@@ -286,16 +300,57 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
     }
 
     /*  ----------------------------------------------------------------------------------------------------------------------------------
+        LIST OF INSTANCES
+
+            [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
+            [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
+        [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
+        ----------------------------------------------------------------------------------------------------------------------------------
+    */
+
+    addrW32s_backup = addrW32s; addrW32s = GRAPH_HEADER_NBWORDS + 2 * GRAPH_INSTANCE_LIST;
+    sprintf(tmpstring3, "GRAPH_INSTANCE_LIST used from here");
+    ST(packxxb, COPY_IN_RAM_FMT0, INPLACE_ACCESS_TAG); ST(packxxb, SIZE_EXT_OFF_FMT0, addrW32s_backup); // read from here
+    GTEXT(tmpstring3); GWORDINC(packxxb);                           // destination address
+    GWORDINC(2);                                                    // size in W32
+    addrW32s = addrW32s_backup;
+    /*
+        FEDCBA98 76543210 FEDCBA98 76543210
+        ________ ___rrSSb PPpppaaa iiiiiiii
+        00000000 00000000 01001001 00000000  priority = low-latency, arch=proc=1 instance=Main/0
+           0   0     0  0    4   9    0   0
+    */
+    GTEXT("one instance"); GWORDINC(0x00004900);
+    GTEXT("end instance"); GWORDINC(0xFFFFFFFF);
+
+    /*  ----------------------------------------------------------------------------------------------------------------------------------
         SUBROUTINE- SCRIPTS : indexed with a table before the codes
 
             [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-        [2] Directory of nodes positions (two words per node)
-            [3] Scripts (when used with indexes)
-            [4] Graph Linked-list of nodes
-            [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read)
-            [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+        [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
         ----------------------------------------------------------------------------------------------------------------------------------
     */
     m = 2 * graph->nb_nodes;
@@ -326,12 +381,18 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
    
             [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-            [2] Directory of nodes positions (two words per node)    
-        [3] Scripts (when used with indexes)
-            [4] Graph Linked-list of nodes
-            [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read)  
-            [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+        [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
         ----------------------------------------------------------------------------------------------------------------------------------
     */
     for (m = iscript = 0; iscript < graph->nb_scripts; iscript++)
@@ -431,12 +492,18 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
    
             [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-            [2] Directory of nodes positions (two words per node)
-            [3] Scripts (when used with indexes)
-        [4] Graph Linked-list of nodes
-            [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read)
-            [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+        [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
         ----------------------------------------------------------------------------------------------------------------------------------
     */
     LK0 = addrW32s;                                                 // linked-list header position
@@ -667,12 +734,18 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
   
             [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-            [2] Directory of nodes positions (two words per node)
-            [3] Scripts (when used with indexes)
-            [4] Graph Linked-list of nodes
-        [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read)
-            [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+        [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
       -------------------------------------------------------------------------------------------------------------------------------
     */
     graph->nb_formats ++;
@@ -710,10 +783,8 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
         ST(FMT0, FRAMESIZE_FMT0, (uint32_t)(0.5+format->frame_length_bytes));
 
         FMT1 = 0;
-        ST(FMT1, SUBTYPE_FMT1, 0);                  // @@@ todo
-        ST(FMT1, DOMAIN_FMT1, 0);                   // arc->domain @@@@
+        ST(FMT1, DOMAIN_FMT1, 0);                   // arc->domain 
         ST(FMT1, RAW_FMT1, format->raw_data);
-        ST(FMT1, TSTPSIZE_FMT1,0);
         ST(FMT1, TIMSTAMP_FMT1, 0);
         ST(FMT1, INTERLEAV_FMT1, format->deinterleaved);
         ST(FMT1, NCHANM1_FMT1, format->nchan -1);  
@@ -728,14 +799,20 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
     }
 
     /* ------------------------------------------------------------------------------------------------------------------------------
-            [0] PIO HW decoding table(1 word per HWIO : index to graphIO + processor affinity Byte)
-            [1] PIO Graph table, NANOGRAPH_IO_CONTROL(4 words per IO for)
-            [2] Directory of nodes positions(two words per node)
-            [3] Scripts(when used with indexes)
-            [4] Graph Linked - list of nodes
-            [5] graph formats < --start of RAM
-        [6] ongoing asynchronous + semaphores (IO - write, scheduler read)
-            [7] arc descriptors
+            [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
+            [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+        [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+            [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
       ------------------------------------------------------------------------------------------------------------------------------
     */
     m = graph->nb_semaphore;
@@ -780,12 +857,18 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
 
             [0] PIO HW decoding table (1 word per HWIO : index to graphIO + processor affinity Byte)
             [1] PIO Graph table, NANOGRAPH_IO_CONTROL (4 words per IO for )
-            [2] Directory of nodes positions (two words per node)
-            [3] Scripts (when used with indexes)
-            [4] Graph Linked-list of nodes
-            [5] graph formats <-- start of RAM
-            [6] ongoing asynchronous IO little circular buffers (IO-write, scheduler read)
-        [7] arc descriptors
+            [2] list of instances from the allowed given in top_manifest.txt
+            [3] Directory of nodes positions (one word per node)
+
+            [4] Scripts (when used with indexes)
+            [5] Graph Linked-list of nodes
+            [6] graph formats <-- start of RAM
+            [7] ongoing asynchronous/servant IO, little circular buffers (IO-write, scheduler read)
+
+        [8] arc descriptors
+            [9] unused
+            [10] unused
+            [11] unused
       -------------------------------------------------------------------------------------------------------------------------------
     */
     m = graph->nb_arcs* SIZEOF_ARCDESC_W32;                     // number of arcs x size    5W or (2*CACHE_LINE_BYTE_LENGTH/4)
@@ -866,7 +949,7 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
             {
                 uint32_t t;
                 if (iscript == 0xFFFF)
-                {   sprintf(tmpstring, "arm_nanograph_script  format %d w32length %d", pscript->script_format, pscript->script_nb_instruction); 
+                {   sprintf(tmpstring, "nanograph_script  format %d w32length %d", pscript->script_format, pscript->script_nb_instruction); 
                 } else
                 {   sprintf(tmpstring, "Script %d format %d w32length %d", iscript, pscript->script_format, pscript->script_nb_instruction); 
                 }
@@ -883,11 +966,11 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
                 HCTEXT(tmpstring);
             }
 
-            ST(ARCW[    SCRIPT_SCRARCW1], BUFF_SIZE_SCRARCW1, m);        
-            ST(ARCW[    SCRIPT_SCRARCW1], CODESIZE_SCRARCW1, pscript->script_nb_instruction);        
-            ST(ARCW[    DBGFMT_SCRARCW4], RAMTOTALW32_SCRARCW4, 2*(pscript->nb_reg + pscript->nb_stack) + pscript->ram_heap_size);        
-            ST(ARCW[    DBGFMT_SCRARCW4], NREGS_SCRARCW4, pscript->nb_reg);        
-            ST(ARCW[    DBGFMT_SCRARCW4], NSTACK_SCRARCW4, pscript->nb_stack);        
+            ST(ARCW[  SCRIPT_SCRARCW1], BUFF_SIZE_SCRARCW1, m);        
+            ST(ARCW[  SCRIPT_SCRARCW1], CODESIZE_SCRARCW1, pscript->script_nb_instruction);        
+            ST(ARCW[WRIOCOLL_SCRARCW4], RAMTOTALW32_SCRARCW4, 2*(pscript->nb_reg + pscript->nb_stack) + pscript->ram_heap_size);
+            ST(ARCW[WRIOCOLL_SCRARCW4], NREGS_SCRARCW4, pscript->nb_reg);
+            ST(ARCW[WRIOCOLL_SCRARCW4], NSTACK_SCRARCW4, pscript->nb_stack);
         
             addrW32s_backup = addrW32s; // save the arc descriptor address while filling the comments
 
@@ -898,8 +981,8 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
             }
            
             sprintf(tmpstring, "      nb instructions 0x%x", pscript->script_nb_instruction);           GTEXTINC(tmpstring); 
-            sprintf(tmpstring, "      nregs+r12 %d x2   stack %d x2  heap %xh", RD(ARCW[DBGFMT_SCRARCW4], NREGS_SCRARCW4), 
-                RD(ARCW[DBGFMT_SCRARCW4], NSTACK_SCRARCW4), pscript->ram_heap_size); HCTEXT(tmpstring); GTEXTINC(tmpstring); 
+            sprintf(tmpstring, "      nregs+r12 %d x2   stack %d x2  heap %xh", RD(ARCW[WRIOCOLL_SCRARCW4], NREGS_SCRARCW4),
+                RD(ARCW[WRIOCOLL_SCRARCW4], NSTACK_SCRARCW4), pscript->ram_heap_size); HCTEXT(tmpstring); GTEXTINC(tmpstring);
             
             sprintf(tmpstring, "arc_buf_%d ",iarc); 
             HCDEF_SSDC("", tmpstring, graph->arc[iarc].graph_base, " arc buffer address");

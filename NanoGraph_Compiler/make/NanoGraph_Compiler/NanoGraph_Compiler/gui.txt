@@ -1,17 +1,50 @@
-GUI graph - AUTOMATICALLY GENERATED ! Thu May 07 2026
-  nodes:
-  - IO:   io_sensor_in[0]
-  - node: arm_filter[0]
+# AUTOMATICALLY GENERATED ! Wed Sep 02 2026
+
+nodes:
+  - IO:   io_sensor_in_0
+    framel: 23
+    domain: gpio
+    nbchan: 1
+    data_type: float32
+  - IO:   io_audio_in_0
+    domain: audio_in
+    data_type: float32
+  - node: script_0
+  - node: arm_filter_0
     preset: 2
     params: 1 0.0625 1.414 20
-  - node: sigp_detector[0]
-    preset: 0
-    script: C:\Users\laulef01\NanoGraph_Computer\NanoGraph_Platform\graphs\detector_script.txt
-  - IO:   io_ui_out[0]
-  arcs:
-  - OPort0 IO:   io_sensor_in[0]
-    IPort0 node: arm_filter[0]
-  - OPort0 node: arm_filter[0]
-    IPort0 node: sigp_detector[0]
-  - OPort0 node: sigp_detector[0]
-    IPort0 IO:   io_ui_out[0]
+  - node: arm_router_0
+  - node: sigp_detector_0
+    preset: 2
+    params: 12 3.14 5
+    paramtxt: "圆周率"
+    maxopp: 2
+    script: detector_script.txt
+  - IO:   io_audio_out_0
+    domain: audio_out
+    data_type: float32
+  - IO:   io_ui_out_0
+    framel: 12
+    domain: user_interface
+    nbchan: 1
+    samprt: 8000.2
+    data_type: float32
+
+arcs:
+  - OPort_0 IO:   io_sensor_in_0
+    IPort_0 node: arm_filter_0
+  - OPort_0 IO:   io_audio_in_0
+    IPort_2 node: arm_router_0
+  - OPort_0 node: arm_filter_0
+    IPort_0 node: sigp_detector_0
+    buffer_size: 9
+  - OPort_3 node: arm_router_0
+    IPort_0 IO:   io_audio_out_0
+  - OPort_0 node: sigp_detector_0
+    IPort_0 IO:   io_ui_out_0
+    arc_name: arc_toto
+    buffer_size: 10
+    data_type: float32
+    refresh: flush
+    jitter_percent: 10.11
+    script: arc_toto_script.txt

@@ -881,3 +881,52 @@ i.spinner {
 
 
 
+
+
+/* -------------------------------------------------------------------------
+ * Common Node Manifest prototype
+ * ---------------------------------------------------------------------- */
+.manifest-parameters-title {
+    margin: 14px 0 10px 0;
+    padding: 8px 10px;
+    background: #eef4fb;
+    border-left: 4px solid #4b77a8;
+    font-weight: bold;
+}
+.manifest-parameters-hint {
+    margin-top: 3px;
+    font-size: 11px;
+    font-weight: normal;
+    color: #666;
+}
+.manifest-parameter-row input,
+.manifest-parameter-row select {
+    width: 58%;
+}
+.manifest-param-unit {
+    display: inline-block;
+    padding-left: 8px;
+    color: #666;
+    font-size: 12px;
+}
+.manifest-parameter-help,
+.manifest-sidebar {
+    padding: 8px;
+}
+.manifest-parameter-help h4,
+.manifest-sidebar h4 {
+    color: #315a86;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+.manifest-help-text {
+    padding: 10px;
+    background: #f7f9fc;
+    border-left: 3px solid #4b77a8;
+    line-height: 1.45em;
+}
+.manifest-sidebar-note {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #777;
+}
