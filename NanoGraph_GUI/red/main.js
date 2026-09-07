@@ -52,6 +52,22 @@ var RED = (function() {
         return name;
     }
 
+    function isPlatformNode(n) {
+        /* Backward compatible: older saved graphs may not yet contain
+         * kind="platform", but the palette category already identifies
+         * platform objects. */
+        return !!(n && (n.kind === "platform" ||
+                       (n._def && n._def.category === "Platforms")));
+    }
+
+    function platformName(n) {
+        /* A platform is a singleton selector, not an indexed instance.
+         * Always export the component type (Computer, M85Board, ...), never
+         * the graphical node id/name such as Computer[0]. */
+        if (!n) return "";
+        return String(n.type || (n._def && n._def.shortName) || n.name || n.id);
+    }
+
     function isEmpty(value) {
         return (value === null || value === undefined ||
                 (typeof value === "string" && value.length === 0));
@@ -126,6 +142,7 @@ var RED = (function() {
     }
 
     function yamlEndpointKind(node) {
+        if (isPlatformNode(node)) return "platform";
         if (node && node.kind === "IO") return "IO";
         if (node && node.kind === "subgraph") return "subgraph";
         return "node";
@@ -463,6 +480,10 @@ var RED = (function() {
         for (i=0; i<nodes.length; i++) {
             n = nodes[i];
 
+            if (isPlatformNode(n)) {
+                throw new Error("A platform can only be selected in main_graph");
+            }
+
             if (n.type === "subgraph_input") {
                 desc[n.id] = {boundary:"in", port:editorBoundaryIndex(n,"in")};
                 continue;
@@ -646,7 +667,13 @@ var RED = (function() {
             if (n.kind === "subgraph") {
                 descriptors[n.id] = expandSubgraphInstance(flat, rootName, n.type, n);
             } else {
-                var k = (n.kind === "IO") ? "IO" : "node";
+                var k;
+                if (isPlatformNode(n)) {
+                    k = "platform";
+                    rootName = platformName(n);
+                } else {
+                    k = (n.kind === "IO") ? "IO" : "node";
+                }
                 flat.nodes.push({kind:k, type:n.type, name:rootName, props:n});
                 descriptors[n.id] = {
                     direct:true,
@@ -737,12 +764,24 @@ var RED = (function() {
         var i, n, a, props;
         yml += "# AUTOMATICALLY GENERATED ! " + (new Date()).toDateString() + "\n";
         yml += "# Subgraphs are flattened; internal names use '__' mangling.\n\n";
+
+        /* The platform is graph-level metadata, not a processing node. */
+        for (i=0; i<flat.nodes.length; i++) {
+            n = flat.nodes[i];
+            if (n.kind === "platform") {
+                yml += "platform: " + n.name + "\n\n";
+                break;
+            }
+        }
+
         yml += "nodes:\n";
 
         for (i=0; i<flat.nodes.length; i++) {
             n = flat.nodes[i];
             props = n.props || {};
-            if (n.kind === "IO") {
+            if (n.kind === "platform") {
+                continue;
+            } else if (n.kind === "IO") {
                 yml += "  - IO:   " + n.name + "\n";
                 var ioFields = ["framel","period","per_hr","per_day","domain","nbchan",
                                 "samprt","samprt_percent_accuracy","unit","scale","data_type",
@@ -753,14 +792,14 @@ var RED = (function() {
                 var m = manifestForType(n.type);
                 if (m && m.parameters && m.parameters.length) {
                     yml = appendField(yml,props,"preset");
-                    yml = appendField(yml,props,"maxopp");
+                    yml = appendField(yml,props,"minopp");
                     yml = appendField(yml,props,"script");
                     yml = appendManifestParametersFrom(yml,n.type,props);
                 } else {
                     yml = appendField(yml,props,"preset");
                     yml = appendField(yml,props,"params");
                     yml = appendField(yml,props,"paramtxt");
-                    yml = appendField(yml,props,"maxopp");
+                    yml = appendField(yml,props,"minopp");
                     yml = appendField(yml,props,"script");
                 }
             }
@@ -789,11 +828,16 @@ var RED = (function() {
             var exportWorkspace = exportRootWorkspaceId();
             var flat = buildFlattenedGraph(exportWorkspace);
             var hasIO = false;
+            var platformCount = 0;
             var i;
             for (i=0; i<flat.nodes.length; i++) {
-                if (flat.nodes[i].kind === "IO") { hasIO = true; break; }
+                if (flat.nodes[i].kind === "IO") hasIO = true;
+                if (flat.nodes[i].kind === "platform") platformCount++;
             }
             if (!hasIO) throw new Error("The graph has no input/output node");
+            if (platformCount > 1) {
+                throw new Error("Only one platform can be selected for a graph");
+            }
 
             var yml = renderFlattenedYaml(flat);
 

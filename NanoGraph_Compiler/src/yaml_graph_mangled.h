@@ -29,7 +29,7 @@
 #define YG_MAX_PARAMS       16
 #define YG_MAX_LINE         512
 
- /* Return values. */
+/* Return values. */
 #define YG_OK                0
 #define YG_ERR_OPEN         -1
 #define YG_ERR_TOO_MANY_NODES -2
@@ -40,7 +40,7 @@
 typedef enum
 {
     YG_ITEM_NODE = 0,
-    YG_ITEM_IO = 1
+    YG_ITEM_IO   = 1
 } YG_ItemKind;
 
 typedef struct
@@ -173,68 +173,68 @@ typedef struct
 extern "C" {
 #endif
 
-    /*
-     * Read a graph file.
-     *
-     * Returns YG_OK on success, otherwise one of YG_ERR_*.
-     */
-    int yg_read_file(const char* filename, YG_Graph* graph);
+/*
+ * Read a graph file.
+ *
+ * Returns YG_OK on success, otherwise one of YG_ERR_*.
+ */
+int yg_read_file(const char *filename, YG_Graph *graph);
 
-    /*
-     * Split a final "_<decimal integer>" suffix.
-     *
-     * Examples:
-     *   "arm_router_12" -> base_name="arm_router", instance_index=12
-     *   "filter_0"      -> base_name="filter",     instance_index=0
-     *   "filter"        -> base_name="filter",     instance_index=-1
-     *
-     * Returns 1 if a suffix was found, 0 otherwise.
-     */
-    int yg_split_instance_name(const char* name,
-        char* base_name,
-        int base_name_size,
-        int* instance_index);
+/*
+ * Split a final "_<decimal integer>" suffix.
+ *
+ * Examples:
+ *   "arm_router_12" -> base_name="arm_router", instance_index=12
+ *   "filter_0"      -> base_name="filter",     instance_index=0
+ *   "filter"        -> base_name="filter",     instance_index=-1
+ *
+ * Returns 1 if a suffix was found, 0 otherwise.
+ */
+int yg_split_instance_name(const char *name,
+                           char *base_name,
+                           int base_name_size,
+                           int *instance_index);
 
 
-    /*
-     * Split a mangled graph name.
-     *
-     * Example:
-     *   "arm_filter_cascade_0__arm_filter_1"
-     *      scope          = "arm_filter_cascade_0"
-     *      local_name     = "arm_filter_1"
-     *      base_name      = "arm_filter"
-     *      instance_index = 1
-     *      hierarchy_depth= 1
-     *
-     * For a top-level name such as "arm_filter_0", scope is empty and
-     * hierarchy_depth is zero.
-     */
-    int yg_split_mangled_name(const char* name,
-        char* scope,
-        int scope_size,
-        char* local_name,
-        int local_name_size,
-        char* base_name,
-        int base_name_size,
-        int* instance_index,
-        int* hierarchy_depth);
+/*
+ * Split a mangled graph name.
+ *
+ * Example:
+ *   "arm_filter_cascade_0__arm_filter_1"
+ *      scope          = "arm_filter_cascade_0"
+ *      local_name     = "arm_filter_1"
+ *      base_name      = "arm_filter"
+ *      instance_index = 1
+ *      hierarchy_depth= 1
+ *
+ * For a top-level name such as "arm_filter_0", scope is empty and
+ * hierarchy_depth is zero.
+ */
+int yg_split_mangled_name(const char *name,
+                          char *scope,
+                          int scope_size,
+                          char *local_name,
+                          int local_name_size,
+                          char *base_name,
+                          int base_name_size,
+                          int *instance_index,
+                          int *hierarchy_depth);
 
-    /*
-     * Convenience lookup helpers.
-     * Return NULL if no matching object is found.
-     */
-    const YG_Node* yg_find_node(const YG_Graph* graph,
-        const char* base_name,
-        int instance_index);
+/*
+ * Convenience lookup helpers.
+ * Return NULL if no matching object is found.
+ */
+const YG_Node *yg_find_node(const YG_Graph *graph,
+                            const char *base_name,
+                            int instance_index);
 
-    const YG_Node* yg_find_node_in_scope(const YG_Graph* graph,
-        const char* scope,
-        const char* base_name,
-        int instance_index);
+const YG_Node *yg_find_node_in_scope(const YG_Graph *graph,
+                                     const char *scope,
+                                     const char *base_name,
+                                     int instance_index);
 
-    const YG_Node* yg_find_full_node_name(const YG_Graph* graph,
-        const char* name);
+const YG_Node *yg_find_full_node_name(const YG_Graph *graph,
+                                      const char *name);
 
 #ifdef __cplusplus
 }

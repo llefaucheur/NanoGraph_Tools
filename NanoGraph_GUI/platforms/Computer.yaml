@@ -1,0 +1,185 @@
+platform: Computer
+version: 1
+description: Desktop computer test platform (Windows, macOS or Linux).
+
+#------------------------------------------
+file_paths:
+  - path_to: node_manifest_arm
+    index: 0
+    path: ../manifests
+  - path_to: node_manifest_sigp
+    index: 1
+    path: ../manifests
+
+#------------------------------------------
+processors:
+  - processor:
+    archID: armv7m
+    procID: 0
+    nodes:          # list of nodes 
+      - node: 
+        path: 0
+        index: 2
+        name: arm_filter
+      - node: 
+        path: 1
+        index: 5
+        name: arm_router        
+      - node: 
+        path: 1
+        index: 10
+        name: sigp_detector 
+
+  - processor:
+    archID: armv7m
+    procID: 0
+    nodes:          # list of nodes 
+      - node: 
+        path: 0
+        index: 2
+        name: arm_filter2d
+
+#------------------------------------------
+memories:
+  - memory: shared  # default 
+    index: 0
+    size: 8000      # bytes guaranteed for the compiler allocations
+    access: 0       # 0 data/prog R/W, 1 data R/W, 2 Prog, 3 Copro
+    speed: 0        # 0 slow/best effort, 1 fast/internal, 2 TCM
+    type: 0         # 0 Static, 1 Retention, 2 scratch,
+    instance: -1    # -1:shared (default) or private to instance 0..63 
+
+  - memory: SRAM    # shared static external used for swap
+    index: 1
+    size: 8000      
+    access: 0       
+    speed: 0        
+    type: 0         
+    subblocks:      # the SRAM is made of smaller subblocks
+      - subblock:
+        index: 0
+        name: sram1
+        base: 0
+        size: 1014
+      - subblock:
+        index: 1
+        name: sram2
+        base: 1024
+        size: 1014
+    instance: -1 
+
+  - memory: RET     # simulates shared retention memory
+    index: 2
+    size: 80        
+    access: 0       
+    speed: 0        
+    type: 1         
+    instance: -1 
+
+  - memory: private0
+    index: 3
+    size: 8000      
+    speed: 2        
+    instance: 0
+
+  - memory: private1
+    index: 4
+    size: 80      
+    instance: 1
+
+#------------------------------------------
+interpreter_instances:
+  - instance: MAIN  # in charge of boot
+    index: 0
+    archID: armv7m
+    procID: 0
+    priority: 1
+    trace_depth: 256
+    trace_verbosity: 2
+    memory_isolation: 1                 # MPU activated
+        
+    interfaces:
+      - interface:                      # io_data_in_0
+        path: 1
+        index: 1                        # index 0 is reserved for the internal "data sink"                        
+        name: io_data_in_0        
+        domain: general
+
+        format:
+          data_type:
+            default: int16              # can be "any" when the node extracts the format during the reset sequence
+            values: [int16, float32]
+
+          frame_length:
+            type: int
+            default: 4
+            values: [1, 2, 3, 4, 8, 16, 32]
+
+          sample_rate:
+            type: float
+            default: 16000
+            values: [8000, 16000, 44100]
+
+          nb_channels:
+            type: int
+            default: 1
+            values: [1, 2, 4]        
+            
+      - interface:                      # io_data_in_1
+        path: 1
+        index: 2
+        name: io_data_in_1
+        domain: general
+        format:
+          data_type:
+            default: int16              # can be "any" when the node extracts the format during the reset sequence
+            values: [int16, float32]
+
+          frame_length:
+            type: int
+            default: 4
+            values: [1, 2, 3, 4, 8, 16, 32]
+
+          sample_rate:
+            type: float
+            default: 16000
+            values: [8000, 16000, 44100]
+
+          nb_channels:
+            type: int
+            default: 1
+            values: [1, 2, 4]      
+                        
+      - interface:                      # io_data_out_0
+        path: 1
+        index: 3
+        name: io_data_out_0
+        domain: general
+        format:
+          data_type:
+            default: int16              # can be "any" when the node extracts the format during the reset sequence
+            values: [int16, float32]
+
+          frame_length:
+            type: int
+            default: 4
+            values: [1, 2, 3, 4, 8, 16, 32]
+
+          sample_rate:
+            type: float
+            default: 16000
+            values: [8000, 16000, 44100]
+
+          nb_channels:
+            type: int
+            default: 1
+            values: [1, 2, 4]            
+
+  - instance: BACKGROUND  
+    index: 1
+    archID: armv6m
+    procID: 0
+    priority: 1
+    trace_depth: 256
+    trace_verbosity: 2
+    

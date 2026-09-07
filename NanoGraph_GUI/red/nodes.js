@@ -76,7 +76,7 @@ RED.nodes = (function() {
             var manifest = (window.NG_NODE_MANIFESTS || {})[type];
 
             ensureDefault(def, "preset", "", false);
-            ensureDefault(def, "maxopp", "", false, RED.validators.positiveInteger());
+            ensureDefault(def, "minopp", "", false, RED.validators.positiveInteger());
             ensureDefault(def, "script", "", false);
 
             if (manifest && manifest.parameters && manifest.parameters.length) {

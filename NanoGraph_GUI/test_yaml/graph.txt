@@ -1,6 +1,8 @@
 # AUTOMATICALLY GENERATED ! Sun Sep 06 2026
 # Subgraphs are flattened; internal names use '__' mangling.
 
+platform: Computer
+
 nodes:
   - IO:   io_analog_in_0
     domain: analog_in
@@ -21,7 +23,6 @@ nodes:
     domain: general
     data_type: float32
   - node: arm_router_0
-    maxopp: 2
     parameters:
       mode: "src"
       gain_db: 20
@@ -34,9 +35,29 @@ nodes:
   - IO:   io_data_out_1
     domain: general
     data_type: float32
-  - platform: Computer
+  - node: arm_filter_cascade_0__arm_filter_0
+    parameters:
+      mode: "lowpass"
+      cutoff: 0.0625
+      q: 1.414
+      gain_db: 0
+  - node: arm_filter_cascade_0__arm_filter_1
+    parameters:
+      mode: "lowpass"
+      cutoff: 0.125
+      q: 1.414
+      gain_db: 0
+  - IO:   io_analog_in_1
+    domain: analog_in
+    data_type: float32
+  - IO:   io_serial_out_0
+    domain: general
+    data_type: float32
 
 arcs:
+  - OPort_0 node: arm_filter_cascade_0__arm_filter_0
+    IPort_0 node: arm_filter_cascade_0__arm_filter_1
+    buffer_size: 16
   - OPort_0 IO: io_analog_in_0
     IPort_0 node: arm_filter_0
     arc_name: input_arc
@@ -53,3 +74,7 @@ arcs:
     IPort_0 IO: io_data_out_1
   - OPort_0 IO: data_in_0_0
     IPort_1 node: arm_router_0
+  - OPort_0 IO: io_analog_in_1
+    IPort_0 node: arm_filter_cascade_0__arm_filter_0
+  - OPort_0 node: arm_filter_cascade_0__arm_filter_1
+    IPort_0 IO: io_serial_out_0

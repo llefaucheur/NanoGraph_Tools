@@ -389,7 +389,7 @@ RED.editor = (function() {
             params: "params",
             paramtxt: "paramtxt",
             preset: "preset",
-            maxopp: "maxopp",
+            minopp: "minopp",
             script: "script"
         };
         var label = parameter ? (parameter.label || parameter.name) : (labels[property] || property);

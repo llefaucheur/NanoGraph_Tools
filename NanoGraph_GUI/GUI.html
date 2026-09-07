@@ -425,8 +425,19 @@ span.mainfunction {color: #993300; font-weight: bolder}
          {"nodes":[
 
 
-         {"type":"Computer", "data":{"shortName":"Computer","inputs":0,"outputs":0,
-          "category":"Platforms","color":"#f1f1f1","icon":"arrow-in.png"}},
+         {"type":"Computer", "data":{"defaults":{"kind":{"value":"platform", "required":true}},
+          "shortName":"Computer","inputs":0,"outputs":0,
+          "category":"Platforms","color":"#f1f1f1","icon":"Plaform_X.png"}},
+
+
+         {"type":"Nuvoton_M5531", "data":{"defaults":{"kind":{"value":"platform", "required":true}},
+          "shortName":"Nuvoton_M5531","inputs":0,"outputs":0,
+          "category":"Platforms","color":"#f1f1f1","icon":"Plaform_X.png"}},
+
+         {"type":"Nuvoton_M55M1", "data":{"defaults":{"kind":{"value":"platform", "required":true}},
+          "shortName":"Nuvoton_M55M1","inputs":0,"outputs":0,
+          "category":"Platforms","color":"#f1f1f1","icon":"Plaform_X.png"}},
+
 
 
 
@@ -1023,46 +1034,16 @@ The default memory configuration is "not shared", meaning that memory associated
 This node receives up to four input streams (arcs) and generates up to four output streams.
 </p><p>
 Each stream may be multichannel.
-</p><p>
-
-The format of the streams is known by the node during the reset and set-parameter commands.
-</p><p>
-
-Input streams may be asynchronous and include time stamps.
-</p><p>
-Output streams are isochronous with other graph streams and have a defined sampling rate.
-</p><p>
-
-The first parameters specify the number of arcs and identify the input arc to be used with high quality of service (HQoS), or −1 if none is used.
-</p><p>
-These parameters are followed by a list of routing and mixing rules.
-</p><p>
-
-When an HQoS arc is defined, data movement is aligned to that arc in the time domain.
-</p><p>
-Other arcs are synchronized accordingly, and data is interpolated or zeroed in case of flow issues.
-            </p>
-When no HQoS arc is defined, the node evaluates all input and output arcs and determines the minimum amount of data that can be processed consistently across all arcs in the time domain.
-
-
+</p>
+        <!-- Parameter controls are generated from manifests/arm_router.yaml -->
+        </script> <script type="text/x-red" data-help-name="arm_router">
+        
+        
         <h4>Use-cases</h4> <div class=tooltipinfo>
 The following use-cases can be combined:
 </p><p>
 1. Router, deinterleaving, interleaving, channels recombination: the input arc data is processed deinterleaved, and the output arc is the result of recombination of any input arc. Audio example with two stereo input arcs using 5ms and 12ms frame lengths, recombined to create a stereo stream interleaved output using 20ms frame length, the left channel from the first arc and the left channel of the second arc.
 </p><p>
-2. Router and mixer with smoothed gain control: the output arc data can result from the weighted mix of input arcs. The applied gain can be changed on the fly. The slope of the time taken to the desired gain is controlled. Audio example: a mono output arc is computed from the combination of two stereo input arc, by mixing the four input channels with a factor 0.25 applied in the mixer.
-</p><p>
-3. Router and raw data conversion. The raw formats can be converted to any other format in this list : int16, int32, int64, float16, float32, float64.
-</p><p>
-4. Router and sampling-rate conversion of isochronous streams (input streams have a determined and independent sampling-rate). Audio example: input streams sampled at 44100Hz is converted to 48000Hz + 0.026Hz for drift compensation (the sampling-rate information, and all the details of the arc's data format, is shared by the graph scheduler during the reset phase of the nodes).
-</p><p>
-5. Router and conversion of asynchronous streams using time-stamps to an isochronous stream with a determined sampling-rate. Motion sensor example: an accelerometer is sampled at 200Hz (5ms period)  with +/- 1ms jitter sampling time uncertainty. The samples are provided with an accurate time-stamp in float32 format of time differences between samples (or float64 for absolute time reference to Jan 1st 2025). The output samples are delivered resampled at 410Hz with no jitter.
-</p><p>
-6. Router of data needing a time synchronization at sample or frame level. In this use-case the node waits the input samples are arriving within a time window before delivering an output frame. Example with motor control and the capture of current and voltage on two input arcs: it is important to send time-synchronized pairs of data. The command [node_script “index”](node_script-"index") is used to call a script checking the arrival of current and voltage with their respective time-stamps (logged in the arc descriptors), the scripts check the arrival of data within a time and release execution of the router when conditions are met.
-</p><p>
-7. Router of streams generated from different threads. The problem is to avoid on multiprocessing devices one channel to be delivered to the final mixer ahead and desynchronized from the others. This problem is solved with an external script controlling the system time like in the use-case 6.
-</p><p>
-
 
         <h4>Parameters</h4> <div class=tooltipinfo>
 </p><p>
@@ -1076,6 +1057,21 @@ The list of routing and mixing information is :
 
             </p>
         </div> </script>
+    <!---------------------------------------------------- arm_filter ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_filter">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <!-- Parameter controls are generated from manifests/arm_filter.yaml -->
+        </script> <script type="text/x-red" data-help-name="arm_filter">
+        <h4>arm_filter</h4>
+        <div class="tooltipinfo">
+          <p>This node is driven by the Common Node Manifest <code>manifests/arm_filter.yaml</code>.</p>
+          <p>Double-click the node to edit its parameters. Selecting a parameter displays its <code>help:</code> text in this right-hand column.</p>
+        </div>
+        </script>
+        
     <!---------------------------------------------------- arm_amplifier ------------------------------------------->
     <script type="text/x-red" data-template-name=         "arm_amplifier">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -1111,20 +1107,6 @@ The list of routing and mixing information is :
 </p><p> **Parameters : X,V vectors, size max = 32 points**
             </p>
         </div> </script>
-    <!---------------------------------------------------- arm_filter ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "arm_filter">
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
-        </div>
-        <!-- Parameter controls are generated from manifests/arm_filter.yaml -->
-        </script> <script type="text/x-red" data-help-name="arm_filter">
-        <h4>arm_filter</h4>
-        <div class="tooltipinfo">
-          <p>This node is driven by the Common Node Manifest <code>manifests/arm_filter.yaml</code>.</p>
-          <p>Double-click the node to edit its parameters. Selecting a parameter displays its <code>help:</code> text in this right-hand column.</p>
-        </div>
-        </script>
 
     <!---------------------------------------------------- arm_modulator ------------------------------------------->
     <script type="text/x-red" data-template-name=         "arm_modulator">

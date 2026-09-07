@@ -1,84 +1,94 @@
-node: arm_filter
-node_designer : arm (ltd)
+node: arm_router
 version: 1
-description: CMSIS-DSP based filtering node
+description: CMSIS-DSP based routering node
 
 ports:
-  nb_input: 1
-  nb_output: 1
   inputs:
-    - name: input
+    - name: input1
       index: 0
-      buffer_overlay: 0         # index of the output arc for "processing in-place"
-      format: inputfmt
+      format: format_input_1_2
+
+    - name: input2
+      index: 1
+      format: format_input_1_2
+
+    - name: input3
+      index: 2
+      format: format_input_3_4
+
+    - name: input4
+      index: 3
+      format: format_input_3_4
 
   outputs:
-    - name: output
+    - name: output1
       index: 0
-      format: outputfmt
+      format: format_output_1_2_3_4
+
+    - name: output2
+      index: 1
+      format: format_output_1_2_3_4
+
+    - name: output3
+      index: 2
+      format: format_output_1_2_3_4
+
+    - name: output4
+      index: 3
+      format: format_output_1_2_3_4
+      
+
 
 formats:
-  - format: inputfmt
+  - format: format_input_1_2
+    data_type: float32
+    consume_min: 2
+    consume_max: 16
     interleaving: interleaved
-    data_type_default: int16    # can be "any" when the node extracts the format during the reset sequence
-    data_type_values: [int16, float32]
-    frame_length_default: 4      # default consumed 
-    frame_length_values: [1,2,3,4,8,16,32]
-    sample_rate_type: float
-    sample_rate_default: 16000
-    sample_rate_values: [8000,16000,44100.5]
-    sample_rate_accuracy: 5.5        # only 5.5% accuracy needed
-    nb_channels_default: 1
-    nb_channels_values: [1,2,4]
-    unit: VRMS                  # RFC8428 list of units
-    unit_scale: 0.5             # full-scale is equivalent to 0.15 VRMS
+    nb_channels_min: 1
+    nb_channels_max: 2
 
-  - format: outputfmt
-    data_type_default: int16    # can be "any" when the node extracts the format during the reset sequence
-    data_type_values: [int16, float32]
-    frame_length_default: 4      # default consumed 
-    frame_length_values: [1,2,3,4,8,16,32]
-    sample_rate_type: float
-    sample_rate_default: 16000
-    sample_rate_values: [8000,16000,44100.5]
-    sample_rate_accuracy: 5.5        # only 5.5% accuracy needed
-    nb_channels_default: 1
-    nb_channels_values: [1,2,4]
+  - format: format_input_3_4
+    data_type: float32
+    consume_min: 2
+    consume_max: 32
+    interleaving: interleaved
+    nb_channels_min: 1
+    nb_channels_max: 32
+    
+
+  - format: format_output_1_2_3_4
+    data_type: float32
+    produce_min: 2
+    produce_max: 32
+    interleaving: interleaved
+    nb_channels_min: 1
+    nb_channels_max: 32
+    
 
 parameters:
   - name: mode
     type: enum
-    default: lowpass
-    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
-    help: Filter type / operating mode
-
-  - name: cutoff
-    type: float
-    default: 0.0625
-    min: 0.0
-    max: 0.5
-    unit: normalized
-    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
-
-  - name: q
-    type: float
-    default: 1.414
-    min: 0.01
-    help: Quality factor of the filter.
-
+    default: src
+    values: [src, raw]
+    help: converter
   - name: gain_db
     type: float
     default: 20
     unit: dB
-    help: Gain used by peak and shelf filters.
+    help: Gain used by peak and shelf routers.
+
+activation:
+  key: 823475928358235
+
 
 # assembly code is made for a specific familty of processors
 implementation:
   language: C90           # plain old C 
   complexity: 10e3        # 10kCycles average per call
-  header: arm_filter.h
-  init: arm_filter_init       # name of the entry point for CMSIS-STREAM
-  process: arm_filter_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
+  header: arm_router.h
+  init: arm_router_init       # name of the entry point for CMSIS-STREAM
+  process: arm_router_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
   processor_architecture: armv7m, armv8m # list of processor architectures
   processor_fpu_option: double  # double precision FPU
   malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph

@@ -22,10 +22,7 @@
  * C90/C89 source.
  */
 
-#undef YAML_GRAPH_TEST
-#define _CRT_SECURE_NO_WARNINGS
-
-#include "nanograph_tool_yaml.h"
+#include "yaml_graph.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,14 +37,14 @@ typedef enum
     YG_SECTION_ARCS
 } YG_Section;
 
-static const char* yg_skip_space(const char* p)
+static const char *yg_skip_space(const char *p)
 {
     while ((*p == ' ') || (*p == '\t'))
         ++p;
     return p;
 }
 
-static void yg_remove_eol(char* s)
+static void yg_remove_eol(char *s)
 {
     int n;
 
@@ -66,10 +63,10 @@ static void yg_remove_eol(char* s)
     }
 }
 
-static void yg_copy_trimmed(char* dst, int dst_size, const char* src)
+static void yg_copy_trimmed(char *dst, int dst_size, const char *src)
 {
-    const char* begin;
-    const char* end;
+    const char *begin;
+    const char *end;
     int n;
 
     if (dst_size <= 0)
@@ -79,7 +76,7 @@ static void yg_copy_trimmed(char* dst, int dst_size, const char* src)
     end = begin + strlen(begin);
 
     while ((end > begin) &&
-        ((end[-1] == ' ') || (end[-1] == '\t')))
+           ((end[-1] == ' ') || (end[-1] == '\t')))
     {
         --end;
     }
@@ -101,7 +98,7 @@ static void yg_copy_trimmed(char* dst, int dst_size, const char* src)
  *
  * is therefore preserved as-is rather than being damaged.
  */
-static void yg_copy_text_value(char* dst, int dst_size, const char* src)
+static void yg_copy_text_value(char *dst, int dst_size, const char *src)
 {
     char temp[YG_MAX_LINE];
     int n;
@@ -137,13 +134,13 @@ static void yg_copy_text_value(char* dst, int dst_size, const char* src)
     yg_copy_trimmed(dst, dst_size, temp);
 }
 
-static int yg_key_value(const char* line,
-    char* key,
-    int key_size,
-    const char** value)
+static int yg_key_value(const char *line,
+                        char *key,
+                        int key_size,
+                        const char **value)
 {
-    const char* p;
-    const char* colon;
+    const char *p;
+    const char *colon;
     int n;
 
     p = yg_skip_space(line);
@@ -154,7 +151,7 @@ static int yg_key_value(const char* line,
 
     n = (int)(colon - p);
     while ((n > 0) &&
-        ((p[n - 1] == ' ') || (p[n - 1] == '\t')))
+           ((p[n - 1] == ' ') || (p[n - 1] == '\t')))
     {
         --n;
     }
@@ -170,10 +167,10 @@ static int yg_key_value(const char* line,
     return 1;
 }
 
-static int yg_parse_int(const char* text, int* value)
+static int yg_parse_int(const char *text, int *value)
 {
-    const char* p;
-    char* end;
+    const char *p;
+    char *end;
     long v;
 
     p = yg_skip_space(text);
@@ -184,7 +181,7 @@ static int yg_parse_int(const char* text, int* value)
     if (end == p)
         return 0;
 
-    end = (char*)yg_skip_space(end);
+    end = (char *)yg_skip_space(end);
     if (*end != '\0')
         return 0;
 
@@ -195,10 +192,10 @@ static int yg_parse_int(const char* text, int* value)
     return 1;
 }
 
-static int yg_parse_double(const char* text, double* value)
+static int yg_parse_double(const char *text, double *value)
 {
-    const char* p;
-    char* end;
+    const char *p;
+    char *end;
     double v;
 
     p = yg_skip_space(text);
@@ -209,7 +206,7 @@ static int yg_parse_double(const char* text, double* value)
     if (end == p)
         return 0;
 
-    end = (char*)yg_skip_space(end);
+    end = (char *)yg_skip_space(end);
     if (*end != '\0')
         return 0;
 
@@ -217,13 +214,13 @@ static int yg_parse_double(const char* text, double* value)
     return 1;
 }
 
-static int yg_parse_params(const char* text,
-    double* values,
-    int max_values,
-    int* count)
+static int yg_parse_params(const char *text,
+                           double *values,
+                           int max_values,
+                           int *count)
 {
-    const char* p;
-    char* end;
+    const char *p;
+    char *end;
     int n;
     double v;
 
@@ -252,10 +249,10 @@ static int yg_parse_params(const char* text,
     return 1;
 }
 
-int yg_split_instance_name(const char* name,
-    char* base_name,
-    int base_name_size,
-    int* instance_index)
+int yg_split_instance_name(const char *name,
+                           char *base_name,
+                           int base_name_size,
+                           int *instance_index)
 {
     int len;
     int i;
@@ -306,18 +303,18 @@ int yg_split_instance_name(const char* name,
     return 1;
 }
 
-int yg_split_mangled_name(const char* name,
-    char* scope,
-    int scope_size,
-    char* local_name,
-    int local_name_size,
-    char* base_name,
-    int base_name_size,
-    int* instance_index,
-    int* hierarchy_depth)
+int yg_split_mangled_name(const char *name,
+                          char *scope,
+                          int scope_size,
+                          char *local_name,
+                          int local_name_size,
+                          char *base_name,
+                          int base_name_size,
+                          int *instance_index,
+                          int *hierarchy_depth)
 {
-    const char* p;
-    const char* last;
+    const char *p;
+    const char *last;
     int depth;
     int n;
 
@@ -362,44 +359,44 @@ int yg_split_mangled_name(const char* name,
     *hierarchy_depth = depth;
 
     yg_split_instance_name(local_name,
-        base_name,
-        base_name_size,
-        instance_index);
+                           base_name,
+                           base_name_size,
+                           instance_index);
 
     return 1;
 }
 
-static void yg_init_node(YG_Node* node)
+static void yg_init_node(YG_Node *node)
 {
     memset(node, 0, sizeof(*node));
     node->instance_index = -1;
 }
 
-static void yg_init_endpoint(YG_Endpoint* ep)
+static void yg_init_endpoint(YG_Endpoint *ep)
 {
     memset(ep, 0, sizeof(*ep));
     ep->port = -1;
     ep->instance_index = -1;
 }
 
-static void yg_init_arc(YG_Arc* arc)
+static void yg_init_arc(YG_Arc *arc)
 {
     memset(arc, 0, sizeof(*arc));
     yg_init_endpoint(&arc->source);
     yg_init_endpoint(&arc->destination);
 }
 
-static void yg_set_error(YG_Graph* graph, int line_no, const char* text)
+static void yg_set_error(YG_Graph *graph, int line_no, const char *text)
 {
     graph->error_line = line_no;
     yg_copy_trimmed(graph->error_text,
-        (int)sizeof(graph->error_text),
-        text);
+                    (int)sizeof(graph->error_text),
+                    text);
 }
 
-static int yg_start_node(YG_Node* node, const char* line)
+static int yg_start_node(YG_Node *node, const char *line)
 {
-    const char* p;
+    const char *p;
 
     p = yg_skip_space(line);
     if (*p != '-')
@@ -426,22 +423,22 @@ static int yg_start_node(YG_Node* node, const char* line)
     }
 
     yg_split_mangled_name(node->name,
-        node->scope,
-        (int)sizeof(node->scope),
-        node->local_name,
-        (int)sizeof(node->local_name),
-        node->base_name,
-        (int)sizeof(node->base_name),
-        &node->instance_index,
-        &node->hierarchy_depth);
+                          node->scope,
+                          (int)sizeof(node->scope),
+                          node->local_name,
+                          (int)sizeof(node->local_name),
+                          node->base_name,
+                          (int)sizeof(node->base_name),
+                          &node->instance_index,
+                          &node->hierarchy_depth);
 
     return 1;
 }
 
-static int yg_parse_node_property(YG_Node* node, const char* line)
+static int yg_parse_node_property(YG_Node *node, const char *line)
 {
     char key[64];
-    const char* value;
+    const char *value;
 
     if (!yg_key_value(line, key, (int)sizeof(key), &value))
         return 0;
@@ -472,8 +469,8 @@ static int yg_parse_node_property(YG_Node* node, const char* line)
     else if (strcmp(key, "data_type") == 0)
     {
         yg_copy_text_value(node->data_type,
-            (int)sizeof(node->data_type),
-            value);
+                           (int)sizeof(node->data_type),
+                           value);
         node->present |= YG_NODE_HAS_DATA_TYPE;
     }
     else if (strcmp(key, "preset") == 0)
@@ -485,9 +482,9 @@ static int yg_parse_node_property(YG_Node* node, const char* line)
     else if (strcmp(key, "params") == 0)
     {
         if (!yg_parse_params(value,
-            node->params,
-            YG_MAX_PARAMS,
-            &node->nb_params))
+                             node->params,
+                             YG_MAX_PARAMS,
+                             &node->nb_params))
         {
             return 0;
         }
@@ -496,8 +493,8 @@ static int yg_parse_node_property(YG_Node* node, const char* line)
     else if (strcmp(key, "paramtxt") == 0)
     {
         yg_copy_text_value(node->paramtxt,
-            (int)sizeof(node->paramtxt),
-            value);
+                           (int)sizeof(node->paramtxt),
+                           value);
         node->present |= YG_NODE_HAS_PARAMTXT;
     }
     else if (strcmp(key, "maxopp") == 0)
@@ -509,8 +506,8 @@ static int yg_parse_node_property(YG_Node* node, const char* line)
     else if (strcmp(key, "script") == 0)
     {
         yg_copy_text_value(node->script,
-            (int)sizeof(node->script),
-            value);
+                           (int)sizeof(node->script),
+                           value);
         node->present |= YG_NODE_HAS_SCRIPT;
     }
     else
@@ -524,13 +521,13 @@ static int yg_parse_node_property(YG_Node* node, const char* line)
     return 1;
 }
 
-static int yg_parse_endpoint(const char* line,
-    const char* prefix,
-    YG_Endpoint* ep)
+static int yg_parse_endpoint(const char *line,
+                             const char *prefix,
+                             YG_Endpoint *ep)
 {
-    const char* p;
-    const char* q;
-    char* end;
+    const char *p;
+    const char *q;
+    char *end;
     long port;
 
     p = yg_skip_space(line);
@@ -568,21 +565,21 @@ static int yg_parse_endpoint(const char* line,
     yg_copy_text_value(ep->name, (int)sizeof(ep->name), q);
 
     yg_split_mangled_name(ep->name,
-        ep->scope,
-        (int)sizeof(ep->scope),
-        ep->local_name,
-        (int)sizeof(ep->local_name),
-        ep->base_name,
-        (int)sizeof(ep->base_name),
-        &ep->instance_index,
-        &ep->hierarchy_depth);
+                          ep->scope,
+                          (int)sizeof(ep->scope),
+                          ep->local_name,
+                          (int)sizeof(ep->local_name),
+                          ep->base_name,
+                          (int)sizeof(ep->base_name),
+                          &ep->instance_index,
+                          &ep->hierarchy_depth);
 
     return 1;
 }
 
-static int yg_start_arc(YG_Arc* arc, const char* line)
+static int yg_start_arc(YG_Arc *arc, const char *line)
 {
-    const char* p;
+    const char *p;
 
     p = yg_skip_space(line);
     if (*p != '-')
@@ -596,10 +593,10 @@ static int yg_start_arc(YG_Arc* arc, const char* line)
     return yg_parse_endpoint(p, "OPort_", &arc->source);
 }
 
-static int yg_parse_arc_property(YG_Arc* arc, const char* line)
+static int yg_parse_arc_property(YG_Arc *arc, const char *line)
 {
     char key[64];
-    const char* value;
+    const char *value;
 
     if (yg_parse_endpoint(line, "IPort_", &arc->destination))
         return 1;
@@ -610,8 +607,8 @@ static int yg_parse_arc_property(YG_Arc* arc, const char* line)
     if (strcmp(key, "arc_name") == 0)
     {
         yg_copy_text_value(arc->arc_name,
-            (int)sizeof(arc->arc_name),
-            value);
+                           (int)sizeof(arc->arc_name),
+                           value);
         arc->present |= YG_ARC_HAS_NAME;
     }
     else if (strcmp(key, "buffer_size") == 0)
@@ -623,15 +620,15 @@ static int yg_parse_arc_property(YG_Arc* arc, const char* line)
     else if (strcmp(key, "data_type") == 0)
     {
         yg_copy_text_value(arc->data_type,
-            (int)sizeof(arc->data_type),
-            value);
+                           (int)sizeof(arc->data_type),
+                           value);
         arc->present |= YG_ARC_HAS_DATA_TYPE;
     }
     else if (strcmp(key, "refresh") == 0)
     {
         yg_copy_text_value(arc->refresh,
-            (int)sizeof(arc->refresh),
-            value);
+                           (int)sizeof(arc->refresh),
+                           value);
         arc->present |= YG_ARC_HAS_REFRESH;
     }
     else if (strcmp(key, "jitter_percent") == 0)
@@ -643,8 +640,8 @@ static int yg_parse_arc_property(YG_Arc* arc, const char* line)
     else if (strcmp(key, "script") == 0)
     {
         yg_copy_text_value(arc->script,
-            (int)sizeof(arc->script),
-            value);
+                           (int)sizeof(arc->script),
+                           value);
         arc->present |= YG_ARC_HAS_SCRIPT;
     }
     else
@@ -655,14 +652,14 @@ static int yg_parse_arc_property(YG_Arc* arc, const char* line)
     return 1;
 }
 
-int yg_read_file(const char* filename, YG_Graph* graph)
+int yg_read_file(const char *filename, YG_Graph *graph)
 {
-    FILE* f;
+    FILE *f;
     char line[YG_MAX_LINE];
     YG_Section section;
-    YG_Node* current_node;
-    YG_Arc* current_arc;
-    const char* p;
+    YG_Node *current_node;
+    YG_Arc *current_arc;
+    const char *p;
     int line_no;
     int n;
 
@@ -754,7 +751,7 @@ int yg_read_file(const char* filename, YG_Graph* graph)
                 if (current_node == NULL)
                 {
                     yg_set_error(graph, line_no,
-                        "node property before node declaration");
+                                 "node property before node declaration");
                     fclose(f);
                     return YG_ERR_SYNTAX;
                 }
@@ -794,7 +791,7 @@ int yg_read_file(const char* filename, YG_Graph* graph)
                 if (current_arc == NULL)
                 {
                     yg_set_error(graph, line_no,
-                        "arc property before arc declaration");
+                                 "arc property before arc declaration");
                     fclose(f);
                     return YG_ERR_SYNTAX;
                 }
@@ -810,7 +807,7 @@ int yg_read_file(const char* filename, YG_Graph* graph)
         else
         {
             yg_set_error(graph, line_no,
-                "content found outside nodes/arcs section");
+                         "content found outside nodes/arcs section");
             fclose(f);
             return YG_ERR_SYNTAX;
         }
@@ -836,12 +833,12 @@ int yg_read_file(const char* filename, YG_Graph* graph)
     return YG_OK;
 }
 
-const YG_Node* yg_find_node(const YG_Graph* graph,
-    const char* base_name,
-    int instance_index)
+const YG_Node *yg_find_node(const YG_Graph *graph,
+                            const char *base_name,
+                            int instance_index)
 {
     int i;
-    const YG_Node* node;
+    const YG_Node *node;
 
     if ((graph == NULL) || (base_name == NULL))
         return NULL;
@@ -863,13 +860,13 @@ const YG_Node* yg_find_node(const YG_Graph* graph,
     return NULL;
 }
 
-const YG_Node* yg_find_node_in_scope(const YG_Graph* graph,
-    const char* scope,
-    const char* base_name,
-    int instance_index)
+const YG_Node *yg_find_node_in_scope(const YG_Graph *graph,
+                                     const char *scope,
+                                     const char *base_name,
+                                     int instance_index)
 {
     int i;
-    const YG_Node* node;
+    const YG_Node *node;
 
     if ((graph == NULL) || (scope == NULL) || (base_name == NULL))
         return NULL;
@@ -892,8 +889,8 @@ const YG_Node* yg_find_node_in_scope(const YG_Graph* graph,
     return NULL;
 }
 
-const YG_Node* yg_find_full_node_name(const YG_Graph* graph,
-    const char* name)
+const YG_Node *yg_find_full_node_name(const YG_Graph *graph,
+                                      const char *name)
 {
     int i;
 
@@ -927,18 +924,18 @@ const YG_Node* yg_find_full_node_name(const YG_Graph* graph,
  */
 #ifdef YAML_GRAPH_TEST
 
-static const char* yg_kind_name(YG_ItemKind kind)
+static const char *yg_kind_name(YG_ItemKind kind)
 {
     if (kind == YG_ITEM_IO)
         return "IO";
     return "node";
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     YG_Graph graph;
-    const YG_Node* node;
-    const YG_Arc* arc;
+    const YG_Node *node;
+    const YG_Arc *arc;
     int rc;
     int i;
     int j;
@@ -953,10 +950,10 @@ int main(int argc, char** argv)
     if (rc != YG_OK)
     {
         fprintf(stderr,
-            "parse error %d, line %d: %s\n",
-            rc,
-            graph.error_line,
-            graph.error_text);
+                "parse error %d, line %d: %s\n",
+                rc,
+                graph.error_line,
+                graph.error_text);
         return 1;
     }
 
@@ -968,15 +965,15 @@ int main(int argc, char** argv)
         node = &graph.nodes[i];
 
         printf("  [%d] %s %s\n",
-            i,
-            yg_kind_name(node->kind),
-            node->name);
+               i,
+               yg_kind_name(node->kind),
+               node->name);
         printf("       scope=%s local=%s base=%s instance=%d depth=%d\n",
-            node->scope,
-            node->local_name,
-            node->base_name,
-            node->instance_index,
-            node->hierarchy_depth);
+               node->scope,
+               node->local_name,
+               node->base_name,
+               node->instance_index,
+               node->hierarchy_depth);
 
         if (node->present & YG_NODE_HAS_FRAMEL)
             printf("       framel=%d\n", node->framel);
@@ -1028,25 +1025,25 @@ int main(int argc, char** argv)
         arc = &graph.arcs[i];
 
         printf("  [%d] OPort_%d %s %s [scope=%s local=%s base=%s instance=%d depth=%d]\n",
-            i,
-            arc->source.port,
-            yg_kind_name(arc->source.kind),
-            arc->source.name,
-            arc->source.scope,
-            arc->source.local_name,
-            arc->source.base_name,
-            arc->source.instance_index,
-            arc->source.hierarchy_depth);
+               i,
+               arc->source.port,
+               yg_kind_name(arc->source.kind),
+               arc->source.name,
+               arc->source.scope,
+               arc->source.local_name,
+               arc->source.base_name,
+               arc->source.instance_index,
+               arc->source.hierarchy_depth);
 
         printf("      IPort_%d %s %s [scope=%s local=%s base=%s instance=%d depth=%d]\n",
-            arc->destination.port,
-            yg_kind_name(arc->destination.kind),
-            arc->destination.name,
-            arc->destination.scope,
-            arc->destination.local_name,
-            arc->destination.base_name,
-            arc->destination.instance_index,
-            arc->destination.hierarchy_depth);
+               arc->destination.port,
+               yg_kind_name(arc->destination.kind),
+               arc->destination.name,
+               arc->destination.scope,
+               arc->destination.local_name,
+               arc->destination.base_name,
+               arc->destination.instance_index,
+               arc->destination.hierarchy_depth);
 
         if (arc->present & YG_ARC_HAS_NAME)
             printf("      arc_name=%s\n", arc->arc_name);

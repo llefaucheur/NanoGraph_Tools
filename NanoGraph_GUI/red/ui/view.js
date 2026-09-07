@@ -555,7 +555,28 @@ RED.view = (function() {
                 var nn = {x: mousePos[0],y:mousePos[1],w:node_width,z:activeWorkspace};
                 nn.type = selected_tool;
                 nn._def = RED.nodes.getType(nn.type);
-                nn.id = RED.nodes.cppName(nn);
+
+                var isPlatform = !!(nn._def && nn._def.defaults &&
+                    nn._def.defaults.kind && nn._def.defaults.kind.value === "platform");
+
+                if (isPlatform) {
+                    var existingPlatform = false;
+                    RED.nodes.eachNode(function(existing) {
+                        if (existingPlatform) return;
+                        if ((existing.kind === "platform") ||
+                            (existing._def && existing._def.category === "Platforms")) {
+                            existingPlatform = true;
+                        }
+                    });
+                    if (existingPlatform) {
+                        RED.notify("Only one platform can be selected for a graph", "warning");
+                        return;
+                    }
+                    /* Platform is a singleton selector: no [0] instance suffix. */
+                    nn.id = nn._def.shortName || nn.type;
+                } else {
+                    nn.id = RED.nodes.cppName(nn);
+                }
 
                 nn._def.defaults = nn._def.defaults ? nn._def.defaults  : {};
                 nn._def.defaults.name = { value: nn.id };

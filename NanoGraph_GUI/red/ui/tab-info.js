@@ -65,19 +65,52 @@ RED.sidebar.info = (function() {
 
     function manifestOverview(node) {
         var manifest = getManifest(node);
-        if (!manifest || !manifest.parameters || !manifest.parameters.length) return "";
+        if (!manifest) return "";
+
+        var hasParameters = manifest.parameters && manifest.parameters.length;
+        var hasFormats = manifest.formats && manifest.formats.length;
+        if (!hasParameters && !hasFormats) return "";
 
         var html = '<div class="manifest-sidebar"><h4>Common Node Manifest</h4>';
         if (manifest.description) html += '<p>'+escapeHtml(manifest.description)+'</p>';
-        html += '<table class="node-info"><tbody>';
-        html += '<tr><td><b>Parameter</b></td><td><b>Value</b></td></tr>';
-        for (var i=0; i<manifest.parameters.length; i++) {
-            var p = manifest.parameters[i];
-            var value = node[p.name];
-            if (value == null || value === "") value = p["default"] == null ? "" : p["default"];
-            html += '<tr><td>'+escapeHtml(p.name)+'</td><td>'+escapeHtml(value)+(p.unit?' '+escapeHtml(p.unit):'')+'</td></tr>';
+
+        if (hasFormats) {
+            html += '<h5>Stream formats</h5>';
+            html += '<table class="node-info"><tbody>';
+            html += '<tr><td><b>Format</b></td><td><b>Properties</b></td></tr>';
+            for (var fi=0; fi<manifest.formats.length; fi++) {
+                var f = manifest.formats[fi];
+                var pieces = [];
+                if (f.data_type) pieces.push('type='+f.data_type);
+                if (f.consume_min != null || f.consume_max != null) {
+                    pieces.push('consume='+(f.consume_min == null?'?':f.consume_min)+'..'+(f.consume_max == null?'?':f.consume_max));
+                }
+                if (f.produce_min != null || f.produce_max != null) {
+                    pieces.push('produce='+(f.produce_min == null?'?':f.produce_min)+'..'+(f.produce_max == null?'?':f.produce_max));
+                }
+                if (f.nbchan_min != null || f.nbchan_max != null) {
+                    pieces.push('channels='+(f.nbchan_min == null?'?':f.nbchan_min)+'..'+(f.nbchan_max == null?'?':f.nbchan_max));
+                }
+                if (f.interleaving) pieces.push(f.interleaving);
+                html += '<tr><td>'+escapeHtml(f.format || '')+'</td><td>'+escapeHtml(pieces.join(', '))+'</td></tr>';
+            }
+            html += '</tbody></table>';
         }
-        html += '</tbody></table><p class="manifest-sidebar-note">Double-click the node and select a parameter to see its help here.</p></div>';
+
+        if (hasParameters) {
+            html += '<h5>Parameters</h5>';
+            html += '<table class="node-info"><tbody>';
+            html += '<tr><td><b>Parameter</b></td><td><b>Value</b></td></tr>';
+            for (var i=0; i<manifest.parameters.length; i++) {
+                var p = manifest.parameters[i];
+                var value = node[p.name];
+                if (value == null || value === "") value = p["default"] == null ? "" : p["default"];
+                html += '<tr><td>'+escapeHtml(p.name)+'</td><td>'+escapeHtml(value)+(p.unit?' '+escapeHtml(p.unit):'')+'</td></tr>';
+            }
+            html += '</tbody></table><p class="manifest-sidebar-note">Double-click the node and select a parameter to see its help here.</p>';
+        }
+
+        html += '</div>';
         return html;
     }
 

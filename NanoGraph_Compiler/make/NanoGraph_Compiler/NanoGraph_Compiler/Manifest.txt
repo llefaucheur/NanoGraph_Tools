@@ -16,6 +16,9 @@
     1           number of processors
     6           number of shared memory 
 
+graph_locations -1 -1  0 0 ; 2 segments stay in Flash, others go in RAMID 0
+
+
 ;   processor and architecture ID are in the range [1..15]
 ; 
 ;   Access    0 data/prog R/W, 1 data R/W, 2 Prog, 3 Copro
@@ -46,7 +49,9 @@
 ;       4       1       2       0
 
 
-;=================================================================
+;========================== INSTANCES ===========================
+
+
 ;   Processor #1 - architecture #1 
 ;   proc ID, arch ID, main proc, nb mem, service mask, I/O, CacheLine
     1        1        1          2       15            13   0
