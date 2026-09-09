@@ -1,11 +1,11 @@
-node: arm_filter
+node: sigp_modulator
 node_designer : arm (ltd)
 version: 1
 description: CMSIS-DSP based filtering node
 
-
 interfaces:
   - rx_interface:               
+#    path: 1
     index: 0                        # index 0 is reserved for the internal "data sink"                        
     name: input0        
     
@@ -32,6 +32,7 @@ interfaces:
         values: [1, 2, 4] 
 
   - tx_interface:                     
+#    path: 1
     index: 0                        # index 0 is reserved for the internal "data sink"                        
     name: output0        
     

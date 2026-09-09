@@ -60,14 +60,6 @@ var RED = (function() {
         var name = (n.name ? n.name : n.id);
         name = String(name);
         name = name.replace(/[\s+\-]+/g, "_");
-
-        /*
-         * Historical GUI compatibility: the palette component is still
-         * called io_sink, while platform manifests use the canonical logical
-         * interface name io_data_sink.  Export the canonical name so graph
-         * YAML and platform lookup share the same (name,index) identity.
-         */
-        name = name.replace(/^io_sink(?=\[|$)/, "io_data_sink");
         return name;
     }
 
@@ -234,9 +226,6 @@ var RED = (function() {
             bufferSize: obj.bufferSize != null ? obj.bufferSize : (obj.buffer_size != null ? obj.buffer_size : ""),
             arcName: obj.arcName != null ? obj.arcName : (obj.arc_name != null ? obj.arc_name : ""),
             dataType: obj.dataType != null ? obj.dataType : (obj.data_type != null ? obj.data_type : ""),
-            sampleRate: obj.sampleRate != null ? obj.sampleRate : (obj.sample_rate != null ? obj.sample_rate : ""),
-            nbChannels: obj.nbChannels != null ? obj.nbChannels : (obj.nb_channels != null ? obj.nb_channels : ""),
-            interleaving: obj.interleaving != null ? obj.interleaving : "",
             refresh: obj.refresh || "",
             formatID: obj.formatID || "",
             jitterPercent: obj.jitterPercent != null ? obj.jitterPercent : (obj.jitter_percent != null ? obj.jitter_percent : ""),
@@ -812,29 +801,10 @@ var RED = (function() {
             itf = R.findPlatformInterface(platformManifest, ep.name);
             if (!itf) throw new Error("Platform has no interface matching " + ep.name);
             fmt = copyObject(itf.format || {});
-
-            /*
-             * The platform manifest is the capability envelope, while the IO
-             * properties stored in the graph are graph-level selections.
-             * Merge non-empty graph selections as exact endpoint constraints.
-             * Do not reject a graph selection merely because it is outside the
-             * platform manifest's advertised values here: doing so would abort
-             * before automatic arm_converter insertion can be attempted.
-             * The platform capability remains the source of defaults/candidates
-             * when the graph does not explicitly select a value.
-             */
-            n = flatNodeByName(flat,ep.name);
-            props = n ? (n.props || {}) : {};
-
-            function applyIoOverride(field, value) {
-                fmt[field] = R.applyEndpointOverride(field,fmt[field],value,ep.name);
-            }
-
-            applyIoOverride("data_type", props.data_type);
-            applyIoOverride("sample_rate", props.samprt);
-            applyIoOverride("nb_channels", props.nbchan);
-            applyIoOverride("interleaving", props.interleaving);
-
+            props = (flatNodeByName(flat,ep.name) || {}).props || {};
+            /* Explicit graph IO properties are hard constraints. */
+            if (!isEmpty(props.data_type)) fmt.data_type = props.data_type;
+            if (!isEmpty(props.samprt)) fmt.sample_rate = props.samprt;
             return {format:fmt, platformInterface:itf};
         }
         n = flatNodeByName(flat,ep.name);
@@ -846,203 +816,38 @@ var RED = (function() {
         return {format:itf.format || {}, platformInterface:null};
     }
 
-    function copyArcAttrs(attrs) {
-        return arcAttributes(attrs || {});
-    }
-
-    function nextGeneratedNodeName(flat, type) {
-        var i, n, prefix, index, maxIndex;
-        prefix = type + "_";
-        maxIndex = -1;
-        for (i=0; i<flat.nodes.length; i++) {
-            n = flat.nodes[i];
-            if (n.kind !== "node") continue;
-            if (n.name.indexOf(prefix) !== 0) continue;
-            index = parseInt(n.name.substring(prefix.length),10);
-            if (!isNaN(index) && String(index) === n.name.substring(prefix.length) && index > maxIndex)
-                maxIndex = index;
-        }
-        return type + "_" + (maxIndex + 1);
-    }
-
-    function preferredEndpointValue(R, raw, platformDefault) {
-        var c = R.normalizeConstraint(raw);
-        if (c.exact && c.values.length) return c.values[0];
-        if (!isEmpty(platformDefault) && R.contains(c,platformDefault)) return platformDefault;
-        if (!isEmpty(c.defaultValue)) return c.defaultValue;
-        if (c.values.length) return c.values[0];
-        return null;
-    }
-
-    function compatibleOrNull(R, field, producerRaw, consumerRaw, options) {
-        try {
-            return {compatible:true, value:R.choose(field,producerRaw,consumerRaw,options || {})};
-        } catch (err) {
-            return {compatible:false, error:err};
-        }
-    }
-
-    function resolveSideValue(R, raw, otherRaw, platformDefault) {
-        var v = preferredEndpointValue(R,raw,platformDefault);
-        if (!isEmpty(v)) return v;
-        /* An unconstrained endpoint inherits the concrete value of the other side. */
-        v = preferredEndpointValue(R,otherRaw,null);
-        return v;
-    }
-
-    function insertConverterForArc(flat, arcIndex, a, src, dst, platformDefaults, dataResult, rateResult, channelsResult, interleavingResult) {
-        var R = window.NG_FORMAT_RESOLVER;
-        var converterName = nextGeneratedNodeName(flat,"arm_converter");
-        var converterManifest = manifestForType("arm_converter");
-        var props = {};
-        var inType, outType, inRate, outRate, inChannels, outChannels, inInterleaving, outInterleaving;
-        var firstAttrs, secondAttrs;
-        if (!converterManifest) throw new Error("No arm_converter manifest is available for automatic format conversion");
-
-        if (dataResult && dataResult.compatible) {
-            inType = dataResult.value;
-            outType = dataResult.value;
-        } else {
-            inType = resolveSideValue(R,src.format.data_type,dst.format.data_type,platformDefaults.srcDataType);
-            outType = resolveSideValue(R,dst.format.data_type,src.format.data_type,platformDefaults.dstDataType);
-        }
-        if (rateResult && rateResult.compatible) {
-            inRate = rateResult.value;
-            outRate = rateResult.value;
-        } else {
-            inRate = resolveSideValue(R,src.format.sample_rate,dst.format.sample_rate,platformDefaults.srcSampleRate);
-            outRate = resolveSideValue(R,dst.format.sample_rate,src.format.sample_rate,platformDefaults.dstSampleRate);
-        }
-
-        if (channelsResult && channelsResult.compatible) {
-            inChannels = channelsResult.value;
-            outChannels = channelsResult.value;
-        } else {
-            inChannels = resolveSideValue(R,src.format.nb_channels,dst.format.nb_channels,platformDefaults.srcNbChannels);
-            outChannels = resolveSideValue(R,dst.format.nb_channels,src.format.nb_channels,platformDefaults.dstNbChannels);
-        }
-        if (interleavingResult && interleavingResult.compatible) {
-            inInterleaving = interleavingResult.value;
-            outInterleaving = interleavingResult.value;
-        } else {
-            inInterleaving = resolveSideValue(R,src.format.interleaving,dst.format.interleaving,platformDefaults.srcInterleaving);
-            outInterleaving = resolveSideValue(R,dst.format.interleaving,src.format.interleaving,platformDefaults.dstInterleaving);
-        }
-
-        if (!isEmpty(inType)) props.i_data_type = inType;
-        if (!isEmpty(outType)) props.o_data_type = outType;
-        if (!isEmpty(inRate)) props.i_sample_rate = inRate;
-        if (!isEmpty(outRate)) props.o_sample_rate = outRate;
-        if (!isEmpty(inChannels)) props.i_nb_channels = inChannels;
-        if (!isEmpty(outChannels)) props.o_nb_channels = outChannels;
-        if (!isEmpty(inInterleaving)) props.i_interleaving = inInterleaving;
-        if (!isEmpty(outInterleaving)) props.o_interleaving = outInterleaving;
-
-        /* Frame length is converter metadata but is not yet an arc-negotiated field. */
-        props.i_frame_length = resolveSideValue(R,src.format.frame_length,dst.format.frame_length,null);
-        props.o_frame_length = resolveSideValue(R,dst.format.frame_length,src.format.frame_length,null);
-
-        flat.nodes.push({kind:"node", type:"arm_converter", name:converterName, props:props, generated:true});
-
-        firstAttrs = copyArcAttrs(a.attrs);
-        secondAttrs = copyArcAttrs(a.attrs);
-        /* arc_name and overlay describe the original FIFO and cannot safely name two generated FIFOs. */
-        secondAttrs.arcName = "";
-        secondAttrs.overlayWith = "";
-
-        firstAttrs.dataType = inType;
-        firstAttrs.sampleRate = inRate;
-        firstAttrs.nbChannels = inChannels;
-        firstAttrs.interleaving = inInterleaving;
-        secondAttrs.dataType = outType;
-        secondAttrs.sampleRate = outRate;
-        secondAttrs.nbChannels = outChannels;
-        secondAttrs.interleaving = outInterleaving;
-
-        return [
-            {source:a.source, destination:endpoint(converterName,"node",0), attrs:firstAttrs},
-            {source:endpoint(converterName,"node",0), destination:a.destination, attrs:secondAttrs}
-        ];
-    }
-
     function resolveArcFormats(flat) {
         var R = window.NG_FORMAT_RESOLVER;
         var platformManifest = selectedPlatformManifest(flat);
-        var oldArcs, newArcs=[];
-        var i, a, src, dst, requested, dataResult, rateResult, channelsResult, interleavingResult;
-        var defs;
+        var i, a, src, dst, platformDefault, requested;
         if (!R) throw new Error("format resolver is not loaded");
         if (!platformManifest) return flat; /* Graphs without platform keep legacy behavior. */
 
-        oldArcs = flat.arcs.slice(0);
-        for (i=0; i<oldArcs.length; i++) {
-            a = oldArcs[i];
+        for (i=0; i<flat.arcs.length; i++) {
+            a = flat.arcs[i];
             src = endpointFormat(flat,a.source,"tx",platformManifest);
             dst = endpointFormat(flat,a.destination,"rx",platformManifest);
-            defs = {
-                srcDataType: src.platformInterface && src.platformInterface.format && src.platformInterface.format.data_type ? src.platformInterface.format.data_type.default : null,
-                dstDataType: dst.platformInterface && dst.platformInterface.format && dst.platformInterface.format.data_type ? dst.platformInterface.format.data_type.default : null,
-                srcSampleRate: src.platformInterface && src.platformInterface.format && src.platformInterface.format.sample_rate ? src.platformInterface.format.sample_rate.default : null,
-                dstSampleRate: dst.platformInterface && dst.platformInterface.format && dst.platformInterface.format.sample_rate ? dst.platformInterface.format.sample_rate.default : null,
-                srcNbChannels: src.platformInterface && src.platformInterface.format && src.platformInterface.format.nb_channels ? src.platformInterface.format.nb_channels.default : null,
-                dstNbChannels: dst.platformInterface && dst.platformInterface.format && dst.platformInterface.format.nb_channels ? dst.platformInterface.format.nb_channels.default : null,
-                srcInterleaving: src.platformInterface && src.platformInterface.format && src.platformInterface.format.interleaving ? (src.platformInterface.format.interleaving.default || src.platformInterface.format.interleaving) : null,
-                dstInterleaving: dst.platformInterface && dst.platformInterface.format && dst.platformInterface.format.interleaving ? (dst.platformInterface.format.interleaving.default || dst.platformInterface.format.interleaving) : null
-            };
 
+            platformDefault = src.platformInterface && src.platformInterface.format &&
+                              src.platformInterface.format.data_type &&
+                              src.platformInterface.format.data_type.default;
+            if (isEmpty(platformDefault) && dst.platformInterface && dst.platformInterface.format &&
+                dst.platformInterface.format.data_type)
+                platformDefault = dst.platformInterface.format.data_type.default;
             requested = a.attrs.dataType;
-            dataResult = compatibleOrNull(R,"data_type",src.format.data_type,dst.format.data_type,
-                                          {requested:requested,platformDefault:!isEmpty(defs.srcDataType)?defs.srcDataType:defs.dstDataType});
-            requested = a.attrs.sampleRate;
-            rateResult = compatibleOrNull(R,"sample_rate",src.format.sample_rate,dst.format.sample_rate,
-                                          {requested:requested,platformDefault:!isEmpty(defs.srcSampleRate)?defs.srcSampleRate:defs.dstSampleRate});
-            requested = a.attrs.nbChannels;
-            channelsResult = compatibleOrNull(R,"nb_channels",src.format.nb_channels,dst.format.nb_channels,
-                                              {requested:requested,platformDefault:!isEmpty(defs.srcNbChannels)?defs.srcNbChannels:defs.dstNbChannels});
-            requested = a.attrs.interleaving;
-            interleavingResult = compatibleOrNull(R,"interleaving",src.format.interleaving,dst.format.interleaving,
-                                                  {requested:requested,platformDefault:!isEmpty(defs.srcInterleaving)?defs.srcInterleaving:defs.dstInterleaving});
+            a.attrs.dataType = R.choose("data_type",src.format.data_type,dst.format.data_type,
+                                       {requested:requested,platformDefault:platformDefault});
 
-            if (dataResult.compatible && rateResult.compatible && channelsResult.compatible && interleavingResult.compatible) {
-                a.attrs.dataType = dataResult.value;
-                a.attrs.sampleRate = rateResult.value;
-                a.attrs.nbChannels = channelsResult.value;
-                a.attrs.interleaving = interleavingResult.value;
-                newArcs.push(a);
-            } else {
-                /* A missing endpoint constraint is a wildcard and never reaches this branch.
-                 * Only a genuine incompatibility causes automatic converter insertion. */
-                Array.prototype.push.apply(newArcs,insertConverterForArc(flat,i,a,src,dst,defs,dataResult,rateResult,channelsResult,interleavingResult));
-            }
+            platformDefault = src.platformInterface && src.platformInterface.format &&
+                              src.platformInterface.format.sample_rate &&
+                              src.platformInterface.format.sample_rate.default;
+            if (isEmpty(platformDefault) && dst.platformInterface && dst.platformInterface.format &&
+                dst.platformInterface.format.sample_rate)
+                platformDefault = dst.platformInterface.format.sample_rate.default;
+            a.attrs.sampleRate = R.choose("sample_rate",src.format.sample_rate,dst.format.sample_rate,
+                                         {platformDefault:platformDefault});
         }
-        flat.arcs = newArcs;
         return flat;
-    }
-
-    function buildCommonFormats(flat) {
-        var R = window.NG_FORMAT_RESOLVER;
-        if (!R || !R.buildFormatTable) throw new Error("format table builder is not loaded");
-        flat.formats = R.buildFormatTable(flat.arcs);
-        return flat;
-    }
-
-    function renderFormatYaml(yml, f) {
-        yml += "  - format:\n";
-        yml += "      formatID: " + f.formatID + "\n";
-        yml += "      interleaving:\n";
-        yml += "        type: enum\n";
-        if (!isEmpty(f.interleaving)) yml += "        default: " + f.interleaving + "\n";
-        yml += "        values: [interleaved, deinterleaved]\n";
-        yml += "      data_type:\n";
-        if (!isEmpty(f.dataType)) yml += "        default: " + f.dataType + "\n";
-        yml += "        values: [int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, utf8, utf16]\n";
-        yml += "      sample_rate:\n";
-        yml += "        type: float\n";
-        if (!isEmpty(f.sampleRate)) yml += "        default: " + f.sampleRate + "\n";
-        yml += "      nb_channels:\n";
-        yml += "        type: int\n";
-        if (!isEmpty(f.nbChannels)) yml += "        default: " + f.nbChannels + "\n";
-        return yml;
     }
 
     function renderFlattenedYaml(flat) {
@@ -1099,6 +904,8 @@ var RED = (function() {
             yml += "    IPort_" + a.destination.port + " " + a.destination.kind + ": " + a.destination.name + "\n";
             if (!isEmpty(a.attrs.arcName)) yml += "    arc_name: " + a.attrs.arcName + "\n";
             if (!isEmpty(a.attrs.bufferSize)) yml += "    buffer_size: " + a.attrs.bufferSize + "\n";
+            if (!isEmpty(a.attrs.dataType)) yml += "    data_type: " + a.attrs.dataType + "\n";
+            if (!isEmpty(a.attrs.sampleRate)) yml += "    sample_rate: " + a.attrs.sampleRate + "\n";
             if (!isEmpty(a.attrs.refresh)) yml += "    refresh: " + a.attrs.refresh + "\n";
             if (!isEmpty(a.attrs.jitterPercent)) yml += "    jitter_percent: " + a.attrs.jitterPercent + "\n";
             if (!isEmpty(a.attrs.overlayWith)) yml += "    overlay_with: " + a.attrs.overlayWith + "\n";
@@ -1106,11 +913,8 @@ var RED = (function() {
             if (!isEmpty(a.attrs.script)) yml += "    script: " + a.attrs.script + "\n";
         }
 
-        yml += "\nformats:\n";
-        for (i=0; i<(flat.formats || []).length; i++) {
-            yml = renderFormatYaml(yml,flat.formats[i]);
-        }
-
+        /* yml += "\nformats:\n";         */
+        
         return yml;
     }
 
@@ -1121,7 +925,6 @@ var RED = (function() {
             var exportWorkspace = exportRootWorkspaceId();
             var flat = buildFlattenedGraph(exportWorkspace);
             resolveArcFormats(flat);
-            buildCommonFormats(flat);
             var hasIO = false;
             var platformCount = 0;
             var i;
@@ -1204,6 +1007,7 @@ var RED = (function() {
             $("#btn-deploy").removeClass("disabled").addClass("btn-danger");
             $("#btn-import").removeClass("disabled").addClass("btn-success");
         }, 1500);
+        $('#btn-deploy').click(function() { save(); });
         var info = getQueryVariable("info");
         if (info) {
             RED.sidebar.info.setHelpContent('', info);

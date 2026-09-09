@@ -184,6 +184,10 @@ span.mainfunction {color: #993300; font-weight: bolder}
                 <input type="text" id="arc-input-overlay-with" placeholder="optional arc name">
             </div>
             <div class="form-row">
+                <label for="arc-formatID"><i class="icon-resize-small"></i> formatID:</label>
+                <input type="text" id="arc-formatID" placeholder="generated during export" readonly>
+            </div>
+            <div class="form-row">
                 <label for="arc-input-script"><i class="icon-file"></i> Script:</label>
                 <input type="text" id="arc-input-script" placeholder="optional">
             </div>
@@ -373,6 +377,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
     <script src="orion/built-editor.min.js"></script>
     <script src="red/d3/d3.v3.min.js"></script>
     <script src="red/node-manifests.js"></script>
+    <script src="red/platform-manifests.js"></script>
+    <script src="red/format-resolver.js"></script>
     <script src="red/main.js"></script>
     <script src="red/ui/state.js"></script>
     <script src="red/nodes.js"></script>
@@ -429,7 +435,6 @@ span.mainfunction {color: #993300; font-weight: bolder}
           "shortName":"Computer","inputs":0,"outputs":0,
           "category":"Platforms","color":"#f1f1f1","icon":"Plaform_X.png"}},
 
-
          {"type":"Nuvoton_M5531", "data":{"defaults":{"kind":{"value":"platform", "required":true}},
           "shortName":"Nuvoton_M5531","inputs":0,"outputs":0,
           "category":"Platforms","color":"#f1f1f1","icon":"Plaform_X.png"}},
@@ -441,14 +446,6 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
-
-         {"type":"data_in_0",
-          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
-                  "framel":{"value":"", "required": "true" },
-                  "nbchan":{"value":"", "required": "true" }
-                  },
-                  "shortName":"data_in_0","inputs":0,"outputs":1,
-                  "category":"input-function","color":"#e2f2ff","icon":"arrow-in.png"}},
 
          {"type":             "io_data_in",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
@@ -500,6 +497,11 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
+         {"type":             "io_sink",
+          "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
+                  "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
+                  "shortName":"io_sink","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
+
          {"type":             "io_data_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
@@ -543,37 +545,47 @@ span.mainfunction {color: #993300; font-weight: bolder}
          {"type":             "arm_script",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"script","inputs":2,"outputs":2, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":             "arm_router",
-          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
-                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"arm_router","inputs":4,"outputs":4, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":             "arm_amplifier",
-          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
-                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"arm_amplifier","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+                  "shortName":"arm_script","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
 
          {"type":             "arm_filter",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
                   "shortName":"arm_filter","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
 
-         {"type":             "arm_modulator",
+         {"type":             "arm_converter",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"arm_modulator","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+                  "shortName":"arm_converter","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
 
-         {"type":             "arm_demodulator",
+         {"type":             "bb_jpegenc",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"arm_demodulator","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+                  "shortName":"bb_jpegenc","inputs":1,"outputs":1, "category":"bitbanksw","color":"#f1f1f1","icon":"arrow-in.png"}},
 
-         {"type":             "arm_filter2D",
+         {"type":             "eml_tjpgdec",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"arm_filter2D","inputs":1,"outputs":1, "category":"arm","color":"#f1f1f1","icon":"arrow-in.png"}},
+                  "shortName":"eml_tjpgdec","inputs":1,"outputs":1, "category":"elm","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "sigp_modulator",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_modulator","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "sigp_amplifier",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_amplifier","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "sigp_demodulator",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_demodulator","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
+
+         {"type":             "sigp_filter2D",
+          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
+                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
+                  "shortName":"sigp_filter2D","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
 
          {"type":             "sigp_detector",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
@@ -600,16 +612,10 @@ span.mainfunction {color: #993300; font-weight: bolder}
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
                   "shortName":"sigp_decompressor","inputs":1,"outputs":1, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}},
 
-         {"type":             "JPEGENC",
+         {"type":             "sigp_router",
           "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
                   "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"JPEGENC","inputs":1,"outputs":1, "category":"bitbanksw","color":"#f1f1f1","icon":"arrow-in.png"}},
-
-         {"type":             "TjpgDec",
-          "data":{"defaults":{"name":{"value":"new"}, "kind":{"value": "node", "required" : "true"},
-                  "preset":{"value":"", "required": "true" },"script":{"value":"", "required": "true" },"params":{"value":"", "required": "true" } },
-                  "shortName":"TjpgDec","inputs":1,"outputs":1, "category":"elm","color":"#f1f1f1","icon":"arrow-in.png"}}
-
+                  "shortName":"sigp_decompressor","inputs":4,"outputs":4, "category":"sigprocfr","color":"#f1f1f1","icon":"arrow-in.png"}}
 
          ]}
     </script>
@@ -849,6 +855,27 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
+    <!----------------------------------- io_sink ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_sink">
+
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
+
+        <div class="form-row"> <label  for="node-input-framel">
+                            <i class= "fa fa-tag"></i> framel</label>
+                    <input type="text"  id="node-input-framel">  </div>
+        <div class="form-row"> <label  for="node-input-nbchan">
+                            <i class= "fa fa-tag"></i> nbchan</label>
+                    <input type="text"  id="node-input-nbchan">  </div>
+        <div class="form-row"> <label  for="node-input-samprt">
+                            <i class= "fa fa-tag"></i> samprt</label>
+                    <input type="text"  id="node-input-samprt">  </div>
+
+    </script><script type="text/x-red" data-help-name="io_sink">
+        <h4>Summary</h4> <div class=tooltipinfo>
+        <p>Absorbs all data, its FIFO is always empty </p>
+        </div> </script>
+
     <!----------------------------------- io_data_out ------------------------------------------->
     <script type="text/x-red"      data-template-name="io_data_out">
 
@@ -999,7 +1026,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
     <script type="text/x-red" data-template-name=         "arm_script">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">  </div>
-        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> arm_script</label> <input type="text"  id="node-input-script">  </div>
 
         </script> <script type="text/x-red" data-help-name="arm_script">
         <h4>Description</h4> <div class=tooltipinfo>
@@ -1020,43 +1047,20 @@ The default memory configuration is "not shared", meaning that memory associated
             </p>
         </div> </script>
 
-    <!---------------------------------------------------- arm_router ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "arm_router">
+    <!---------------------------------------------------- arm_converter ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "arm_converter">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_router">
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-This node receives up to four input streams (arcs) and generates up to four output streams.
-</p><p>
-Each stream may be multichannel.
-</p>
-        <!-- Parameter controls are generated from manifests/arm_router.yaml -->
-        </script> <script type="text/x-red" data-help-name="arm_router">
-        
-        
-        <h4>Use-cases</h4> <div class=tooltipinfo>
-The following use-cases can be combined:
-</p><p>
-1. Router, deinterleaving, interleaving, channels recombination: the input arc data is processed deinterleaved, and the output arc is the result of recombination of any input arc. Audio example with two stereo input arcs using 5ms and 12ms frame lengths, recombined to create a stereo stream interleaved output using 20ms frame length, the left channel from the first arc and the left channel of the second arc.
-</p><p>
+        </script> <script type="text/x-red" data-help-name="arm_converter">
 
-        <h4>Parameters</h4> <div class=tooltipinfo>
-</p><p>
-The list of routing and mixing information is :
-</p><p>
-</p><p>- index of the input arc (<= 4)
-</p><p>- index of the channels (1 Byte to 31 Bytes)
-</p><p>- index of the output destination arc (<=4)
-</p><p>- index of the channels (1 Byte to 31 Bytes)
-</p>   - mixer gain to apply (fp32) and convergence speed (fp32)
-
-            </p>
+        <!-- Parameter controls are generated from manifests/arm_converter.yaml -->
+        </script> <script type="text/x-red" data-help-name="arm_converter">
         </div> </script>
+        
     <!---------------------------------------------------- arm_filter ------------------------------------------->
     <script type="text/x-red" data-template-name=         "arm_filter">
         <div class="form-row">
@@ -1071,98 +1075,95 @@ The list of routing and mixing information is :
           <p>Double-click the node to edit its parameters. Selecting a parameter displays its <code>help:</code> text in this right-hand column.</p>
         </div>
         </script>
+ 
         
-    <!---------------------------------------------------- arm_amplifier ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "arm_amplifier">
+    <!---------------------------------------------------- sigp_amplifier ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_amplifier">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_amplifier">
+        </script> <script type="text/x-red" data-help-name="sigp_amplifier">
         <h4>Operation</h4> <div class=tooltipinfo>
         <p>
-</p><p>Operation : rescale and control of the amplitude of the input stream with controlled time of ramp-up/ramp-down.
-</p><p>The gain control “mute” is used to store the current gain setting, being reloaded with the command “unmute”
-</p><p>Option : either the same gain/controls for all channels or list of parameters for each channel
-</p><p>
-</p><p>Parameters :  new gain/mute/unmute, ramp-up/down slope, delay before starting the slope.
-</p><p>Use-cases :
-</p><p>    Features : adaptive gain control (range compressor, expander, AGC) under a script control with energy polling
-</p><p>    Metadata features : "saturation occurred" "energy"
-</p><p>    Mixed-Signal glitches : remove the first seconds of an IR sensor until it was self-calibrated (same for audio Class-D)
-</p><p>
-</p><p>parameters of amplifier (variable size):
-</p><p>TAG_CMD = 1, uint8_t, 1st-order shifter slope time (as stream_mixer, 0..75k samples)
-</p><p>TAG_CMD = 2, uint16_t, desired gain
-</p><p>TAG_CMD = 3, uint8_t, set/reset mute state
-</p><p>TAG_CMD = 4, uint16_t, delay before applying unmute, in samples
-</p><p>TAG_CMD = 5, uint16_t, delay before applying mute, in samples
-</p><p>
-</p><p>Slopes of rising and falling gains, identical to all channels
-</p><p> Operation : applies vq = **interp1**(x,v,xq)
-</p><p> Following https://fr.mathworks.com/help/matlab/ref/interp1.html
-</p><p>   linear of polynomial interpolation (implementation)
-</p><p> **Parameters : X,V vectors, size max = 32 points**
-            </p>
+        </p><p>Operation : rescale and control of the amplitude of the input stream with controlled time of ramp-up/ramp-down.
+        </p><p>The gain control “mute” is used to store the current gain setting, being reloaded with the command “unmute”
+        </p><p>Option : either the same gain/controls for all channels or list of parameters for each channel
+        </p><p>
+        </p><p>Parameters :  new gain/mute/unmute, ramp-up/down slope, delay before starting the slope.
+        </p><p>Use-cases :
+        </p><p>    Features : adaptive gain control (range compressor, expander, AGC) under a script control with energy polling
+        </p><p>    Metadata features : "saturation occurred" "energy"
+        </p><p>    Mixed-Signal glitches : remove the first seconds of an IR sensor until it was self-calibrated (same for audio Class-D)
+        </p><p>
+        </p><p>parameters of amplifier (variable size):
+        </p><p>TAG_CMD = 1, uint8_t, 1st-order shifter slope time (as stream_mixer, 0..75k samples)
+        </p><p>TAG_CMD = 2, uint16_t, desired gain
+        </p><p>TAG_CMD = 3, uint8_t, set/reset mute state
+        </p><p>TAG_CMD = 4, uint16_t, delay before applying unmute, in samples
+        </p><p>TAG_CMD = 5, uint16_t, delay before applying mute, in samples
+        </p><p>
+        </p><p>Slopes of rising and falling gains, identical to all channels
+        </p><p> Operation : applies vq = **interp1**(x,v,xq)
+        </p><p> Following https://fr.mathworks.com/help/matlab/ref/interp1.html
+        </p><p>   linear of polynomial interpolation (implementation)
+        </p><p> **Parameters : X,V vectors, size max = 32 points** 
+        </p>
         </div> </script>
+        <!-- Parameter controls are generated from manifests/sigp_amplifier.yaml -->
+        <script type="text/x-red" data-help-name="sigp_amplifier"> </script>         
 
-    <!---------------------------------------------------- arm_modulator ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "arm_modulator">
+    <!---------------------------------------------------- sigp_modulator ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_modulator">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_modulator">
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
- sine, noise, square, saw tooth with amplitude or frequency modulation
- use-case : ring modulator, sweep generation with a cascade of a ramp generator and a frequency modulator
-            </p>
+        </script> <script type="text/x-red" data-help-name="sigp_modulator"> <h4>Operation</h4> <div class=tooltipinfo>
+        <p> sine, noise, square, saw tooth with amplitude or frequency modulation </p>
+        <p>use-case : ring modulator, sweep generation with a cascade of a ramp generator and a frequency modulator </p>
         </div> </script>
-    <!---------------------------------------------------- arm_demodulator ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "arm_demodulator">
+        <!-- Parameter controls are generated from manifests/sigp_modulator.yaml -->
+        <script type="text/x-red" data-help-name="sigp_modulator"> </script> 
+        
+    <!---------------------------------------------------- sigp_demodulator ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_demodulator">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_demodulator">
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-decode a bit-stream from analog data. Use-case: IR decoder, CAN/UART on SPI/I2S audio (Arduino-IRremote)
-</p><p>
-sinewave frequency recognition for alarm detector.
-</p><p>
-Parameters : clock and parity setting or let the algorithm discover the frame setting after some time
-</p><p>
+        </script> <script type="text/x-red" data-help-name="sigp_demodulator">
+        <h4>Operation</h4> <div class=tooltipinfo> 
+        <p> decode a bit-stream from analog data. Use-case: IR decoder, CAN/UART on SPI/I2S audio (Arduino-IRremote)</p>
+        <p> sinewave frequency recognition for alarm detector. </p>
+        <p> Parameters : clock and parity setting or let the algorithm discover the frame setting after some time </p>
         </div> </script>
-    <!---------------------------------------------------- arm_filter2D ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "arm_filter2D">
+        <!-- Parameter controls are generated from manifests/sigp_demodulator.yaml -->
+        <script type="text/x-red" data-help-name="sigp_demodulator"> </script> 
+        
+    <!---------------------------------------------------- sigp_filter2D ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_filter2D">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="arm_filter2D">
-        <h4>Operation</h4> <div class=tooltipinfo>
-</p><p>
-Filter, rescale/zoom/extract, rotate, exposure compensation, background removal.
-</p><p>
-
-Channel mixer : insert a portion of the processed image in a larger frame buffer.
-</p><p>
-
-Parameters : spatial and temporal filtering, decimation, distortion, color mapping/log-effect
-</p><p>
-            </p>
+        </script> <script type="text/x-red" data-help-name="sigp_filter2D">
+        <h4>Operation</h4> <div class=tooltipinfo> </p><p> Filter, rescale/zoom/extract, rotate, exposure compensation, background removal.</p>
+        <p> Channel mixer : insert a portion of the processed image in a larger frame buffer. </p>
+        <p> Parameters : spatial and temporal filtering, decimation, distortion, color mapping/log-effect </p>
         </div> </script>
-
+        
+        <!-- Parameter controls are generated from manifests/sigp_filter2D.yaml -->
+        <script type="text/x-red" data-help-name="sigp_filter2D"> </script>  
+        
     <!-------------------------------------------------- sigp_detector ------------------------------------------->
     <script type="text/x-red" data-template-name=       "sigp_detector">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -1173,7 +1174,7 @@ Parameters : spatial and temporal filtering, decimation, distortion, color mappi
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
         </script><script type="text/x-red" data-help-name="sigp_detector">
         <h4>Summary</h4> <div class=tooltipinfo>
-            <div class=tooltipinfo>
+        <div class=tooltipinfo>
         <p>Signal sigp_detector PRESET. </p>
         <p>Input MONO of a stream of Q15/float32 data, without time-stamp, at any sampling-rate.</p>
         <p>Detection flag (0 or 1.0/0x7FFF) push on the output port at the frame rate of the input stream.</p>
@@ -1182,11 +1183,12 @@ Parameters : spatial and temporal filtering, decimation, distortion, color mappi
         <li>PRESET=1 : audio activity (Fs=44.1/48kHz)
         <li>PRESET=2 : signal detection without pre-filtering (debouncing)
         </ul>
-                </p>
+        </p>
         <p align=center><img img style="max-width: 300px; max-height: 150px" src="img/node_sigp_detector.png"><br><small> Block diagram of the detector </small></p>
         </div> </script>
-
-
+        <!-- Parameter controls are generated from manifests/sigp_detector.yaml -->
+        <script type="text/x-red" data-help-name="sigp_detector"> </script>  
+        
     <!---------------------------------------------------- sigp_detector2D ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_detector2D">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -1197,19 +1199,15 @@ Parameters : spatial and temporal filtering, decimation, distortion, color mappi
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
         </script> <script type="text/x-red" data-help-name="sigp_detector2D">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-Motion and pattern detector. Counting moving object and build a text report (object sizes, shape, speed, color, ..) to be later processed by SLM on the application processor.
-</p><p>
-
-Operation : detection of movement(s) and computation of the movement map
-</p><p>
-Parameters : sensitivity, floor-noise smoothing factors
-</p><p>
-Metadata : decimated map of movement detection
-</p><p>
-            </p>
-        </div> </script>
-
+        <p> Motion and pattern detector. Counting moving object and build a text report (object sizes, shape, speed, color, ..) to be later processed by SLM on the application processor.</p>
+        <p> Operation : detection of movement(s) and computation of the movement map </p>
+        <p> Parameters : sensitivity, floor-noise smoothing factors </p>
+        <p> Metadata : decimated map of movement detection </p>
+        </div> </script> 
+        
+        <!-- Parameter controls are generated from manifests/sigp_detector2D.yaml -->
+        <script type="text/x-red" data-help-name="sigp_detector2D"> </script>        
+        
     <!---------------------------------------------------- sigp_resampler ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_resampler">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -1220,21 +1218,14 @@ Metadata : decimated map of movement detection
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
         </script> <script type="text/x-red" data-help-name="sigp_resampler">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-Operation : high quality conversion of multichannel input data rate to the rate of the output arcs
-</p><p>
-
-  + asynchronous rate conversion within +/- 1% adjustment
-</p><p>
-
-SSRC synchronous rate converter, FS in/out are exchanged during STREAM_RESET
-</p><p>
-ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) pre-LP-filtering tuned from Fout/Fin ratio + Lagrange polynomial interpolator
-</p><p>
-
-
-            </p>
-        </div> </script>
+        <p> Operation : high quality conversion of multichannel input data rate to the rate of the output arcs </p>
+        <p>  + asynchronous rate conversion within +/- 1% adjustment </p>
+        <p> SSRC synchronous rate converter, FS in/out are exchanged during STREAM_RESET </p>
+        <p> ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) pre-LP-filtering tuned from Fout/Fin ratio + Lagrange polynomial interpolator</p>
+        </div> 
+        
+        <!-- Parameter controls are generated from manifests/sigp_resampler.yaml -->
+        </script> <script type="text/x-red" data-help-name="sigp_resampler"> </script>        
 
     <!---------------------------------------------------- sigp_compressor ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_compressor">
@@ -1246,27 +1237,18 @@ ASRC asynchronous rate converter using time-stamps (in) to synchronous FS (out) 
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
         </script> <script type="text/x-red" data-help-name="sigp_compressor">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-Operation : wave compression using IMADPCM(4bits/sample)
-</p><p>
-Parameters : coding scheme
-</p><p>
+        <p> decompression of encoded data </p><p>
+Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD threshold and silence frame format (w/wo time-stamps) </p><p>
+dynamic parameters : pause, stop, fast-forward x2 and x4.
+</p><p>- 1 : encoder IMADPCM
+</p><p>- 2 : encoder LPC
+</p><p>- 3 : 
+</p><p>- 4 : encoder CVSD for BT speech
+</p><p>- 5 : encoder SBC
+</p><p>- 6 : encoder MP3 </p>
 
-presets (provision codes):
-</p><p>
-
-- 1 : coder IMADPCM
-</p><p>
-- 2 : coder LPC
-</p><p>
-- 4 : coder CVSD for BT speech
-</p><p>
-- 5 : coder SBC
-</p><p>
-- 6 : coder MP3
-</p><p>
-            </p>
-        </div> </script>
+        <!-- Parameter controls are generated from manifests/sigp_compressor.yaml -->
+        </script> <script type="text/x-red" data-help-name="sigp_compressor"> </script>
 
     <!---------------------------------------------------- sigp_decompressor ------------------------------------------->
     <script type="text/x-red" data-template-name=         "sigp_decompressor">
@@ -1278,61 +1260,61 @@ presets (provision codes):
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
         </script> <script type="text/x-red" data-help-name="sigp_decompressor">
         <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-decompression of encoded data
-</p><p>
-Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD threshold and silence frame format (w/wo time-stamps)
-</p><p>
+        <p> decompression of encoded data </p><p>
+Parameters : coding scheme and a block of 16 parameter bytes for codecs, VAD threshold and silence frame format (w/wo time-stamps) </p><p>
+dynamic parameters : pause, stop, fast-forward x2 and x4.
+</p><p>- 1 : decoder IMADPCM
+</p><p>- 2 : decoder LPC
+</p><p>- 3 : MIDI player
+</p><p>- 4 : decoder CVSD for BT speech
+</p><p>- 5 : decoder SBC
+</p><p>- 6 : decoder MP3 </p>
 
-​    dynamic parameters : pause, stop, fast-forward x2 and x4.
-</p><p>
-- 1 : decoder IMADPCM
-</p><p>
-- 2 : decoder LPC
-</p><p>
-- 3 : MIDI player
-</p><p>
-- 4 : decoder CVSD for BT speech
-</p><p>
-- 5 : decoder SBC
-</p><p>
-- 6 : decoder MP3
-</p><p>
-            </p>
-        </div> </script>
+        <!-- Parameter controls are generated from manifests/sigp_decompressor.yaml -->
+        </script> <script type="text/x-red" data-help-name="sigp_decompressor"> </script>
 
-    <!---------------------------------------------------- JPEGENC ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "JPEGENC">
+    <!---------------------------------------------------- sigp_router ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "sigp_router">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="JPEGENC">
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-From "bitbank" https://github.com/google/jpegli/tree/main
-            </p>
-        </div> </script>
+        </script> <script type="text/x-red" data-help-name="sigp_router"> </script> 
 
-    <!---------------------------------------------------- TjpgDec ------------------------------------------->
-    <script type="text/x-red" data-template-name=         "TjpgDec">
+        <!-- Parameter controls are generated from manifests/sigp_router.yaml -->
+        <script type="text/x-red" data-help-name="sigp_router"> </script>
+        
+    <!---------------------------------------------------- bb_jpegenc ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "bb_jpegenc">
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
 
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
-        </script> <script type="text/x-red" data-help-name="TjpgDec">
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p>
-From "EML" Use-case : images decompression, pattern generation.
-            </p>
-        </div> </script>
+        </script> <script type="text/x-red" data-help-name="bb_jpegenc"> </script>
+        
+        <!-- Parameter controls are generated from manifests/bb_jpegenc.yaml -->
+        <script type="text/x-red" data-help-name="bb_jpegenc"> </script>
+        
+    <!---------------------------------------------------- eml_tjpgdec ------------------------------------------->
+    <script type="text/x-red" data-template-name=         "eml_tjpgdec">
+        <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">  </div>
 
+        <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
+        <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
+        <div class="form-row"> <label  for="node-input-params"> <i class= "fa fa-tag"></i> params</label> <input type="text"  id="node-input-params">  </div>
+        </script> <script type="text/x-red" data-help-name="eml_tjpgdec"> </script>
 
+        <!-- Parameter controls are generated from manifests/eml_tjpgdec.yaml -->
+        <script type="text/x-red" data-help-name="eml_tjpgdec"> </script>
+        
 
+        
+        
 </body>
 </html>
 

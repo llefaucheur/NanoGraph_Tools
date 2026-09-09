@@ -1,105 +1,130 @@
-node: arm_filter
-node_designer : arm (ltd)
+node: sigp_router
 version: 1
-description: CMSIS-DSP based filtering node
+description: routering node
 
 
 interfaces:
   - rx_interface:               
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+#    path: 1
+    index: 0                                                
     name: input0        
-    
     domain: general
     format:
-      
       data_type:
-        default: int16              # can be "any" when the node extracts the format during the reset sequence
-        values: [int16, float32]
-
       frame_length:
-        type: int
-        default: 4
-        values: [1, 2, 3, 4, 8, 16, 32]
-
       sample_rate:
-        type: float
-        default: 16000
-        values: [8000, 16000, 44100]
-
       nb_channels:
-        type: int
-        default: 1
-        values: [1, 2, 4] 
+
+  - rx_interface:               
+#    path: 1
+    index: 1                                 
+    name: input1        
+    domain: general
+    format:
+      data_type:
+      frame_length:
+      sample_rate:
+      nb_channels:
+
+        
+  - rx_interface:               
+#    path: 1
+    index: 2                                    
+    name: input2     
+    domain: general
+    format:
+      data_type:
+      frame_length:
+      sample_rate:
+      nb_channels:
+
+        
+  - rx_interface:               
+#    path: 1
+    index: 3                               
+    name: input3       
+    domain: general
+    format:
+      data_type:
+      frame_length:
+      sample_rate:
+      nb_channels:
+       
+        
 
   - tx_interface:                     
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+#    path: 1
+    index: 0                                        
     name: output0        
-    
     domain: general
     format:
-      interleaving: interleaved      
-      unit: VRMS                    # RFC8428 list of units
-      unit_scale: 0.5               # full-scale is equivalent to 0.15 VRMS
-      
       data_type:
-        default: int16              # can be "any" when the node extracts the format during the reset sequence
-        values: [int16, float32]
-
       frame_length:
-        type: int
-        default: 4
-        values: [1, 2, 3, 4, 8, 16, 32]
-
       sample_rate:
-        type: float
-        default: 16000
-        values: [8000, 16000, 44100]
-
       nb_channels:
-        type: int
-        default: 1
-        values: [1, 2, 4] 
-      
+
+
+  - tx_interface:                     
+#    path: 1
+    index: 1                          
+    name: output1        
+    domain: general
+    format:
+      data_type:
+      frame_length:
+      sample_rate:
+      nb_channels:
+
+
+  - tx_interface:                     
+#    path: 1
+    index: 2                        
+    name: output2        
+    domain: general
+    format:
+      data_type:
+      frame_length:
+      sample_rate:
+      nb_channels:
+
+
+  - tx_interface:                     
+#    path: 1
+    index: 3                                           
+    name: output3        
+    domain: general
+    format:
+      data_type:
+      frame_length:
+      sample_rate:
+      nb_channels:
+ 
+
+    
 
 parameters:
   - name: mode
     type: enum
-    default: lowpass
-    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
-    help: Filter type / operating mode
-
-  - name: cutoff
-    type: float
-    default: 0.0625
-    min: 0.0
-    max: 0.5
-    unit: normalized
-    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
-
-  - name: q
-    type: float
-    default: 1.414
-    min: 0.01
-    help: Quality factor of the filter.
-
+    default: src
+    values: [src, merge, split, raw]
+    help: converter
   - name: gain_db
     type: float
     default: 20
     unit: dB
-    help: Gain used by peak and shelf filters.
+    help: Gain used by peak and shelf routers.
 
 activation:
-  key: 8234758358235    
-
+  key: 823475928358235
 
 
 # assembly code is made for a specific familty of processors
 implementation:
   language: C90           # plain old C 
   complexity: 10e3        # 10kCycles average per call
-  header: arm_filter.h
-  init: arm_filter_init       # name of the entry point for CMSIS-STREAM
-  process: arm_filter_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
+  header: sigp_router.h
+  init: sigp_router_init       # name of the entry point for CMSIS-STREAM
+  process: sigp_router_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
   processor_architecture: armv7m, armv8m # list of processor architectures
   processor_fpu_option: double  # double precision FPU
   malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph

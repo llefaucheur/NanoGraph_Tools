@@ -1,94 +1,86 @@
-node: arm_router
+node: sigp_amplifier
+node_designer : arm (ltd)
 version: 1
-description: CMSIS-DSP based routering node
+description: CMSIS-DSP based filtering node
 
-ports:
-  inputs:
-    - name: input1
-      index: 0
-      format: format_input_1_2
 
-    - name: input2
-      index: 1
-      format: format_input_1_2
+interfaces:
+  - rx_interface:               
+    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    name: input0        
+    
+    domain: general
+    format:
+      data_type: int16
+      frame_length:
+        type: int
+      sample_rate:
+        type: float
+        default: 16000
+        values: [8000, 16000, 44100]
+      nb_channels:
+        type: int
+        default: 1
+        values: [1] 
 
-    - name: input3
-      index: 2
-      format: format_input_3_4
-
-    - name: input4
-      index: 3
-      format: format_input_3_4
-
-  outputs:
-    - name: output1
-      index: 0
-      format: format_output_1_2_3_4
-
-    - name: output2
-      index: 1
-      format: format_output_1_2_3_4
-
-    - name: output3
-      index: 2
-      format: format_output_1_2_3_4
-
-    - name: output4
-      index: 3
-      format: format_output_1_2_3_4
+  - tx_interface:                     
+    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    name: output0        
+    
+    domain: general
+    format:
+      data_type: int16
+      frame_length:
+        type: int
+      sample_rate:
+        type: float
+        default: 16000
+        values: [8000, 16000, 44100]
+      nb_channels:
+        type: int
+        default: 1
+        values: [1] 
       
-
-
-formats:
-  - format: format_input_1_2
-    data_type: float32
-    consume_min: 2
-    consume_max: 16
-    interleaving: interleaved
-    nb_channels_min: 1
-    nb_channels_max: 2
-
-  - format: format_input_3_4
-    data_type: float32
-    consume_min: 2
-    consume_max: 32
-    interleaving: interleaved
-    nb_channels_min: 1
-    nb_channels_max: 32
-    
-
-  - format: format_output_1_2_3_4
-    data_type: float32
-    produce_min: 2
-    produce_max: 32
-    interleaving: interleaved
-    nb_channels_min: 1
-    nb_channels_max: 32
-    
 
 parameters:
   - name: mode
     type: enum
-    default: src
-    values: [src, raw]
-    help: converter
+    default: lowpass
+    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
+    help: Filter type / operating mode
+
+  - name: cutoff
+    type: float
+    default: 0.0625
+    min: 0.0
+    max: 0.5
+    unit: normalized
+    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
+
+  - name: q
+    type: float
+    default: 1.414
+    min: 0.01
+    help: Quality factor of the filter.
+
   - name: gain_db
     type: float
     default: 20
     unit: dB
-    help: Gain used by peak and shelf routers.
+    help: Gain used by peak and shelf filters.
 
 activation:
-  key: 823475928358235
+  key: 8234758358235    
+
 
 
 # assembly code is made for a specific familty of processors
 implementation:
   language: C90           # plain old C 
   complexity: 10e3        # 10kCycles average per call
-  header: arm_router.h
-  init: arm_router_init       # name of the entry point for CMSIS-STREAM
-  process: arm_router_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
+  header: sigp_amplifier.h
+  init: sigp_amplifier_init       # name of the entry point for CMSIS-STREAM
+  process: sigp_amplifier_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
   processor_architecture: armv7m, armv8m # list of processor architectures
   processor_fpu_option: double  # double precision FPU
   malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph
@@ -118,7 +110,7 @@ implementation:
       mem_alloc_d: 12     # "D"
       mem_alloc_d_arc: 0  # "k" in the formula
 
-  input2:
+  memoryBank2:
     - index: 1
       mem_alloc: 78       # (coef + state)50 + (pointers + index)24
       mem_type: working   # static / working / periodic_backup / pseudo_working 

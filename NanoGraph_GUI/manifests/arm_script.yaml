@@ -1,64 +1,47 @@
-node: arm_filter
+node: arm_script
 node_designer : arm (ltd)
 version: 1
-description: CMSIS-DSP based filtering node
+description: data converter
 
 
 interfaces:
   - rx_interface:               
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                
     name: input0        
     
     domain: general
     format:
-      
+      interleaving: 
+        type: enum
+        values: [interleaved, deinterleaved]
       data_type:
-        default: int16              # can be "any" when the node extracts the format during the reset sequence
-        values: [int16, float32]
-
+        default: int16              
+        values:  [int8,int16,int32,int64,  uint8,uint16,uint32,uint64,  float32,float64,  utf8,utf16]
       frame_length:
         type: int
-        default: 4
-        values: [1, 2, 3, 4, 8, 16, 32]
-
       sample_rate:
         type: float
-        default: 16000
-        values: [8000, 16000, 44100]
-
       nb_channels:
         type: int
-        default: 1
-        values: [1, 2, 4] 
 
   - tx_interface:                     
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                
     name: output0        
     
     domain: general
     format:
-      interleaving: interleaved      
-      unit: VRMS                    # RFC8428 list of units
-      unit_scale: 0.5               # full-scale is equivalent to 0.15 VRMS
-      
+      interleaving: 
+        type: enum
+        values: [interleaved, deinterleaved]
       data_type:
-        default: int16              # can be "any" when the node extracts the format during the reset sequence
-        values: [int16, float32]
-
+        default: int16              
+        values:  [int8,int16,int32,int64,  uint8,uint16,uint32,uint64,  float32,float64,  utf8,utf16]
       frame_length:
         type: int
-        default: 4
-        values: [1, 2, 3, 4, 8, 16, 32]
-
       sample_rate:
         type: float
-        default: 16000
-        values: [8000, 16000, 44100]
-
       nb_channels:
         type: int
-        default: 1
-        values: [1, 2, 4] 
       
 
 parameters:
@@ -97,9 +80,9 @@ activation:
 implementation:
   language: C90           # plain old C 
   complexity: 10e3        # 10kCycles average per call
-  header: arm_filter.h
-  init: arm_filter_init       # name of the entry point for CMSIS-STREAM
-  process: arm_filter_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
+  header: sigp_detector.h
+  init: sigp_detector_init       # name of the entry point for CMSIS-STREAM
+  process: sigp_detector_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
   processor_architecture: armv7m, armv8m # list of processor architectures
   processor_fpu_option: double  # double precision FPU
   malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph

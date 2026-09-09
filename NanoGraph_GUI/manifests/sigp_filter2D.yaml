@@ -1,8 +1,7 @@
-node: arm_filter
-node_designer : arm (ltd)
+node: sigp_filter2D
+node_designer : signal-processing.fr
 version: 1
-description: CMSIS-DSP based filtering node
-
+description: 2D filters, interpolators, decimators
 
 interfaces:
   - rx_interface:               
@@ -32,6 +31,7 @@ interfaces:
         values: [1, 2, 4] 
 
   - tx_interface:                     
+#    path: 1
     index: 0                        # index 0 is reserved for the internal "data sink"                        
     name: output0        
     

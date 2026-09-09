@@ -183,6 +183,11 @@ static int yn_set_port(YN_Port *p, const char *key, char *value)
         yn_copy(p->format, YN_MAX_NAME, value);
         p->present |= YN_PORT_HAS_FORMAT;
     }
+    else if (strcmp(key, "domain") == 0)
+    {
+        yn_copy(p->domain, YN_MAX_VALUE, value);
+        p->present |= YN_PORT_HAS_DOMAIN;
+    }
     else if (strcmp(key, "buffer_overlay") == 0)
     {
         if (!yn_int(value, &p->buffer_overlay)) return 0;
@@ -328,14 +333,21 @@ int yn_read_file(const char *filename, YN_NodeManifest *m)
     int current_format;
     int current_param;
     int current_mem;
+    int interface_kind;
+    int interface_format;
+    int format_constraint;
     char impl_list[YN_MAX_NAME];
 
-    enum { S_TOP=0, S_PORTS, S_FORMATS, S_PARAMETERS, S_ACTIVATION, S_IMPLEMENTATION };
+    enum { S_TOP=0, S_PORTS, S_FORMATS, S_PARAMETERS, S_ACTIVATION, S_IMPLEMENTATION, S_INTERFACES };
+    enum { C_NONE=0, C_DATA_TYPE, C_FRAME_LENGTH, C_SAMPLE_RATE, C_NB_CHANNELS };
 
     if ((filename == NULL) || (m == NULL)) return YN_ERR_SYNTAX;
     memset(m, 0, sizeof(*m));
     current_port = current_format = current_param = current_mem = -1;
     port_kind = 0;
+    interface_kind = 0;
+    interface_format = -1;
+    format_constraint = C_NONE;
     impl_list[0] = '\0';
     section = S_TOP;
 
@@ -360,6 +372,9 @@ int yn_read_file(const char *filename, YN_NodeManifest *m)
             section = S_TOP;
             current_port = current_format = current_param = current_mem = -1;
             port_kind = 0;
+            interface_kind = 0;
+            interface_format = -1;
+            format_constraint = C_NONE;
             impl_list[0] = '\0';
             if (!yn_key_value(text, &key, &value))
             { fclose(fp); yn_error(m,line_no,"expected top-level key"); return YN_ERR_SYNTAX; }
@@ -371,6 +386,7 @@ int yn_read_file(const char *filename, YN_NodeManifest *m)
             { if(!yn_int(value,&m->version)) goto badnum; m->present |= YN_NODE_HAS_VERSION; }
             else if (strcmp(key,"description") == 0)
             { yn_copy(m->description, YN_MAX_TEXT, value); m->present |= YN_NODE_HAS_DESCRIPTION; }
+            else if (strcmp(key,"interfaces") == 0) section = S_INTERFACES;
             else if (strcmp(key,"ports") == 0) section = S_PORTS;
             else if (strcmp(key,"formats") == 0) section = S_FORMATS;
             else if (strcmp(key,"parameters") == 0) section = S_PARAMETERS;
@@ -379,7 +395,115 @@ int yn_read_file(const char *filename, YN_NodeManifest *m)
             continue;
         }
 
-        if (section == S_PORTS)
+        if (section == S_INTERFACES)
+        {
+            YN_Port *port;
+            YN_Format *fmt;
+            port = NULL;
+            fmt = NULL;
+
+            if ((ind == 2) && (text[0] == '-'))
+            {
+                text = yn_ltrim(text + 1);
+                if (!yn_key_value(text, &key, &value)) goto syntax;
+                if ((strcmp(key, "rx_interface") != 0) && (strcmp(key, "tx_interface") != 0)) goto syntax;
+                interface_kind = (strcmp(key, "rx_interface") == 0) ? 1 : 2;
+                if (interface_kind == 1)
+                {
+                    if (m->input_count >= YN_MAX_PORTS) goto toomany;
+                    current_port = m->input_count++;
+                    memset(&m->input[current_port], 0, sizeof(YN_Port));
+                    port = &m->input[current_port];
+                }
+                else
+                {
+                    if (m->output_count >= YN_MAX_PORTS) goto toomany;
+                    current_port = m->output_count++;
+                    memset(&m->output[current_port], 0, sizeof(YN_Port));
+                    port = &m->output[current_port];
+                }
+                if (m->format_count >= YN_MAX_FORMATS) goto toomany;
+                interface_format = m->format_count++;
+                memset(&m->format[interface_format], 0, sizeof(YN_Format));
+                format_constraint = C_NONE;
+            }
+            else if ((current_port >= 0) && (interface_kind != 0))
+            {
+                port = (interface_kind == 1) ? &m->input[current_port] : &m->output[current_port];
+                if (interface_format >= 0) fmt = &m->format[interface_format];
+
+                if ((ind == 4) && yn_key_value(text, &key, &value))
+                {
+                    yn_unquote(value);
+                    format_constraint = C_NONE;
+                    if (strcmp(key, "format") == 0)
+                    {
+                        if (fmt != NULL)
+                        {
+                            if (port->name[0] != '\0') yn_copy(fmt->name, YN_MAX_NAME, port->name);
+                            else sprintf(fmt->name, "interface%d", interface_format);
+                            yn_copy(port->format, YN_MAX_NAME, fmt->name);
+                            port->present |= YN_PORT_HAS_FORMAT;
+                        }
+                    }
+                    else
+                    {
+                        if (!yn_set_port(port, key, value)) goto badnum;
+                        if ((strcmp(key, "name") == 0) && (fmt != NULL))
+                        {
+                            yn_copy(fmt->name, YN_MAX_NAME, value);
+                            yn_copy(port->format, YN_MAX_NAME, value);
+                            port->present |= YN_PORT_HAS_FORMAT;
+                        }
+                    }
+                }
+                else if ((ind == 6) && (fmt != NULL) && yn_key_value(text, &key, &value))
+                {
+                    yn_unquote(value);
+                    if ((strcmp(key, "data_type") == 0) && (*value == '\0')) format_constraint = C_DATA_TYPE;
+                    else if ((strcmp(key, "frame_length") == 0) && (*value == '\0')) format_constraint = C_FRAME_LENGTH;
+                    else if ((strcmp(key, "sample_rate") == 0) && (*value == '\0')) format_constraint = C_SAMPLE_RATE;
+                    else if ((strcmp(key, "nb_channels") == 0) && (*value == '\0')) format_constraint = C_NB_CHANNELS;
+                    else
+                    {
+                        format_constraint = C_NONE;
+                        if (!yn_set_format(fmt, key, value)) goto badnum;
+                    }
+                }
+                else if ((ind >= 8) && (fmt != NULL) && yn_key_value(text, &key, &value))
+                {
+                    char mapped[64];
+                    mapped[0] = '\0';
+                    yn_unquote(value);
+                    if (format_constraint == C_DATA_TYPE)
+                    {
+                        if (strcmp(key,"default") == 0) yn_copy(mapped,(int)sizeof(mapped),"data_type_default");
+                        else if (strcmp(key,"values") == 0) yn_copy(mapped,(int)sizeof(mapped),"data_type_values");
+                    }
+                    else if (format_constraint == C_FRAME_LENGTH)
+                    {
+                        if (strcmp(key,"default") == 0) yn_copy(mapped,(int)sizeof(mapped),"frame_length_default");
+                        else if (strcmp(key,"values") == 0) yn_copy(mapped,(int)sizeof(mapped),"frame_length_values");
+                    }
+                    else if (format_constraint == C_SAMPLE_RATE)
+                    {
+                        if (strcmp(key,"type") == 0) yn_copy(mapped,(int)sizeof(mapped),"sample_rate_type");
+                        else if (strcmp(key,"default") == 0) yn_copy(mapped,(int)sizeof(mapped),"sample_rate_default");
+                        else if (strcmp(key,"values") == 0) yn_copy(mapped,(int)sizeof(mapped),"sample_rate_values");
+                        else if (strcmp(key,"accuracy") == 0) yn_copy(mapped,(int)sizeof(mapped),"sample_rate_accuracy");
+                    }
+                    else if (format_constraint == C_NB_CHANNELS)
+                    {
+                        if (strcmp(key,"default") == 0) yn_copy(mapped,(int)sizeof(mapped),"nb_channels_default");
+                        else if (strcmp(key,"values") == 0) yn_copy(mapped,(int)sizeof(mapped),"nb_channels_values");
+                        else if (strcmp(key,"min") == 0) yn_copy(mapped,(int)sizeof(mapped),"nb_channels_min");
+                        else if (strcmp(key,"max") == 0) yn_copy(mapped,(int)sizeof(mapped),"nb_channels_max");
+                    }
+                    if ((mapped[0] != '\0') && !yn_set_format(fmt, mapped, value)) goto badnum;
+                }
+            }
+        }
+        else if (section == S_PORTS)
         {
             if ((ind == 2) && yn_key_value(text,&key,&value))
             {
@@ -481,6 +605,9 @@ int yn_read_file(const char *filename, YN_NodeManifest *m)
     if (!(m->present & YN_NODE_HAS_NB_INPUT)) m->nb_input=m->input_count;
     if (!(m->present & YN_NODE_HAS_NB_OUTPUT)) m->nb_output=m->output_count;
     return YN_OK;
+
+syntax:
+    fclose(fp); yn_error(m,line_no,"invalid interface syntax"); return YN_ERR_SYNTAX;
 
 badnum:
     fclose(fp); yn_error(m,line_no,"invalid numeric/list value"); return YN_ERR_BAD_NUMBER;

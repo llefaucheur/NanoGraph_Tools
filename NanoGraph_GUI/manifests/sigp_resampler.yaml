@@ -1,4 +1,4 @@
-node: arm_filter
+node: sigp_resampler
 node_designer : arm (ltd)
 version: 1
 description: CMSIS-DSP based filtering node
@@ -11,7 +11,7 @@ interfaces:
     
     domain: general
     format:
-      
+      interleaving: interleaved           
       data_type:
         default: int16              # can be "any" when the node extracts the format during the reset sequence
         values: [int16, float32]
@@ -32,6 +32,7 @@ interfaces:
         values: [1, 2, 4] 
 
   - tx_interface:                     
+#    path: 1
     index: 0                        # index 0 is reserved for the internal "data sink"                        
     name: output0        
     
@@ -97,9 +98,9 @@ activation:
 implementation:
   language: C90           # plain old C 
   complexity: 10e3        # 10kCycles average per call
-  header: arm_filter.h
-  init: arm_filter_init       # name of the entry point for CMSIS-STREAM
-  process: arm_filter_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
+  header: sigp_resampler.h
+  init: sigp_resampler_init       # name of the entry point for CMSIS-STREAM
+  process: sigp_resampler_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
   processor_architecture: armv7m, armv8m # list of processor architectures
   processor_fpu_option: double  # double precision FPU
   malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph

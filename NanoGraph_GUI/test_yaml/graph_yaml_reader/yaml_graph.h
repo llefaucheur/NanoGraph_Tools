@@ -13,6 +13,7 @@
 
 #define YG_MAX_NODES             64
 #define YG_MAX_ARCS             128
+#define YG_MAX_FORMATS           64
 #define YG_MAX_NAME             256
 #define YG_MAX_LOCAL_NAME        64
 #define YG_MAX_SCOPE            256
@@ -29,6 +30,7 @@
 #define YG_MAX_UNIT              32
 #define YG_MAX_TIMESTAMP         32
 #define YG_MAX_INTERLEAVING      32
+#define YG_MAX_FORMAT_ID         64
 #define YG_MAX_LINE             512
 
 #define YG_OK                       0
@@ -38,6 +40,7 @@
 #define YG_ERR_SYNTAX              -4
 #define YG_ERR_LINE_TOO_LONG       -5
 #define YG_ERR_TOO_MANY_PARAMS     -6
+#define YG_ERR_TOO_MANY_FORMATS    -7
 
 typedef enum
 {
@@ -91,6 +94,7 @@ typedef struct
     int preset;
     int minopp;
     char script[YG_MAX_SCRIPT];
+    char format_id[YG_MAX_FORMAT_ID];
 
     /* Manifest-driven named parameters exported under "parameters:". */
     int nb_named_parameters;
@@ -114,15 +118,34 @@ typedef struct
 
 typedef struct
 {
+    int format_id;
+    char data_type[YG_MAX_DATA_TYPE];
+    double sample_rate;
+    int nb_channels;
+    char interleaving[YG_MAX_INTERLEAVING];
+    unsigned long present;
+} YG_Format;
+
+#define YG_FORMAT_HAS_DATA_TYPE      0x0001UL
+#define YG_FORMAT_HAS_SAMPLE_RATE    0x0002UL
+#define YG_FORMAT_HAS_NB_CHANNELS    0x0004UL
+#define YG_FORMAT_HAS_INTERLEAVING   0x0008UL
+
+typedef struct
+{
     YG_Endpoint source;
     YG_Endpoint destination;
 
     char arc_name[YG_MAX_NAME];
     int buffer_size;
     char data_type[YG_MAX_DATA_TYPE];
+    double sample_rate;
+    int nb_channels;
+    char interleaving[YG_MAX_INTERLEAVING];
     char refresh[YG_MAX_REFRESH];
     double jitter_percent;
     char overlay_with[YG_MAX_NAME];
+    char format_id[YG_MAX_FORMAT_ID];
     char script[YG_MAX_SCRIPT];
 
     unsigned long present;
@@ -138,6 +161,9 @@ typedef struct
 
     int nb_arcs;
     YG_Arc arcs[YG_MAX_ARCS];
+
+    int nb_formats;
+    YG_Format formats[YG_MAX_FORMATS];
 
     int error_line;
     char error_text[YG_MAX_TEXT];
@@ -166,6 +192,7 @@ typedef struct
 #define YG_NODE_HAS_MINOPP             0x00010000UL
 #define YG_NODE_HAS_SCRIPT             0x00020000UL
 #define YG_NODE_HAS_NAMED_PARAMETERS   0x00040000UL
+#define YG_NODE_HAS_FORMAT_ID          0x00080000UL
 
 /* Arc presence bits. */
 #define YG_ARC_HAS_NAME                0x0001UL
@@ -175,6 +202,10 @@ typedef struct
 #define YG_ARC_HAS_JITTER              0x0010UL
 #define YG_ARC_HAS_OVERLAY_WITH        0x0020UL
 #define YG_ARC_HAS_SCRIPT              0x0040UL
+#define YG_ARC_HAS_FORMAT_ID           0x0080UL
+#define YG_ARC_HAS_SAMPLE_RATE         0x0100UL
+#define YG_ARC_HAS_NB_CHANNELS         0x0200UL
+#define YG_ARC_HAS_INTERLEAVING        0x0400UL
 
 #ifdef __cplusplus
 extern "C" {
@@ -186,6 +217,14 @@ int yg_split_instance_name(const char *name,
                            char *base_name,
                            int base_name_size,
                            int *instance_index);
+
+
+/* Split the logical platform-IO syntax "io_name[index]".
+ * If no bracket suffix is present, instance_index is -1. */
+int yg_split_io_name(const char *name,
+                     char *base_name,
+                     int base_name_size,
+                     int *instance_index);
 
 int yg_split_mangled_name(const char *name,
                           char *scope,
@@ -204,6 +243,8 @@ const YG_Node *yg_find_full_node_name(const YG_Graph *graph,
                                       const char *name);
 const YG_NamedParameter *yg_find_node_parameter(const YG_Node *node,
                                                  const char *name);
+
+const YG_Format *yg_find_format(const YG_Graph *graph, int format_id);
 
 #ifdef __cplusplus
 }

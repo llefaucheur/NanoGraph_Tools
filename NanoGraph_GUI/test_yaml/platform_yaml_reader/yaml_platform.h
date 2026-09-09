@@ -147,7 +147,9 @@ typedef struct
 {
     int path;
     int index;
+    int c_platform_index;
     char name[YP_MAX_NAME];
+    char direction[YP_MAX_VALUE];
     char domain[YP_MAX_VALUE];
     YP_InterfaceFormat format;
     unsigned long present;
@@ -155,7 +157,9 @@ typedef struct
 
 #define YP_IF_HAS_PATH        0x01UL
 #define YP_IF_HAS_INDEX       0x02UL
-#define YP_IF_HAS_DOMAIN      0x04UL
+#define YP_IF_HAS_C_PLATFORM_INDEX 0x04UL
+#define YP_IF_HAS_DIRECTION        0x08UL
+#define YP_IF_HAS_DOMAIN           0x10UL
 
 typedef struct
 {
@@ -217,6 +221,8 @@ const YP_Memory *yp_find_memory(const YP_PlatformManifest *manifest,
                                 const char *name, int index);
 const YP_InterpreterInstance *yp_find_instance(const YP_PlatformManifest *manifest,
                                                const char *name);
+const YP_Interface *yp_find_interface(const YP_InterpreterInstance *instance,
+                                      const char *name, int index);
 
 #ifdef __cplusplus
 }

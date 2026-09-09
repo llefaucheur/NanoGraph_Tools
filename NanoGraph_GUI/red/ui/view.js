@@ -879,6 +879,7 @@ RED.view = (function() {
                     refresh: "",
                     jitterPercent: "",
                     overlayWith: "",
+                    formatID: "",
                     script: ""
                 };
                 RED.nodes.addLink(link);
@@ -1041,6 +1042,7 @@ RED.view = (function() {
                 refresh:a.refresh || "",
                 jitterPercent:a.jitter_percent || "",
                 overlayWith:"",
+                formatID:"",
                 script:a.script || ""
             });
         }
@@ -1182,6 +1184,7 @@ RED.view = (function() {
         $("#arc-input-refresh").val(link.refresh || "");
         $("#arc-input-jitter-percent").val(link.jitterPercent || "");
         $("#arc-input-overlay-with").val(link.overlayWith || "");
+        $("#arc-formatID").val(link.formatID || "");
         $("#arc-input-script").val(link.script || "");
         $("#arc-dialog").dialog("option","link",link).dialog("open");
     }
@@ -1204,6 +1207,7 @@ RED.view = (function() {
                         refresh: $.trim($("#arc-input-refresh").val()),
                         jitterPercent: $.trim($("#arc-input-jitter-percent").val()),
                         overlayWith: $.trim($("#arc-input-overlay-with").val()),
+                        formatID: $.trim($("#arc-formatID").val()),
                         script: $.trim($("#arc-input-script").val())
                     };
                     if (values.bufferSize !== "" && (!/^\d+$/.test(values.bufferSize) || parseInt(values.bufferSize,10) <= 0)) {

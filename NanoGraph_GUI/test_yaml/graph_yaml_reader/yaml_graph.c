@@ -19,7 +19,8 @@ typedef enum
 {
     YG_SECTION_NONE,
     YG_SECTION_NODES,
-    YG_SECTION_ARCS
+    YG_SECTION_ARCS,
+    YG_SECTION_FORMATS
 } YG_Section;
 
 static const char *yg_skip_space(const char *p)
@@ -196,6 +197,55 @@ int yg_split_instance_name(const char *name, char *base_name, int base_name_size
     return 1;
 }
 
+int yg_split_io_name(const char *name,
+                     char *base_name,
+                     int base_name_size,
+                     int *instance_index)
+{
+    int len;
+    int close_pos;
+    int open_pos;
+    int i;
+    long value;
+    char number[32];
+    int number_len;
+
+    if ((name == NULL) || (base_name == NULL) ||
+        (base_name_size <= 0) || (instance_index == NULL)) return 0;
+
+    len = (int)strlen(name);
+    close_pos = len - 1;
+    if ((close_pos < 2) || (name[close_pos] != ']'))
+    {
+        yg_copy_trimmed(base_name, base_name_size, name);
+        *instance_index = -1;
+        return 0;
+    }
+
+    open_pos = close_pos - 1;
+    while ((open_pos >= 0) && isdigit((unsigned char)name[open_pos])) --open_pos;
+    if ((open_pos < 0) || (name[open_pos] != '[') || (open_pos == close_pos - 1))
+    {
+        yg_copy_trimmed(base_name, base_name_size, name);
+        *instance_index = -1;
+        return 0;
+    }
+
+    number_len = close_pos - open_pos - 1;
+    if (number_len >= (int)sizeof(number)) return 0;
+    for (i = 0; i < number_len; ++i) number[i] = name[open_pos + 1 + i];
+    number[number_len] = '\0';
+    value = strtol(number, NULL, 10);
+    if (value > (long)INT_MAX) return 0;
+
+    i = open_pos;
+    if (i >= base_name_size) i = base_name_size - 1;
+    if (i > 0) memcpy(base_name, name, (size_t)i);
+    base_name[i] = '\0';
+    *instance_index = (int)value;
+    return 1;
+}
+
 int yg_split_mangled_name(const char *name,
                           char *scope, int scope_size,
                           char *local_name, int local_name_size,
@@ -257,19 +307,57 @@ static void yg_init_arc(YG_Arc *arc)
     yg_init_endpoint(&arc->destination);
 }
 
+static void yg_init_format(YG_Format *format)
+{
+    memset(format, 0, sizeof(*format));
+    format->format_id = -1;
+}
+
 static void yg_set_error(YG_Graph *graph, int line_no, const char *text)
 {
     graph->error_line = line_no;
     yg_copy_trimmed(graph->error_text, (int)sizeof(graph->error_text), text);
 }
 
-static void yg_fill_name_parts(const char *name, char *scope, int scope_size,
+static void yg_fill_name_parts(YG_ItemKind kind,
+                               const char *name, char *scope, int scope_size,
                                char *local_name, int local_size,
                                char *base_name, int base_size,
                                int *instance_index, int *depth)
 {
-    yg_split_mangled_name(name, scope, scope_size, local_name, local_size,
-                          base_name, base_size, instance_index, depth);
+    const char *p;
+    const char *last;
+    int n;
+    int d;
+
+    last = NULL;
+    d = 0;
+    p = name;
+    while ((p = strstr(p, "__")) != NULL)
+    {
+        last = p;
+        ++d;
+        p += 2;
+    }
+    if (last != NULL)
+    {
+        n = (int)(last - name);
+        if (n >= scope_size) n = scope_size - 1;
+        if (n > 0) memcpy(scope, name, (size_t)n);
+        scope[n] = '\0';
+        yg_copy_trimmed(local_name, local_size, last + 2);
+    }
+    else
+    {
+        scope[0] = '\0';
+        yg_copy_trimmed(local_name, local_size, name);
+    }
+    *depth = d;
+
+    if (kind == YG_ITEM_IO)
+        yg_split_io_name(local_name, base_name, base_size, instance_index);
+    else
+        yg_split_instance_name(local_name, base_name, base_size, instance_index);
 }
 
 static int yg_start_node(YG_Node *node, const char *line)
@@ -291,7 +379,7 @@ static int yg_start_node(YG_Node *node, const char *line)
         yg_copy_text_value(node->name, (int)sizeof(node->name), p + 5);
     }
     else return 0;
-    yg_fill_name_parts(node->name,
+    yg_fill_name_parts(node->kind, node->name,
                        node->scope, (int)sizeof(node->scope),
                        node->local_name, (int)sizeof(node->local_name),
                        node->base_name, (int)sizeof(node->base_name),
@@ -329,6 +417,7 @@ static int yg_parse_node_property(YG_Node *node, const char *line)
     YG_INT_FIELD("preset",preset,YG_NODE_HAS_PRESET)
     YG_INT_FIELD("minopp",minopp,YG_NODE_HAS_MINOPP)
     if (strcmp(key,"script") == 0) { yg_copy_text_value(node->script,(int)sizeof(node->script),value); node->present|=YG_NODE_HAS_SCRIPT; return 1; }
+    if (strcmp(key,"formatID") == 0) { yg_copy_text_value(node->format_id,(int)sizeof(node->format_id),value); node->present|=YG_NODE_HAS_FORMAT_ID; return 1; }
 #undef YG_INT_FIELD
 #undef YG_DBL_FIELD
     /* "parameters:" itself and future fields are accepted. */
@@ -367,7 +456,7 @@ static int yg_parse_endpoint(const char *line, const char *prefix, YG_Endpoint *
     else return 0;
     ep->port = (int)port;
     yg_copy_text_value(ep->name,(int)sizeof(ep->name),q);
-    yg_fill_name_parts(ep->name,
+    yg_fill_name_parts(ep->kind, ep->name,
                        ep->scope,(int)sizeof(ep->scope),
                        ep->local_name,(int)sizeof(ep->local_name),
                        ep->base_name,(int)sizeof(ep->base_name),
@@ -395,9 +484,13 @@ static int yg_parse_arc_property(YG_Arc *arc, const char *line)
     if (strcmp(key,"arc_name") == 0) { yg_copy_text_value(arc->arc_name,(int)sizeof(arc->arc_name),value); arc->present|=YG_ARC_HAS_NAME; }
     else if (strcmp(key,"buffer_size") == 0) { if(!yg_parse_int(value,&arc->buffer_size)) return 0; arc->present|=YG_ARC_HAS_BUFFER_SIZE; }
     else if (strcmp(key,"data_type") == 0) { yg_copy_text_value(arc->data_type,(int)sizeof(arc->data_type),value); arc->present|=YG_ARC_HAS_DATA_TYPE; }
+    else if (strcmp(key,"sample_rate") == 0) { if(!yg_parse_double(value,&arc->sample_rate)) return 0; arc->present|=YG_ARC_HAS_SAMPLE_RATE; }
+    else if (strcmp(key,"nb_channels") == 0) { if(!yg_parse_int(value,&arc->nb_channels)) return 0; arc->present|=YG_ARC_HAS_NB_CHANNELS; }
+    else if (strcmp(key,"interleaving") == 0) { yg_copy_text_value(arc->interleaving,(int)sizeof(arc->interleaving),value); arc->present|=YG_ARC_HAS_INTERLEAVING; }
     else if (strcmp(key,"refresh") == 0) { yg_copy_text_value(arc->refresh,(int)sizeof(arc->refresh),value); arc->present|=YG_ARC_HAS_REFRESH; }
     else if (strcmp(key,"jitter_percent") == 0) { if(!yg_parse_double(value,&arc->jitter_percent)) return 0; arc->present|=YG_ARC_HAS_JITTER; }
     else if (strcmp(key,"overlay_with") == 0) { yg_copy_text_value(arc->overlay_with,(int)sizeof(arc->overlay_with),value); arc->present|=YG_ARC_HAS_OVERLAY_WITH; }
+    else if (strcmp(key,"formatID") == 0) { yg_copy_text_value(arc->format_id,(int)sizeof(arc->format_id),value); arc->present|=YG_ARC_HAS_FORMAT_ID; }
     else if (strcmp(key,"script") == 0) { yg_copy_text_value(arc->script,(int)sizeof(arc->script),value); arc->present|=YG_ARC_HAS_SCRIPT; }
     return 1;
 }
@@ -409,6 +502,8 @@ int yg_read_file(const char *filename, YG_Graph *graph)
     YG_Section section;
     YG_Node *current_node;
     YG_Arc *current_arc;
+    YG_Format *current_format;
+    char current_format_field[32];
     const char *p;
     const char *value;
     char key[64];
@@ -425,6 +520,8 @@ int yg_read_file(const char *filename, YG_Graph *graph)
     section=YG_SECTION_NONE;
     current_node=NULL;
     current_arc=NULL;
+    current_format=NULL;
+    current_format_field[0]='\0';
     line_no=0;
     in_named_parameters=0;
 
@@ -446,9 +543,11 @@ int yg_read_file(const char *filename, YG_Graph *graph)
             continue;
         }
         if ((ind==0) && (strcmp(p,"nodes:")==0))
-        { section=YG_SECTION_NODES; current_node=NULL; current_arc=NULL; in_named_parameters=0; continue; }
+        { section=YG_SECTION_NODES; current_node=NULL; current_arc=NULL; current_format=NULL; in_named_parameters=0; continue; }
         if ((ind==0) && (strcmp(p,"arcs:")==0))
-        { section=YG_SECTION_ARCS; current_node=NULL; current_arc=NULL; in_named_parameters=0; continue; }
+        { section=YG_SECTION_ARCS; current_node=NULL; current_arc=NULL; current_format=NULL; in_named_parameters=0; continue; }
+        if ((ind==0) && (strcmp(p,"formats:")==0))
+        { section=YG_SECTION_FORMATS; current_node=NULL; current_arc=NULL; current_format=NULL; current_format_field[0]='\0'; in_named_parameters=0; continue; }
 
         if (section==YG_SECTION_NODES)
         {
@@ -494,9 +593,54 @@ int yg_read_file(const char *filename, YG_Graph *graph)
                 if (!yg_parse_arc_property(current_arc,p)) { yg_set_error(graph,line_no,"invalid arc property"); fclose(f); return YG_ERR_SYNTAX; }
             }
         }
+        else if (section==YG_SECTION_FORMATS)
+        {
+            if (*p=='-')
+            {
+                if (strcmp(p,"- format:")!=0) { yg_set_error(graph,line_no,"invalid format declaration"); fclose(f); return YG_ERR_SYNTAX; }
+                if (graph->nb_formats>=YG_MAX_FORMATS) { yg_set_error(graph,line_no,"too many formats"); fclose(f); return YG_ERR_TOO_MANY_FORMATS; }
+                current_format=&graph->formats[graph->nb_formats];
+                yg_init_format(current_format);
+                ++graph->nb_formats;
+                current_format_field[0]='\0';
+            }
+            else
+            {
+                if (current_format==NULL) { yg_set_error(graph,line_no,"format property before format declaration"); fclose(f); return YG_ERR_SYNTAX; }
+                if (!yg_key_value(p,key,(int)sizeof(key),&value)) { yg_set_error(graph,line_no,"invalid format property"); fclose(f); return YG_ERR_SYNTAX; }
+                if (ind==6)
+                {
+                    if (strcmp(key,"formatID")==0)
+                    {
+                        if (!yg_parse_int(value,&current_format->format_id)) { yg_set_error(graph,line_no,"invalid formatID"); fclose(f); return YG_ERR_SYNTAX; }
+                        current_format_field[0]='\0';
+                    }
+                    else if ((strcmp(key,"data_type")==0) || (strcmp(key,"sample_rate")==0) ||
+                             (strcmp(key,"nb_channels")==0) || (strcmp(key,"interleaving")==0))
+                    {
+                        yg_copy_trimmed(current_format_field,(int)sizeof(current_format_field),key);
+                    }
+                    else current_format_field[0]='\0';
+                }
+                else if ((ind>=8) && (strcmp(key,"default")==0))
+                {
+                    if (strcmp(current_format_field,"data_type")==0)
+                    { yg_copy_text_value(current_format->data_type,(int)sizeof(current_format->data_type),value); current_format->present|=YG_FORMAT_HAS_DATA_TYPE; }
+                    else if (strcmp(current_format_field,"sample_rate")==0)
+                    { if(!yg_parse_double(value,&current_format->sample_rate)) { yg_set_error(graph,line_no,"invalid format sample_rate"); fclose(f); return YG_ERR_SYNTAX; } current_format->present|=YG_FORMAT_HAS_SAMPLE_RATE; }
+                    else if (strcmp(current_format_field,"nb_channels")==0)
+                    { if(!yg_parse_int(value,&current_format->nb_channels)) { yg_set_error(graph,line_no,"invalid format nb_channels"); fclose(f); return YG_ERR_SYNTAX; } current_format->present|=YG_FORMAT_HAS_NB_CHANNELS; }
+                    else if (strcmp(current_format_field,"interleaving")==0)
+                    { yg_copy_text_value(current_format->interleaving,(int)sizeof(current_format->interleaving),value); current_format->present|=YG_FORMAT_HAS_INTERLEAVING; }
+                }
+                /* type: and values: are schema metadata. The graph compiler needs
+                 * the selected/default value, so they are deliberately accepted
+                 * without duplicating the allowed-value tables in RAM. */
+            }
+        }
         else
         {
-            yg_set_error(graph,line_no,"content found outside nodes/arcs section"); fclose(f); return YG_ERR_SYNTAX;
+            yg_set_error(graph,line_no,"content found outside nodes/arcs/formats section"); fclose(f); return YG_ERR_SYNTAX;
         }
     }
     fclose(f);
@@ -544,6 +688,19 @@ const YG_NamedParameter *yg_find_node_parameter(const YG_Node *node, const char 
     while (i<node->nb_named_parameters)
     {
         if (strcmp(node->named_parameter[i].name,name)==0) return &node->named_parameter[i];
+        ++i;
+    }
+    return NULL;
+}
+
+const YG_Format *yg_find_format(const YG_Graph *graph, int format_id)
+{
+    int i;
+    if (graph==NULL) return NULL;
+    i=0;
+    while (i<graph->nb_formats)
+    {
+        if (graph->formats[i].format_id==format_id) return &graph->formats[i];
         ++i;
     }
     return NULL;
@@ -610,7 +767,27 @@ int main(int argc, char **argv)
                a->destination.port, yg_test_kind(a->destination.kind), a->destination.name);
         if (a->present & YG_ARC_HAS_NAME) printf("       arc_name=%s\n", a->arc_name);
         if (a->present & YG_ARC_HAS_BUFFER_SIZE) printf("       buffer_size=%d\n", a->buffer_size);
+        if (a->present & YG_ARC_HAS_DATA_TYPE) printf("       data_type=%s\n", a->data_type);
+        if (a->present & YG_ARC_HAS_SAMPLE_RATE) printf("       sample_rate=%g\n", a->sample_rate);
+        if (a->present & YG_ARC_HAS_NB_CHANNELS) printf("       nb_channels=%d\n", a->nb_channels);
+        if (a->present & YG_ARC_HAS_INTERLEAVING) printf("       interleaving=%s\n", a->interleaving);
         if (a->present & YG_ARC_HAS_OVERLAY_WITH) printf("       overlay_with=%s\n", a->overlay_with);
+        if (a->present & YG_ARC_HAS_FORMAT_ID) printf("       formatID=%s\n", a->format_id);
+        ++i;
+    }
+
+    printf("formats: %d\n", g.nb_formats);
+    i = 0;
+    while (i < g.nb_formats)
+    {
+        const YG_Format *fmt;
+        fmt = &g.formats[i];
+        printf("  [%d] formatID=%d", i, fmt->format_id);
+        if (fmt->present & YG_FORMAT_HAS_DATA_TYPE) printf(" data_type=%s", fmt->data_type);
+        if (fmt->present & YG_FORMAT_HAS_SAMPLE_RATE) printf(" sample_rate=%g", fmt->sample_rate);
+        if (fmt->present & YG_FORMAT_HAS_NB_CHANNELS) printf(" nb_channels=%d", fmt->nb_channels);
+        if (fmt->present & YG_FORMAT_HAS_INTERLEAVING) printf(" interleaving=%s", fmt->interleaving);
+        printf("\n");
         ++i;
     }
     return 0;

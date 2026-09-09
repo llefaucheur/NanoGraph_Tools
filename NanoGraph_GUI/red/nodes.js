@@ -42,6 +42,7 @@ RED.nodes = (function() {
         return "";
     }
 
+
     function ensureDefault(def, name, value, required, validate) {
         def.defaults = def.defaults || {};
         if (!def.defaults[name]) {
@@ -58,18 +59,18 @@ RED.nodes = (function() {
     function augmentTypeDefaults(type, def) {
         if (def.category === "input-function" || def.category === "output-function") {
             ensureDefault(def, "domain", inferDomain(type, def), false);
-            ensureDefault(def, "framel", "", true, RED.validators.positiveInteger());
-            ensureDefault(def, "nbchan", "", true, RED.validators.positiveInteger());
-            ensureDefault(def, "samprt", "", false, RED.validators.positiveNumber());
+            ensureDefault(def, "framel", "4", true, RED.validators.positiveInteger());
+            ensureDefault(def, "nbchan", "1", true, RED.validators.positiveInteger());
+            ensureDefault(def, "samprt", "0", false, RED.validators.positiveNumber());
             ensureDefault(def, "period", "", false, RED.validators.positiveNumber());
             ensureDefault(def, "per_hr", "", false, RED.validators.positiveNumber());
             ensureDefault(def, "per_day", "", false, RED.validators.positiveNumber());
             ensureDefault(def, "samprt_percent_accuracy", "", false, RED.validators.nonNegativeNumber());
-            ensureDefault(def, "unit", "", false);
-            ensureDefault(def, "scale", "", false, RED.validators.positiveNumber());
-            ensureDefault(def, "data_type", "float32", false, RED.validators.dataType());
-            ensureDefault(def, "time_stamp", "", false, RED.validators.oneOf(["none","counter","delta","absolute"]));
-            ensureDefault(def, "interleaving", "", false, RED.validators.oneOf(["sample","frame"]));
+            ensureDefault(def, "unit", "vrms", false);
+            ensureDefault(def, "scale", "1", false, RED.validators.positiveNumber());
+            ensureDefault(def, "data_type", "", false, RED.validators.dataType());
+            ensureDefault(def, "time_stamp", "none", false, RED.validators.oneOf(["none","counter","delta","absolute"]));
+            ensureDefault(def, "interleaving", "interleaved", false, RED.validators.oneOf(["interleaved","deinterleaved"]));  /* ["sample","frame"] */
             ensureDefault(def, "params", "", false);
             ensureDefault(def, "paramtxt", "", false);
         } else if (def.category !== "config" && ((def.inputs || 0) > 0 || (def.outputs || 0) > 0)) {
@@ -359,6 +360,7 @@ RED.nodes = (function() {
                     refresh: w.refresh || "",
                     jitterPercent: w.jitterPercent || "",
                     overlayWith: w.overlayWith || "",
+                    formatID: w.formatID || "",
                     script: w.script || ""
                 });
             }
@@ -738,6 +740,7 @@ var node_map = {};
                                     refresh: wire.refresh || "",
                                     jitterPercent: wire.jitterPercent || "",
                                     overlayWith: wire.overlayWith || "",
+                                    formatID: wire.formatID || "",
                                     script: wire.script || ""
                                 };
                                 addLink(link);

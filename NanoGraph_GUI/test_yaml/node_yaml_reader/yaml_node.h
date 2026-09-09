@@ -48,6 +48,7 @@ typedef struct
     char name[YN_MAX_NAME];
     int index;
     char format[YN_MAX_NAME];
+    char domain[YN_MAX_VALUE];
     int buffer_overlay;
     unsigned long present;
 } YN_Port;
@@ -55,6 +56,7 @@ typedef struct
 #define YN_PORT_HAS_INDEX          0x0001UL
 #define YN_PORT_HAS_FORMAT         0x0002UL
 #define YN_PORT_HAS_OVERLAY        0x0004UL
+#define YN_PORT_HAS_DOMAIN         0x0008UL
 
 typedef struct
 {

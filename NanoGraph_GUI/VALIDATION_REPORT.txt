@@ -1,0 +1,73 @@
+NanoGraph validation - 2026-09-09
+
+Format negotiation update
+-------------------------
+Negotiated arc fields are now:
+  data_type
+  sample_rate
+  nb_channels
+  interleaving
+
+A missing endpoint constraint is a wildcard for all four fields.
+A genuine incompatibility in any one of these four fields triggers automatic
+insertion of arm_converter during export.
+
+The generated converter parameters use the producer-side concrete format as
+input parameters and the consumer-side concrete format as output parameters:
+  i_data_type / o_data_type
+  i_sample_rate / o_sample_rate
+  i_nb_channels / o_nb_channels
+  i_interleaving / o_interleaving
+
+If a field is compatible, the same negotiated value is used on both converter
+sides. This avoids unnecessary conversion of a field when another field alone
+caused converter insertion.
+
+The exported arcs now also retain resolved nb_channels and interleaving, in
+addition to data_type and sample_rate.
+
+Tests performed
+---------------
+- tools/build_manifests.py: PASS
+- JavaScript syntax checks: PASS
+- tools/test_format_resolver.js: PASS
+- interleaved -> deinterleaved mismatch detected: PASS
+- nb_channels [1,2] -> 4 mismatch detected: PASS
+- wildcard interleaving: PASS
+- wildcard nb_channels: PASS
+- graph YAML C reader strict C90 build: PASS
+- node YAML C reader strict C90 build: PASS
+- platform YAML C reader strict C90 build: PASS
+- every node manifest parsed by node reader: PASS
+- every platform manifest parsed by platform reader: PASS
+- graph reader retains nb_channels and interleaving on arcs: PASS
+
+2026-09-09 COMMON FORMAT TABLE UPDATE
+-------------------------------------
+Graph export now emits four top-level sections in this order:
+  platform:, nodes:, arcs:, formats:
+
+The four negotiated stream attributes (data_type, sample_rate, nb_channels,
+interleaving) are deduplicated into a common format table. Each format has a
+numeric formatID. Every exported arc contains formatID and no longer duplicates
+those four concrete fields in the arc body.
+
+Format descriptors keep the manifest-style metadata. The selected concrete
+value is represented by default:. The graph C reader stores the selected values
+in YG_Format and accepts type:/values: as schema metadata without duplicating
+the allowed-value tables in RAM.
+
+2026-09-09 IO graph override fix
+--------------------------------
+Graph-level IO selections are now merged with the platform interface capability
+instead of being ignored. Non-empty IO data_type, samprt, nbchan and
+interleaving values become exact endpoint constraints, provided the platform
+manifest allows them.
+
+Regression checks:
+- io_data_out[0] graph interleaving=deinterleaved versus producer interleaved
+  triggers converter insertion: PASS
+- graph IO override outside platform capability is rejected with a precise
+  platform error: PASS
+- current Computer.yaml allows io_data_out[0] nb_channels [1,2,4], therefore
+  graph nbchan=6 is invalid until the platform manifest is expanded: EXPECTED

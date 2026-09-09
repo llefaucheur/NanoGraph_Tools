@@ -260,7 +260,11 @@ static int yp_set_interface(YP_Interface *p, const char *key, char *value)
     { if(!yp_int(value,&p->path)) return 0; p->present |= YP_IF_HAS_PATH; }
     else if (strcmp(key,"index") == 0)
     { if(!yp_int(value,&p->index)) return 0; p->present |= YP_IF_HAS_INDEX; }
+    else if (strcmp(key,"c_platform_index") == 0)
+    { if(!yp_int(value,&p->c_platform_index)) return 0; p->present |= YP_IF_HAS_C_PLATFORM_INDEX; }
     else if (strcmp(key,"name") == 0) yp_copy(p->name,YP_MAX_NAME,value);
+    else if (strcmp(key,"direction") == 0)
+    { yp_copy(p->direction,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_DIRECTION; }
     else if (strcmp(key,"domain") == 0)
     { yp_copy(p->domain,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_DOMAIN; }
     return 1;
@@ -534,6 +538,18 @@ const YP_InterpreterInstance *yp_find_instance(const YP_PlatformManifest *m,
     return NULL;
 }
 
+const YP_Interface *yp_find_interface(const YP_InterpreterInstance *instance,
+                                      const char *name, int index)
+{
+    int i;
+    if ((instance == NULL) || (name == NULL)) return NULL;
+    for (i=0;i<instance->interface_count;++i)
+        if ((strcmp(instance->interface[i].name,name)==0) &&
+            (instance->interface[i].index==index))
+            return &instance->interface[i];
+    return NULL;
+}
+
 #ifdef YAML_PLATFORM_TEST
 int main(int argc, char **argv)
 {
@@ -596,6 +612,19 @@ int main(int argc, char **argv)
         printf("  [%d] %s archID=%s procID=%d interfaces=%d\n", i,
                m.instance[i].name, m.instance[i].archID,
                m.instance[i].procID, m.instance[i].interface_count);
+        j = 0;
+        while (j < m.instance[i].interface_count)
+        {
+            const YP_Interface *itf;
+            itf = &m.instance[i].interface[j];
+            printf("       interface[%d] %s[%d] c_platform_index=%d direction=%s domain=%s",
+                   j, itf->name, itf->index, itf->c_platform_index,
+                   itf->direction, itf->domain);
+            if (itf->format.sample_rate.present & YP_NUM_HAS_DEFAULT)
+                printf(" sample_rate_default=%g", itf->format.sample_rate.default_value);
+            printf("\n");
+            ++j;
+        }
         ++i;
     }
     return 0;

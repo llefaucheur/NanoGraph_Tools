@@ -3,47 +3,63 @@ node_designer : arm (ltd)
 version: 1
 description: CMSIS-DSP based filtering node
 
-ports:
-  nb_input: 1
-  nb_output: 1
-  inputs:
-    - name: input
-      index: 0
-      buffer_overlay: 0         # index of the output arc for "processing in-place"
-      format: inputfmt
 
-  outputs:
-    - name: output
-      index: 0
-      format: outputfmt
+interfaces:
+  - rx_interface:               
+    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    name: input0        
+    
+    domain: general
+    format:
+      
+      data_type:
+        default: int16              # can be "any" when the node extracts the format during the reset sequence
+        values: [int16, float32]
 
-formats:
-  - format: inputfmt
-    interleaving: interleaved
-    data_type_default: int16    # can be "any" when the node extracts the format during the reset sequence
-    data_type_values: [int16, float32]
-    frame_length_default: 4      # default consumed 
-    frame_length_values: [1,2,3,4,8,16,32]
-    sample_rate_type: float
-    sample_rate_default: 16000
-    sample_rate_values: [8000,16000,44100.5]
-    sample_rate_accuracy: 5.5        # only 5.5% accuracy needed
-    nb_channels_default: 1
-    nb_channels_values: [1,2,4]
-    unit: VRMS                  # RFC8428 list of units
-    unit_scale: 0.5             # full-scale is equivalent to 0.15 VRMS
+      frame_length:
+        type: int
+        default: 4
+        values: [1, 2, 3, 4, 8, 16, 32]
 
-  - format: outputfmt
-    data_type_default: int16    # can be "any" when the node extracts the format during the reset sequence
-    data_type_values: [int16, float32]
-    frame_length_default: 4      # default consumed 
-    frame_length_values: [1,2,3,4,8,16,32]
-    sample_rate_type: float
-    sample_rate_default: 16000
-    sample_rate_values: [8000,16000,44100.5]
-    sample_rate_accuracy: 5.5        # only 5.5% accuracy needed
-    nb_channels_default: 1
-    nb_channels_values: [1,2,4]
+      sample_rate:
+        type: float
+        default: 16000
+        values: [8000, 16000, 44100]
+
+      nb_channels:
+        type: int
+        default: 1
+        values: [1, 2, 4] 
+
+  - tx_interface:                     
+    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    name: output0        
+    
+    domain: general
+    format:
+      interleaving: interleaved      
+      unit: VRMS                    # RFC8428 list of units
+      unit_scale: 0.5               # full-scale is equivalent to 0.15 VRMS
+      
+      data_type:
+        default: int16              # can be "any" when the node extracts the format during the reset sequence
+        values: [int16, float32]
+
+      frame_length:
+        type: int
+        default: 4
+        values: [1, 2, 3, 4, 8, 16, 32]
+
+      sample_rate:
+        type: float
+        default: 16000
+        values: [8000, 16000, 44100]
+
+      nb_channels:
+        type: int
+        default: 1
+        values: [1, 2, 4] 
+      
 
 parameters:
   - name: mode
@@ -71,6 +87,11 @@ parameters:
     default: 20
     unit: dB
     help: Gain used by peak and shelf filters.
+
+activation:
+  key: 8234758358235    
+
+
 
 # assembly code is made for a specific familty of processors
 implementation:
@@ -108,7 +129,7 @@ implementation:
       mem_alloc_d: 12     # "D"
       mem_alloc_d_arc: 0  # "k" in the formula
 
-  input2:
+  memoryBank2:
     - index: 1
       mem_alloc: 78       # (coef + state)50 + (pointers + index)24
       mem_type: working   # static / working / periodic_backup / pseudo_working 

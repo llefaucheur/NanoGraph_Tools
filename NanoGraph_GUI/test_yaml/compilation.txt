@@ -6,3 +6,10 @@ gcc -std=c90 -pedantic -Wall -Wextra -Werror \
 
 gcc -std=c90 -pedantic -Wall -Wextra -Werror \
     -DYAML_PLATFORM_TEST platform_yaml_reader/yaml_platform.c -o platform_test
+    
+    
+REM TESTS
+
+./graph_test      graph.txt
+./node_test       node.txt
+./platform_test   platform.txt
