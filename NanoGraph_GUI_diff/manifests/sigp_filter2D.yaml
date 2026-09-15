@@ -1,0 +1,138 @@
+node: sigp_filter2D
+node_designer : signal-processing.fr
+version: 1
+description: 2D filters, interpolators, decimators
+
+interfaces:
+  - rx_interface:               
+    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    name: input0        
+    
+    domain: general
+    format:
+      
+      data_type:
+        default: int16              # can be "any" when the node extracts the format during the reset sequence
+        values: [int16, float32]
+
+      frame_length:
+        type: int
+        default: 4
+        values: [1, 2, 3, 4, 8, 16, 32]
+
+      sample_rate:
+        type: float
+        default: 16000
+        values: [8000, 16000, 44100]
+
+      nb_channels:
+        type: int
+        default: 1
+        values: [1, 2, 4] 
+
+  - tx_interface:                     
+#    path: 1
+    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    name: output0        
+    
+    domain: general
+    format:
+      interleaving: interleaved      
+      unit: VRMS                    # RFC8428 list of units
+      unit_scale: 0.5               # full-scale is equivalent to 0.15 VRMS
+      
+      data_type:
+        default: int16              # can be "any" when the node extracts the format during the reset sequence
+        values: [int16, float32]
+
+      frame_length:
+        type: int
+        default: 4
+        values: [1, 2, 3, 4, 8, 16, 32]
+
+      sample_rate:
+        type: float
+        default: 16000
+        values: [8000, 16000, 44100]
+
+      nb_channels:
+        type: int
+        default: 1
+        values: [1, 2, 4] 
+      
+
+parameters:
+  - name: mode
+    type: enum
+    default: lowpass
+    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
+    help: Filter type / operating mode
+
+  - name: cutoff
+    type: float
+    default: 0.0625
+    min: 0.0
+    max: 0.5
+    unit: normalized
+    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
+
+  - name: q
+    type: float
+    default: 1.414
+    min: 0.01
+    help: Quality factor of the filter.
+
+  - name: gain_db
+    type: float
+    default: 20
+    unit: dB
+    help: Gain used by peak and shelf filters.
+
+activation:
+  key: 8234758358235    
+
+
+
+# assembly code is made for a specific familty of processors
+implementation:
+  language: C90           # plain old C 
+  complexity: 10e3        # 10kCycles average per call
+  header: arm_filter.h
+  init: arm_filter_init       # name of the entry point for CMSIS-STREAM
+  process: arm_filter_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
+  processor_architecture: armv7m, armv8m # list of processor architectures
+  processor_fpu_option: double  # double precision FPU
+  malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph
+  reentrant: yes          # code is reentrant
+  compatibility: 101       # the node is tested with framework V.101 and before
+  nb_memory_banks: 2      # number of memory banks
+
+  # memsize = 
+  # A + 							   (fixed memory allocation in Bytes)
+  # B x frame_size(mono) of arc(i) or max(input/output arcs) or their sum +
+  # C x frame_size(mono) x nb_channel of arc(j) + 
+  # D x nb_channels of arc(k) 
+  #    + parameter from the graph optional field "node_malloc_add"
+  memoryBank1:
+    - index: 0
+      relocatable: 1      # command 'STREAM_UPDATE_RELOCATABLE' is used with address changes
+      memory_clear: 1     # the scheduler clears the memory at reset time
+      data0prog1: 0       # data / program access
+      mem_alloc: 24       # 24 bytes for the instance (2xint32 + 2xptr64)
+      mem_type: static    # 
+      mem_alloc_a: 12     # "A" in the above formula
+      mem_alloc_b: 12     # "B"
+      mem_alloc_b_type: 0 # take the max/min/sum of all input/output arcs/frame sizes
+      mem_alloc_b_arc: 0  # index of arc(i) in the above equation
+      mem_alloc_c: 12     # "C"
+      mem_alloc_c_arc: 0  # "j" in the formula
+      mem_alloc_d: 12     # "D"
+      mem_alloc_d_arc: 0  # "k" in the formula
+
+  memoryBank2:
+    - index: 1
+      mem_alloc: 78       # (coef + state)50 + (pointers + index)24
+      mem_type: working   # static / working / periodic_backup / pseudo_working 
+      mem_speed: critical # critical / fast / best-effort / coprocessor memory
+      format: format1
+  library: 16             # dependency to DSP services

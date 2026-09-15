@@ -1,0 +1,60 @@
+# AUTOMATICALLY GENERATED ! Fri Sep 11 2026
+# Subgraphs are flattened; internal names use '__' mangling.
+
+platform: Computer
+
+nodes:
+  - IO:   io_data_in[0]
+    domain: general
+    nbchan: 1
+    unit: vrms
+    scale: 1
+    time_stamp: none
+    interleaving: deinterleaved
+  - IO:   io_data_out[0]
+    framel: 15
+    domain: general
+    nbchan: 1
+    samprt: 16000
+    unit: vrms
+    scale: 1
+    time_stamp: none
+    interleaving: interleaved
+  - node: sigp_amplifier_0
+    preset: 2
+    paramFile: config.txt
+    paramtxt: "malloc_add 12 0"  "malloc_add 12 1"
+    minopp: 4
+    script: 1
+    parameters:
+      mode: "lowpass"
+      cutoff: 0.0625
+      q: 1.414
+      gain_db: 20
+
+arcs:
+  - OPort_0 IO: io_data_in[0]
+    IPort_0 node: sigp_amplifier_0
+    buffer_size: 4
+    formatID: 0
+  - OPort_0 node: sigp_amplifier_0
+    IPort_0 IO: io_data_out[0]
+    buffer_size: 15
+    formatID: 0
+
+formats:
+  - format:
+      formatID: 0
+      interleaving:
+        type: enum
+        default: interleaved
+        values: [interleaved, deinterleaved]
+      data_type:
+        default: int16
+        values: [int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, utf8, utf16]
+      sample_rate:
+        type: float
+        default: 16000
+      nb_channels:
+        type: int
+        default: 1

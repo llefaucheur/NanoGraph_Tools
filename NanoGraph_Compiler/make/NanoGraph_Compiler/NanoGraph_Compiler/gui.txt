@@ -1,0 +1,30 @@
+# AUTOMATICALLY GENERATED ! Mon Sep 07 2026
+# Subgraphs are flattened; internal names use '__' mangling.
+
+platform: Computer
+
+nodes:
+  - IO:   io_2d_in_0
+    domain: 2d_in
+    samprt_percent_accuracy: 0
+    unit: vrms
+    scale: 1
+    data_type: float32
+    time_stamp: none
+    interleaving: interleaved
+  - node: arm_router_0
+    parameters:
+      mode: "src"
+      gain_db: 20
+  - node: arm_filter_0
+    parameters:
+      mode: "lowpass"
+      cutoff: 0.0625
+      q: 1.414
+      gain_db: 20
+
+arcs:
+  - OPort_0 IO: io_2d_in_0
+    IPort_3 node: arm_router_0
+  - OPort_0 node: arm_filter_0
+    IPort_2 node: arm_router_0

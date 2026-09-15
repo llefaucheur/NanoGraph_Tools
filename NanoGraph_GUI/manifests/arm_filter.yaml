@@ -62,31 +62,47 @@ interfaces:
       
 
 parameters:
-  - name: mode
+  - name: mode_1
     type: enum
-    default: lowpass
-    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
-    help: Filter type / operating mode
-
-  - name: cutoff
+    default: none 
+    values: [none, lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
+  - name: cutoff_1
     type: float
-    default: 0.0625
-    min: 0.0
-    max: 0.5
-    unit: normalized
-    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
-
-  - name: q
+    unit: "0 .. 0.5"
+  - name: Q_1
     type: float
-    default: 1.414
-    min: 0.01
-    help: Quality factor of the filter.
-
-  - name: gain_db
+    unit: "0 .. 5"
+  - name: gain_dB_1
     type: float
-    default: 20
     unit: dB
-    help: Gain used by peak and shelf filters.
+
+  - name: mode_2
+    type: enum
+    default: none 
+    values: [none, lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
+  - name: cutoff_2
+    type: float
+    unit: "0 .. 0.5"
+  - name: Q_2
+    type: float
+    unit: "0 .. 5"
+  - name: gain_dB_2
+    type: float
+    unit: dB
+
+  - name: mode_3
+    type: enum
+    default: none 
+    values: [none, lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
+  - name: cutoff_3
+    type: float
+    unit: "0 .. 0.5"
+  - name: Q_3
+    type: float
+    unit: "0 .. 5"
+  - name: gain_dB_3
+    type: float
+    unit: dB
 
 activation:
   key: 8234758358235    

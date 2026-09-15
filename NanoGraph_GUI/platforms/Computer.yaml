@@ -78,6 +78,10 @@ processors:
         path: 0
         index: 15
         name: sigp_router    
+      - node: 
+        path: 0
+        index: 16
+        name: sigp_analysis            
         
 
   - processor:
@@ -170,8 +174,15 @@ interpreter_instances:
         index: 0
         c_platform_index: 0
         name: io_data_sink
-        direction: tx
-        domain: general
+      - interface:                      # io_data_sink[1]
+        index: 1
+        c_platform_index: 0
+        name: io_data_sink
+      - interface:                      # io_data_sink[2]
+        index: 2
+        c_platform_index: 0
+        name: io_data_sink
+      
 
             
       - interface:                      # io_data_in[0]
@@ -225,14 +236,14 @@ interpreter_instances:
       - interface:                      # io_data_out[0]
         path: 1
         index: 0
-        c_platform_index: 3
+        c_platform_index: 21
         name: io_data_out
         direction: tx
         domain: general
         format:
           data_type:
             default: int16             
-            values: [int16]
+            values: [int16, float32]
           frame_length:
             type: int
             default: 4

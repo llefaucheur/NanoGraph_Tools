@@ -1,4 +1,4 @@
-# AUTOMATICALLY GENERATED ! Wed Sep 09 2026
+# AUTOMATICALLY GENERATED ! Sun Sep 13 2026
 # Subgraphs are flattened; internal names use '__' mangling.
 
 platform: Computer
@@ -10,28 +10,90 @@ nodes:
     unit: vrms
     scale: 1
     time_stamp: none
-    interleaving: interleaved
+    interleaving: deinterleaved
   - IO:   io_data_out[0]
+    framel: 15
     domain: general
     nbchan: 1
+    samprt: 16000
     unit: vrms
     scale: 1
     time_stamp: none
     interleaving: interleaved
   - node: sigp_amplifier_0
+    preset: 2
+    paramFile: config.txt
+    paramtxt: "malloc_add 12 0"  "malloc_add 12 1"
+    minopp: 4
+    script: 1
     parameters:
       mode: "lowpass"
       cutoff: 0.0625
       q: 1.414
       gain_db: 20
+  - node: arm_script_0
+    parameters:
+      mode: "none"
+  - IO:   io_data_sink[0]
+    domain: general
+    unit: vrms
+    scale: 1
+    time_stamp: none
+    interleaving: interleaved
+  - node: arm_filter_0
+    paramtxt: "priority 2 malloc_add 12 swap 1 0 processor 0"
+    parameters:
+      mode_1: "lowpass"
+      cutoff_1: 0.1
+      Q_1: 1
+      gain_dB_1: 1
+      mode_2: "highpass"
+      cutoff_2: 0.1
+      Q_2: 2
+      gain_dB_2: 2
+      mode_3: "bandpass"
+      cutoff_3: 0.3
+      Q_3: 3
+      gain_dB_3: 3
+  - IO:   io_data_sink[1]
+    domain: general
+    unit: vrms
+    scale: 1
+    time_stamp: none
+    interleaving: interleaved
+  - node: sigp_detector_0
+    parameters:
+      mode: "lowpass"
+      cutoff: 0.0625
+      q: 1.414
+      gain_db: 20
+  - IO:   io_data_sink[2]
+    domain: general
+    unit: vrms
+    scale: 1
+    time_stamp: none
+    interleaving: interleaved
 
 arcs:
   - OPort_0 IO: io_data_in[0]
     IPort_0 node: sigp_amplifier_0
+    buffer_size: 4
     formatID: 0
   - OPort_0 node: sigp_amplifier_0
     IPort_0 IO: io_data_out[0]
+    buffer_size: 15
+    formatID: 0
+  - OPort_0 node: arm_script_0
+    IPort_0 IO: io_data_sink[0]
     formatID: 1
+  - OPort_0 node: arm_filter_0
+    IPort_0 IO: io_data_sink[1]
+    buffer_size: 4
+    formatID: 0
+  - OPort_0 node: sigp_detector_0
+    IPort_0 IO: io_data_sink[2]
+    buffer_size: 4
+    formatID: 0
 
 formats:
   - format:
@@ -56,11 +118,9 @@ formats:
         default: interleaved
         values: [interleaved, deinterleaved]
       data_type:
-        default: float32
+        default: int16
         values: [int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, utf8, utf16]
       sample_rate:
         type: float
-        default: 44100
       nb_channels:
         type: int
-        default: 1

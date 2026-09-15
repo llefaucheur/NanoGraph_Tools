@@ -321,10 +321,11 @@ window.NG_NODE_MANIFESTS = {
     ],
     "parameters": [
       {
-        "name": "mode",
+        "name": "mode_1",
         "type": "enum",
-        "default": "lowpass",
+        "default": "none",
         "values": [
+          "none",
           "lowpass",
           "highpass",
           "notch",
@@ -333,31 +334,84 @@ window.NG_NODE_MANIFESTS = {
           "peak",
           "lowshelf",
           "highshelf"
-        ],
-        "help": "Filter type / operating mode"
+        ]
       },
       {
-        "name": "cutoff",
+        "name": "cutoff_1",
         "type": "float",
-        "default": 0.0625,
-        "min": 0.0,
-        "max": 0.5,
-        "unit": "normalized",
-        "help": "Normalized cutoff frequency. Nyquist frequency is 0.5."
+        "unit": "0 .. 0.5"
       },
       {
-        "name": "q",
+        "name": "Q_1",
         "type": "float",
-        "default": 1.414,
-        "min": 0.01,
-        "help": "Quality factor of the filter."
+        "unit": "0 .. 5"
       },
       {
-        "name": "gain_db",
+        "name": "gain_dB_1",
         "type": "float",
-        "default": 20,
-        "unit": "dB",
-        "help": "Gain used by peak and shelf filters."
+        "unit": "dB"
+      },
+      {
+        "name": "mode_2",
+        "type": "enum",
+        "default": "none",
+        "values": [
+          "none",
+          "lowpass",
+          "highpass",
+          "notch",
+          "bandpass",
+          "allpass",
+          "peak",
+          "lowshelf",
+          "highshelf"
+        ]
+      },
+      {
+        "name": "cutoff_2",
+        "type": "float",
+        "unit": "0 .. 0.5"
+      },
+      {
+        "name": "Q_2",
+        "type": "float",
+        "unit": "0 .. 5"
+      },
+      {
+        "name": "gain_dB_2",
+        "type": "float",
+        "unit": "dB"
+      },
+      {
+        "name": "mode_3",
+        "type": "enum",
+        "default": "none",
+        "values": [
+          "none",
+          "lowpass",
+          "highpass",
+          "notch",
+          "bandpass",
+          "allpass",
+          "peak",
+          "lowshelf",
+          "highshelf"
+        ]
+      },
+      {
+        "name": "cutoff_3",
+        "type": "float",
+        "unit": "0 .. 0.5"
+      },
+      {
+        "name": "Q_3",
+        "type": "float",
+        "unit": "0 .. 5"
+      },
+      {
+        "name": "gain_dB_3",
+        "type": "float",
+        "unit": "dB"
       }
     ],
     "activation": {
@@ -499,86 +553,36 @@ window.NG_NODE_MANIFESTS = {
       {
         "name": "mode",
         "type": "enum",
-        "default": "lowpass",
+        "default": "none",
         "values": [
-          "lowpass",
-          "highpass",
-          "notch",
-          "bandpass",
-          "allpass",
-          "peak",
-          "lowshelf",
-          "highshelf"
+          "disabled",
+          "check_input",
+          "call_before_each_node",
+          "call_after_each_node",
+          "call_at_start_of_scheduling_loop",
+          "call_at_end_of_scheduling_loop",
+          "called_after_reset",
+          "called_on_stop"
         ],
-        "help": "Filter type / operating mode"
-      },
-      {
-        "name": "cutoff",
-        "type": "float",
-        "default": 0.0625,
-        "min": 0.0,
-        "max": 0.5,
-        "unit": "normalized",
-        "help": "Normalized cutoff frequency. Nyquist frequency is 0.5."
-      },
-      {
-        "name": "q",
-        "type": "float",
-        "default": 1.414,
-        "min": 0.01,
-        "help": "Quality factor of the filter."
-      },
-      {
-        "name": "gain_db",
-        "type": "float",
-        "default": 20,
-        "unit": "dB",
-        "help": "Gain used by peak and shelf filters."
+        "help": "options of \"main\" script, called during graph scheduling"
       }
     ],
-    "activation": {
-      "key": 8234758358235
-    },
     "implementation": {
-      "language": "C90",
-      "complexity": "10e3",
-      "header": "sigp_detector.h",
-      "init": "sigp_detector_init",
-      "process": "sigp_detector_process",
-      "processor_architecture": "armv7m, armv8m",
-      "processor_fpu_option": "double",
+      "header": "arm_script.h",
+      "init": "arm_script_init",
+      "process": "arm_script_process",
       "malloc": "precomputed",
-      "reentrant": true,
+      "reentrant": false,
       "compatibility": 101,
-      "nb_memory_banks": 2,
-      "memoryBank1": [
-        {
-          "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
-        }
-      ],
+      "nb_memory_banks": 1,
       "memoryBank2": [
         {
-          "index": 1,
+          "index": 0,
           "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
-          "format": "format1"
+          "mem_type": "static",
+          "mem_speed": "normal"
         }
-      ],
-      "library": 16
+      ]
     },
     "component_kind": "node"
   },
@@ -972,6 +976,7 @@ window.NG_NODE_MANIFESTS = {
         "name": "input0",
         "domain": "general",
         "format": {
+          "interleaving": "interleaved",
           "data_type": "int16",
           "frame_length": {
             "type": "int"
@@ -989,7 +994,9 @@ window.NG_NODE_MANIFESTS = {
             "type": "int",
             "default": 1,
             "values": [
-              1
+              1,
+              2,
+              4
             ]
           }
         }
@@ -1000,68 +1007,43 @@ window.NG_NODE_MANIFESTS = {
         "name": "output0",
         "domain": "general",
         "format": {
-          "data_type": "int16",
-          "frame_length": {
-            "type": "int"
-          },
-          "sample_rate": {
-            "type": "float",
-            "default": 16000,
-            "values": [
-              8000,
-              16000,
-              44100
-            ]
-          },
-          "nb_channels": {
-            "type": "int",
-            "default": 1,
-            "values": [
-              1
-            ]
+          "same_as": {
+            "interface": "rx_interface",
+            "index": 0
           }
         }
       }
     ],
     "parameters": [
       {
-        "name": "mode",
-        "type": "enum",
-        "default": "lowpass",
-        "values": [
-          "lowpass",
-          "highpass",
-          "notch",
-          "bandpass",
-          "allpass",
-          "peak",
-          "lowshelf",
-          "highshelf"
-        ],
-        "help": "Filter type / operating mode"
+        "name": "X",
+        "type": "utf8",
+        "X": null
       },
       {
-        "name": "cutoff",
-        "type": "float",
-        "default": 0.0625,
-        "min": 0.0,
-        "max": 0.5,
-        "unit": "normalized",
-        "help": "Normalized cutoff frequency. Nyquist frequency is 0.5."
+        "name": "Y",
+        "type": "utf8",
+        "Y": null
       },
       {
-        "name": "q",
-        "type": "float",
-        "default": 1.414,
-        "min": 0.01,
-        "help": "Quality factor of the filter."
+        "name": "muted_bool",
+        "type": "int",
+        "default": 0
       },
       {
-        "name": "gain_db",
+        "name": "delay_before_muted",
         "type": "float",
-        "default": 20,
-        "unit": "dB",
-        "help": "Gain used by peak and shelf filters."
+        "default": 0.02
+      },
+      {
+        "name": "delay_before_unmuted",
+        "type": "float",
+        "default": 0.02
+      },
+      {
+        "name": "ramp_delay",
+        "type": "float",
+        "default": 0.15
       }
     ],
     "activation": {
@@ -1104,6 +1086,126 @@ window.NG_NODE_MANIFESTS = {
           "mem_type": "working",
           "mem_speed": "critical",
           "format": "format1"
+        }
+      ],
+      "library": 16
+    },
+    "component_kind": "node"
+  },
+  "sigp_analysis": {
+    "node": "sigp_analysis",
+    "node_designer": "arm (ltd)",
+    "version": 1,
+    "description": "Extraction of features",
+    "interfaces": [
+      {
+        "rx_interface": null,
+        "index": 0,
+        "name": "input0",
+        "domain": "general",
+        "format": {
+          "data_type": {
+            "default": "int16",
+            "values": [
+              "int16",
+              "float32"
+            ]
+          },
+          "frame_length": {
+            "type": "int",
+            "default": null,
+            "values": null
+          },
+          "sample_rate": {
+            "type": "float",
+            "default": null,
+            "values": null
+          },
+          "nb_channels": {
+            "type": "int",
+            "default": 1,
+            "values": [
+              1
+            ]
+          }
+        }
+      },
+      {
+        "tx_interface": null,
+        "index": 0,
+        "name": "output0",
+        "domain": "general",
+        "format": {
+          "data_type": {
+            "default": "int16",
+            "values": [
+              "int16",
+              "float32"
+            ]
+          },
+          "frame_length": {
+            "type": "int",
+            "default": null,
+            "values": null
+          },
+          "sample_rate": {
+            "type": "float",
+            "default": null,
+            "values": null
+          },
+          "nb_channels": {
+            "type": "int",
+            "default": 1,
+            "values": [
+              1
+            ]
+          }
+        }
+      }
+    ],
+    "parameters": [
+      {
+        "name": "mode_analysis",
+        "type": "enum",
+        "default": "none",
+        "values": [
+          "none",
+          "results_on_output_port"
+        ],
+        "help": "Extraction of Metadata"
+      }
+    ],
+    "activation": {
+      "key": 8234758358235
+    },
+    "implementation": {
+      "language": "C90",
+      "complexity": "10e3",
+      "header": "sigp_analysis.h",
+      "init": "sigp_analysis_init",
+      "process": "sigp_analysis_process",
+      "processor_architecture": "armv7m, armv8m",
+      "processor_fpu_option": "double",
+      "malloc": "precomputed",
+      "reentrant": true,
+      "compatibility": 101,
+      "nb_memory_banks": 1,
+      "memoryBank1": [
+        {
+          "index": 0,
+          "relocatable": 1,
+          "memory_clear": 1,
+          "data0prog1": 0,
+          "mem_alloc": 24,
+          "mem_type": "static",
+          "mem_alloc_a": 12,
+          "mem_alloc_b": 12,
+          "mem_alloc_b_type": 0,
+          "mem_alloc_b_arc": 0,
+          "mem_alloc_c": 12,
+          "mem_alloc_c_arc": 0,
+          "mem_alloc_d": 12,
+          "mem_alloc_d_arc": 0
         }
       ],
       "library": 16
@@ -1301,9 +1403,9 @@ window.NG_NODE_MANIFESTS = {
   },
   "sigp_decompressor": {
     "node": "sigp_decompressor",
-    "node_designer": "arm (ltd)",
+    "node_designer": "sigproc",
     "version": 1,
-    "description": "CMSIS-DSP based filtering node",
+    "description": "stream decompressor",
     "interfaces": [
       {
         "rx_interface": null,
@@ -1312,32 +1414,27 @@ window.NG_NODE_MANIFESTS = {
         "domain": "general",
         "format": {
           "data_type": {
-            "default": "int16",
+            "default": "uint8",
             "values": [
-              "int16",
-              "float32"
+              "uint8"
             ]
           },
           "frame_length": {
             "type": "int",
-            "default": 4,
+            "default": 1024,
             "values": [
-              1,
-              2,
-              3,
-              4,
-              8,
-              16,
-              32
+              1024
             ]
           },
           "sample_rate": {
             "type": "float",
-            "default": 16000,
+            "default": 44100,
             "values": [
               8000,
               16000,
-              44100
+              32000,
+              44100,
+              48000
             ]
           },
           "nb_channels": {
@@ -1346,7 +1443,12 @@ window.NG_NODE_MANIFESTS = {
             "values": [
               1,
               2,
-              4
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
             ]
           }
         }
@@ -1358,35 +1460,28 @@ window.NG_NODE_MANIFESTS = {
         "domain": "general",
         "format": {
           "interleaving": "interleaved",
-          "unit": "VRMS",
-          "unit_scale": 0.5,
           "data_type": {
-            "default": "int16",
+            "default": "uint8",
             "values": [
-              "int16",
-              "float32"
+              "uint8"
             ]
           },
           "frame_length": {
             "type": "int",
-            "default": 4,
+            "default": 1024,
             "values": [
-              1,
-              2,
-              3,
-              4,
-              8,
-              16,
-              32
+              1024
             ]
           },
           "sample_rate": {
             "type": "float",
-            "default": 16000,
+            "default": 44100,
             "values": [
               8000,
               16000,
-              44100
+              32000,
+              44100,
+              48000
             ]
           },
           "nb_channels": {
@@ -1395,7 +1490,12 @@ window.NG_NODE_MANIFESTS = {
             "values": [
               1,
               2,
-              4
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
             ]
           }
         }
@@ -1403,43 +1503,41 @@ window.NG_NODE_MANIFESTS = {
     ],
     "parameters": [
       {
-        "name": "mode",
+        "name": "bitsync",
         "type": "enum",
-        "default": "lowpass",
+        "default": "none",
         "values": [
-          "lowpass",
-          "highpass",
-          "notch",
-          "bandpass",
-          "allpass",
-          "peak",
-          "lowshelf",
-          "highshelf"
+          "none",
+          "LOAS",
+          "ADTS",
+          "AVCC"
         ],
-        "help": "Filter type / operating mode"
+        "help": "bitstream synchronization type"
       },
       {
-        "name": "cutoff",
-        "type": "float",
-        "default": 0.0625,
-        "min": 0.0,
-        "max": 0.5,
-        "unit": "normalized",
-        "help": "Normalized cutoff frequency. Nyquist frequency is 0.5."
+        "name": "content",
+        "type": "enum",
+        "default": "alaw",
+        "values": [
+          "alaw",
+          "ulaw",
+          "imadpcm",
+          "cvsd",
+          "lpc",
+          "sbc",
+          "mp3"
+        ],
+        "help": "compression format of the input stream"
       },
       {
-        "name": "q",
-        "type": "float",
-        "default": 1.414,
-        "min": 0.01,
-        "help": "Quality factor of the filter."
-      },
-      {
-        "name": "gain_db",
-        "type": "float",
-        "default": 20,
-        "unit": "dB",
-        "help": "Gain used by peak and shelf filters."
+        "name": "outformat",
+        "type": "enum",
+        "default": "int16",
+        "values": [
+          "int16",
+          "float"
+        ],
+        "help": "16bits / 32bits output"
       }
     ],
     "activation": {
@@ -2737,13 +2835,6 @@ window.NG_NODE_MANIFESTS = {
           "raw"
         ],
         "help": "converter"
-      },
-      {
-        "name": "gain_db",
-        "type": "float",
-        "default": 20,
-        "unit": "dB",
-        "help": "Gain used by peak and shelf routers."
       }
     ],
     "activation": {

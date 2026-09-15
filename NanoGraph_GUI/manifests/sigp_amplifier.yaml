@@ -11,6 +11,7 @@ interfaces:
     
     domain: general
     format:
+      interleaving: interleaved
       data_type: int16
       frame_length:
         type: int
@@ -21,54 +22,44 @@ interfaces:
       nb_channels:
         type: int
         default: 1
-        values: [1] 
+        values: [1, 2, 4] 
 
   - tx_interface:                     
+#    path: 1
     index: 0                        # index 0 is reserved for the internal "data sink"                        
     name: output0        
     
     domain: general
     format:
-      data_type: int16
-      frame_length:
-        type: int
-      sample_rate:
-        type: float
-        default: 16000
-        values: [8000, 16000, 44100]
-      nb_channels:
-        type: int
-        default: 1
-        values: [1] 
+      same_as:
+        interface: rx_interface
+        index: 0
       
 
 parameters:
-  - name: mode
-    type: enum
-    default: lowpass
-    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
-    help: Filter type / operating mode
+  - name: X
+    type: utf8
+    X: 
+  - name: Y
+    type: utf8
+    Y: 
 
-  - name: cutoff
+  - name: muted_bool
+    type: int
+    default: 0
+    
+  - name: delay_before_muted
     type: float
-    default: 0.0625
-    min: 0.0
-    max: 0.5
-    unit: normalized
-    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
-
-  - name: q
+    default: 0.02
+    
+  - name: delay_before_unmuted
     type: float
-    default: 1.414
-    min: 0.01
-    help: Quality factor of the filter.
+    default: 0.02
 
-  - name: gain_db
+  - name: ramp_delay
     type: float
-    default: 20
-    unit: dB
-    help: Gain used by peak and shelf filters.
-
+    default: 0.15
+    
 activation:
   key: 8234758358235    
 

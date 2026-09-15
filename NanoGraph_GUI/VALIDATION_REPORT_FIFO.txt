@@ -1,0 +1,11 @@
+NanoGraph frame_length / FIFO sizing update
+
+- frame_length remains outside format negotiation.
+- FIFO buffer_size is generated as max(producer frame_length, consumer frame_length).
+- IO graph property framel overrides the platform manifest frame_length for FIFO sizing.
+- Processing-node frame_length comes from the corresponding manifest interface.
+- Generated arm_converter input/output frame lengths follow the original producer/consumer respectively.
+- Converter-split FIFOs are sized independently.
+- Common format IDs still contain only data_type, sample_rate, nb_channels and interleaving.
+- test_format_resolver.js contains direct regressions for frame-length selection and FIFO max sizing.
+- test_yaml/graph.txt exercises generated buffer_size and converter frame-length parameters.

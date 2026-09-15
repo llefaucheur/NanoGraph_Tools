@@ -2,6 +2,20 @@ node: sigp_router
 version: 1
 description: routering node
 
+# https://asciiflow.com/legacy/#/
+#
+#         +------------------------------+
+#         |                              |
+# ------->|                              |
+#         |                              |
+# ------->|                              |
+#         |                              |
+# ------->|                              |
+#         |                              |
+# ------->|                              |
+#         |                              |
+#         +------------------------------+
+#
 
 interfaces:
   - rx_interface:               
@@ -108,11 +122,11 @@ parameters:
     default: src
     values: [src, merge, split, raw]
     help: converter
-  - name: gain_db
-    type: float
-    default: 20
-    unit: dB
-    help: Gain used by peak and shelf routers.
+#  - name: gain_db
+#    type: float
+#    default: 20
+#    unit: dB
+#    help: Gain used by peak and shelf routers.
 
 activation:
   key: 823475928358235

@@ -77,7 +77,11 @@ processors:
       - node: 
         path: 0
         index: 15
-        name: sigp_router    
+        name: sigp_router
+      - node: 
+        path: 0
+        index: 16
+        name: sigp_analysis
         
 
   - processor:

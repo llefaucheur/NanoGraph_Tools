@@ -111,6 +111,12 @@ window.NG_PLATFORM_MANIFESTS = {
             "path": 0,
             "index": 15,
             "name": "sigp_router"
+          },
+          {
+            "node": null,
+            "path": 0,
+            "index": 16,
+            "name": "sigp_analysis"
           }
         ]
       },
@@ -201,9 +207,19 @@ window.NG_PLATFORM_MANIFESTS = {
             "interface": null,
             "index": 0,
             "c_platform_index": 0,
-            "name": "io_data_sink",
-            "direction": "tx",
-            "domain": "general"
+            "name": "io_data_sink"
+          },
+          {
+            "interface": null,
+            "index": 1,
+            "c_platform_index": 0,
+            "name": "io_data_sink"
+          },
+          {
+            "interface": null,
+            "index": 2,
+            "c_platform_index": 0,
+            "name": "io_data_sink"
           },
           {
             "interface": null,
@@ -307,7 +323,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "interface": null,
             "path": 1,
             "index": 0,
-            "c_platform_index": 3,
+            "c_platform_index": 21,
             "name": "io_data_out",
             "direction": "tx",
             "domain": "general",
@@ -315,7 +331,8 @@ window.NG_PLATFORM_MANIFESTS = {
               "data_type": {
                 "default": "int16",
                 "values": [
-                  "int16"
+                  "int16",
+                  "float32"
                 ]
               },
               "frame_length": {

@@ -1,0 +1,13 @@
+NanoGraph GUI - paramFile / paramtxt split
+
+Current semantics:
+- paramtxt: inline free-form parameter text.
+- paramFile: filename/path of an external parameter file.
+- structured parameters: remain under parameters:.
+
+Compatibility:
+- Old browser workspaces containing property "params" are migrated to "paramFile" during import.
+- The C graph reader still accepts legacy YAML "params:" numeric lists for old graph files, but new GUI exports use "paramFile:".
+
+Persistence:
+- paramFile is part of node defaults and therefore follows the normal localStorage serialization/restoration path.
