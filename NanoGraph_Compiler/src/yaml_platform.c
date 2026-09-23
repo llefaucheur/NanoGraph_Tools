@@ -5,6 +5,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable: 4996)
 
 static void yp_copy(char *dst, int size, const char *src)
 {
@@ -323,7 +325,7 @@ int yp_read_file(const char *filename, YP_PlatformManifest *m)
     fmt_group=0;
     section=S_TOP;
 
-    fp=fopen(filename,"r");
+    fp = fopen(filename, "r");
     if (fp == NULL) return YP_ERR_OPEN;
 
     line_no=0;

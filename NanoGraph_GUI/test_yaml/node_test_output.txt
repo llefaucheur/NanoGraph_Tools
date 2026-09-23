@@ -1,0 +1,33 @@
+manifest.present=0x27
+node=sigp_amplifier node_designer=arm (ltd) version=1 description=CMSIS-DSP based filtering node
+nb_input=1 nb_output=1 input_count=1 output_count=1 activation.key=8234758358235
+input[0].present=0xb name=input0 index=0 format=input0 domain=general buffer_overlay=0
+output[0].present=0xb name=output0 index=0 format=output0 domain=general buffer_overlay=0
+formats=2
+  format[0].present=0xdc3 name=input0 interleaving=interleaved
+    data_type=int16 data_type_default= data_type_values=[]
+    frame_length_default=0 frame_length_values=[]
+    sample_rate_type=float sample_rate_default=16000 sample_rate_values=[8000, 16000, 44100] sample_rate_accuracy=0
+    nb_channels_default=1 nb_channels_values=[1, 2, 4] nb_channels_min=0 nb_channels_max=0
+    consume_min=0 consume_max=0 produce_min=0 produce_max=0 unit= unit_scale=0
+    same_as.interface= same_as.index=0
+  format[1].present=0x300000 name=output0 interleaving=
+    data_type= data_type_default= data_type_values=[]
+    frame_length_default=0 frame_length_values=[]
+    sample_rate_type= sample_rate_default=0 sample_rate_values=[] sample_rate_accuracy=0
+    nb_channels_default=0 nb_channels_values=[] nb_channels_min=0 nb_channels_max=0
+    consume_min=0 consume_max=0 produce_min=0 produce_max=0 unit= unit_scale=0
+    same_as.interface=rx_interface same_as.index=0
+parameters=4
+  parameter[0].present=0x47 name=mode type=enum default=lowpass values=[lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf] min=0 max=0 unit= help=Filter type / operating mode
+  parameter[1].present=0x7b name=cutoff type=float default=0.0625 values=[] min=0 max=0.5 unit=normalized help=Normalized cutoff frequency. Nyquist frequency is 0.5.
+  parameter[2].present=0x4b name=q type=float default=1.414 values=[] min=0.01 max=0 unit= help=Quality factor of the filter.
+  parameter[3].present=0x63 name=gain_db type=float default=20 values=[] min=0 max=0 unit=dB help=Gain used by peak and shelf filters.
+implementation.present=0xfff
+  language=C90 complexity=10000 header=sigp_amplifier.h init=sigp_amplifier_init process=sigp_amplifier_process
+  processor_architecture=armv7m, armv8m processor_fpu_option=double malloc=precomputed reentrant=yes compatibility=101 nb_memory_banks=2 library=16 memory_bank_count=2
+  memory_bank[0].present=0x7fbf section=memoryBank1 index=0 relocatable=1 memory_clear=1 data0prog1=0 mem_alloc=24 mem_type=static mem_speed=
+    mem_alloc_a=12 mem_alloc_b=12 mem_alloc_b_type=0 mem_alloc_b_arc=0 mem_alloc_c=12 mem_alloc_c_arc=0 mem_alloc_d=12 mem_alloc_d_arc=0 format=
+  memory_bank[1].present=0x8071 section=memoryBank2 index=1 relocatable=0 memory_clear=0 data0prog1=0 mem_alloc=78 mem_type=working mem_speed=critical
+    mem_alloc_a=0 mem_alloc_b=0 mem_alloc_b_type=0 mem_alloc_b_arc=0 mem_alloc_c=0 mem_alloc_c_arc=0 mem_alloc_d=0 mem_alloc_d_arc=0 format=format1
+error_line=0 error_text=

@@ -40,6 +40,10 @@
 #include "nanograph_tool_types.h"
 #include "nanograph_tool_include.h"
 
+#include "yaml_platform.h"
+#include "yaml_graph.h"
+#include "yaml_node.h"
+
 
 uint8_t globalEndFile;
 uint8_t FoundEndSection;
@@ -690,6 +694,141 @@ int fields_extract(char **pt_line, char *types,  ...)
     va_end(vl);
 
     return 1;
+}
+
+
+/* ========================================================================
+    compute node  memreq_size  for one of the 6 memreq
+
+*/
+void compute_add_length(char* type, uint32_t* size,
+    uint32_t sizeArc, uint32_t maxin, uint32_t maxout, uint32_t maxall, uint32_t sumin, uint32_t sumout, uint32_t sumall)
+{
+    if (strlen(type) == 0) { *size += 0; }      /* nothing to add */
+    if (0 == strncmp(type, "arc", strlen("arc"))) { *size += sizeArc; }
+    if (0 == strncmp(type, "maxin", strlen("maxin"))) { *size += maxin; }
+    if (0 == strncmp(type, "maxout", strlen("maxout"))) { *size += maxout; }
+    if (0 == strncmp(type, "maxall", strlen("maxall"))) { *size += maxall; }
+    if (0 == strncmp(type, "sumin", strlen("sumin"))) { *size += sumin; }
+    if (0 == strncmp(type, "sumout", strlen("sumout"))) { *size += sumout; }
+    if (0 == strncmp(type, "sumall", strlen("sumall"))) { *size += sumall; }
+}
+
+
+/* ========================================================================
+    compute node  memreq_size  for one of the 6 memreq
+
+*/
+void compute_memreq(struct node_memory_bank* m, struct formatStruct* all_format, struct nanograph_node_manifest* node)
+{
+    uint32_t sizeArcMono;
+    uint32_t maxin, maxout, maxall, sumin, sumout, sumall;
+    uint32_t maxinMono, maxoutMono, maxallMono, suminMono, sumoutMono, sumallMono;
+    uint32_t maxinChan, maxoutChan, maxallChan;
+    struct formatStruct* format;
+    uint32_t iarc, fmtProd, fmtCons;
+    uint32_t sizeArc, nbChan, memSize;
+
+    sizeArcMono = maxinMono = maxoutMono = maxallMono = suminMono = sumoutMono = sumallMono = 0;
+    sizeArc = maxin = maxout = maxall = sumin = sumout = sumall = maxinChan = maxoutChan = maxallChan = 0;
+
+    for (iarc = 0; iarc < node->nbInputArc + node->nbOutputArc; iarc++)
+    {
+        if (iarc < node->nbInputArc)                /* is it an input arc ? => read producer format */
+        {
+            fmtProd = node->arc[iarc].fmtProd; format = &(all_format[fmtProd]);
+        }
+        else                                        /* is it an output arc ? => read consumer format */
+        {
+            fmtCons = node->arc[iarc].fmtCons; format = &(all_format[fmtCons]);
+        }
+
+        if (format->frame_format_byte0_time1 != 0)       /* format in samples of in time unit */
+        {
+            sizeArc = (uint32_t)(0.5 + format->frame_length_second * format->samplingRate);
+            sizeArcMono = (uint32_t)(0.5 + format->frame_length_second * format->samplingRate) / format->nchan;
+        }
+        else
+        {
+            sizeArc = format->frame_length_bytes;
+            sizeArcMono = format->frame_length_bytes / format->nchan;
+        }
+        nbChan = format->nchan;
+
+        memSize = 0;
+        if (m->iarcFrameMono != (-1))               /* did we selected a specific mono arc ? */
+        {
+            if (iarc == m->iarcFrameMono)           /*   is it this one ? */
+            {
+                memSize = (uint64_t)(sizeArcMono * m->MulFrameSizeMono);
+            }
+        }
+
+        if (m->iarcFrame != (-1))                   /* did we selected a specific multichannel frame size ? */
+        {
+            if (iarc == m->iarcFrame)               /*   is it this one ? */
+            {
+                memSize = (uint64_t)(sizeArcMono * m->MulFrameSize);
+            }
+        }
+
+        if (m->iarcFrameChan != (-1))               /* did we selected a specific number of channels */
+        {
+            if (iarc == m->iarcFrameChan)           /*   is it this one ? */
+            {
+                memSize = (uint64_t)(nbChan * m->MulFrameSizeChan);
+            }
+        }
+
+        if (iarc < node->nbInputArc)
+        {
+            maxin = MAX(maxin, sizeArc);
+            maxinMono = MAX(maxinMono, sizeArcMono);
+            sumin = sumin + sizeArc;
+            suminMono = suminMono + sizeArcMono;
+        }
+        else
+        {
+            maxout = MAX(maxout, sizeArc);
+            maxoutMono = MAX(maxoutMono, sizeArcMono);
+            sumout = sumout + sizeArc;
+            sumoutMono = sumoutMono + sizeArcMono;
+        }
+
+        maxall = MAX(maxin, maxout);
+        sumall = sumin + sumout;
+
+        compute_add_length(m->TypeFrameMono, &memSize,
+            sizeArcMono, maxinMono, maxoutMono, maxallMono, suminMono, sumoutMono, sumallMono);
+
+        compute_add_length(m->TypeFrame, &memSize,
+            sizeArc, maxin, maxout, maxall, sumin, sumout, sumall);
+
+        compute_add_length(m->TypeFrameChan, &memSize,
+            sizeArc, maxin, maxout, maxall, sumin, sumout, sumall);
+    }
+
+    memSize = ((memSize + 3) >> 2) << 2;
+
+    /* add the extra memory requested in the graph (command "node_malloc_add Bytes segment") */
+    memSize = memSize + m->size_mem_alloc_A;
+    memSize = memSize + m->malloc_add;
+
+    /* rounding to W32 */
+    memSize = memSize + 3;
+    memSize = memSize & 0xFFFFFFFCL;
+
+    m->graph_memreq_size = memSize;
+}
+
+
+void copy_graph_yaml2C(YG_Graph* yaml, struct nanograph_graph_linkedlist* graph)
+{
+}
+
+void copy_manifest_yaml2C(YP_PlatformManifest* yaml, struct nanograph_platform_manifest* platform)
+{
+
 }
 
 #ifdef __cplusplus

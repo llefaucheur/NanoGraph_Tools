@@ -88,31 +88,20 @@
      * Interleaving has no semantic meaning for a mono stream.  This helper
      * must be called after nb_channels has been resolved.  When both sides
      * are known to be one channel, any interleaved/deinterleaved difference
-     * is accepted and the result is canonicalized to "interleaved".
+     * is accepted and the result is canonicalized to the empty value.
      */
     function chooseInterleaving(producerRaw, consumerRaw, producerChannels, consumerChannels, options) {
         var pc = has(producerChannels) ? Number(producerChannels) : null;
         var cc = has(consumerChannels) ? Number(consumerChannels) : null;
-        if (pc === 1 && cc === 1) return "interleaved";
+        if (pc === 1 && cc === 1) return "";
         return choose("interleaving", producerRaw, consumerRaw, options || {});
     }
 
     function canonicalInterleaving(interleaving, nbChannels) {
-        if (has(nbChannels) && Number(nbChannels) === 1) return "interleaved";
+        if (has(nbChannels) && Number(nbChannels) === 1) return "";
         return interleaving;
     }
 
-
-    function platformDefaultAsExact(raw) {
-        /*
-         * For a physical sink reached from a same_as output, the platform
-         * default is the selected operating point, not merely a preference.
-         * Keep unconstrained fields unconstrained.
-         */
-        var c = normalizeConstraint(raw);
-        if (has(c.defaultValue)) return c.defaultValue;
-        return raw;
-    }
 
     function applyEndpointOverride(field, capabilityRaw, overrideValue, endpointName) {
         /*
@@ -200,9 +189,6 @@
     function findPlatformInterface(platformManifest, ioName) {
         var key=splitIoName(ioName), instances, i, list, j, itf;
         if (!platformManifest) return null;
-        /* Accept old saved/exported GUI name; platform manifests use the
-         * canonical logical interface name io_data_sink. */
-        if (key.name === "io_sink") key.name = "io_data_sink";
         instances=platformManifest.interpreter_instances || [];
         for (i=0; i<instances.length; i++) {
             list=instances[i].interfaces || [];
@@ -233,7 +219,6 @@
         choose:choose,
         chooseInterleaving:chooseInterleaving,
         canonicalInterleaving:canonicalInterleaving,
-        platformDefaultAsExact:platformDefaultAsExact,
         applyEndpointOverride:applyEndpointOverride,
         frameLengthValue:frameLengthValue,
         fifoSizeFromFrameLengths:fifoSizeFromFrameLengths,

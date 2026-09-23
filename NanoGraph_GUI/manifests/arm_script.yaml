@@ -48,7 +48,7 @@ parameters:
   - name: mode
     type: enum
     default: none
-    values: [disabled, check_input, call_before_each_node, call_after_each_node, call_at_start_of_scheduling_loop, call_at_end_of_scheduling_loop, called_after_reset, called_on_stop]
+    values: [none, check_input, call_before_each_node, call_after_each_node, call_at_start_of_scheduling_loop, call_at_end_of_scheduling_loop, called_after_reset, called_on_stop]
     help: options of "main" script, called during graph scheduling
 
 

@@ -506,7 +506,13 @@ struct nanograph_platform_manifest
 
     uint32_t max_io_al_idx;             /* max { fw_io_idx } */
 
-    uint32_t platform_key[MAXNB_WORD32_PLAFORM_KEY];
+    uint32_t platform_key[MAXNB_WORD32_PLAFORM_KEY];    /* YAML platform key */
+    /* see 
+        #define PLATFORM_PRIVATE_KEY32_0    2452526671
+        #define PLATFORM_PRIVATE_KEY32_1    1812651256 
+        #define PLATFORM_PRIVATE_KEY32_2    37893006
+        #define PLATFORM_PRIVATE_KEY32_3    3544725485 
+    */
 };
 
 typedef struct nanograph_platform_manifest nanograph_platform_manifest_t;
@@ -525,9 +531,9 @@ typedef struct dbgtrace dbgtrace_t;
 struct nanograph_graph_linkedlist
 {   
     uint32_t subg_depth;                            
-    char mangling[SUBGMAXDEPTH][MAXCHAR_NAME];     /* name of subgraph, to concatenate with local labels */
-    char toConcatenate[SUBGMAXDEPTH * MAXCHAR_NAME];
-    uint32_t arcIO_redirection[SUBGMAXDEPTH][MAX_NB_IO]; /* 
+    //char mangling[SUBGMAXDEPTH][MAXCHAR_NAME];     /* name of subgraph, to concatenate with local labels */
+    //char toConcatenate[SUBGMAXDEPTH * MAXCHAR_NAME];
+    //uint32_t arcIO_redirection[SUBGMAXDEPTH][MAX_NB_IO]; 
     
     /* ------- HEADER ------- */                    /* graph[4] bit-field of allowed processors */
     uint32_t procid_allowed_gr4;                    /* position of the graph words going to RAM */  

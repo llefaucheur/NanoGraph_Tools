@@ -82,3 +82,12 @@ buffer_size = max(producer frame_length, consumer frame_length)
 ```
 
 A graph-level IO `framel` value overrides the platform interface frame-length default for that endpoint. For processing nodes, the manifest interface `frame_length.default` is used when present. If only one endpoint has a concrete frame length, that value is used; if neither endpoint does, an existing explicit `buffer_size` is left unchanged. Automatic `arm_converter` insertion preserves the producer frame length on the converter input and the consumer frame length on its output, so the two generated FIFOs are sized separately.
+
+
+## Importing an exported graph
+
+The GUI provides **Import Graph** next to **Export Graph**. The importer accepts the YAML text emitted by the exporter, either pasted into the dialog or loaded from a `.yaml`, `.yml`, or `.txt` file.
+
+Exports carry `graph_format_version: 1` and `graph_state: resolved`. Nodes inserted automatically by the format resolver carry `generated: true`, `generated_by: format_resolver`, and a `generated_reason`.
+
+The default **Logical import** removes nodes marked `generated: true`, reconnects their single input/output arcs, discards resolved `formatID` values, and lets the current platform/node manifests resolve the graph again on the next export. An `arm_converter` without `generated: true` is considered user-authored and is never removed by this step. **Preserve resolved graph** keeps generated nodes for debugging/reproduction.

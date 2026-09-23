@@ -5,89 +5,56 @@ description:
 
 interfaces:
   - rx_interface:               
-#    path: 1
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                 
     name: input0        
     
     domain: general
     format:
       
       data_type:
-        default: int16              # can be "any" when the node extracts the format during the reset sequence
-        values: [int16, float32]
+        default: uint8              
+        values: [uint8]
 
       frame_length:
         type: int
-        default: 4
-        values: [1, 2, 3, 4, 8, 16, 32]
 
       sample_rate:
         type: float
-        default: 16000
-        values: [8000, 16000, 44100]
 
       nb_channels:
         type: int
         default: 1
-        values: [1, 2, 4] 
+        values: [1] 
 
   - tx_interface:                     
-#    path: 1
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                 
     name: output0        
     
-    domain: general
+    domain: 2d_out
     format:
-      interleaving: interleaved      
-      unit: VRMS                    # RFC8428 list of units
-      unit_scale: 0.5               # full-scale is equivalent to 0.15 VRMS
-      
+     
       data_type:
-        default: int16              # can be "any" when the node extracts the format during the reset sequence
-        values: [int16, float32]
+        default: uint8              
+        values: [uint8]
 
       frame_length:
         type: int
-        default: 4
-        values: [1, 2, 3, 4, 8, 16, 32]
 
       sample_rate:
         type: float
-        default: 16000
-        values: [8000, 16000, 44100]
 
       nb_channels:
         type: int
         default: 1
-        values: [1, 2, 4] 
+        values: [1]
       
 
 parameters:
   - name: mode
     type: enum
-    default: lowpass
-    values: [lowpass, highpass, notch, bandpass, allpass, peak, lowshelf, highshelf]
-    help: Filter type / operating mode
-
-  - name: cutoff
-    type: float
-    default: 0.0625
-    min: 0.0
-    max: 0.5
-    unit: normalized
-    help: Normalized cutoff frequency. Nyquist frequency is 0.5.
-
-  - name: q
-    type: float
-    default: 1.414
-    min: 0.01
-    help: Quality factor of the filter.
-
-  - name: gain_db
-    type: float
-    default: 20
-    unit: dB
-    help: Gain used by peak and shelf filters.
+    default: highquality
+    values: [lowpower, intermediate, highquality]
+    help: decoding quality
 
 activation:
   key: 8234758358235    

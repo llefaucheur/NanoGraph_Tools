@@ -70,13 +70,17 @@ typedef struct
 {
     char archID[YP_MAX_VALUE];
     int procID;
+    int cacheLine;
+    int computeServices;
     int node_count;
     YP_AvailableNode node[YP_MAX_NODES_PER_PROC];
     unsigned long present;
 } YP_Processor;
 
 #define YP_PROC_HAS_ARCH   0x01UL
-#define YP_PROC_HAS_ID     0x02UL
+#define YP_PROC_HAS_ID       0x02UL
+#define YP_PROC_HAS_CACHELINE 0x04UL
+#define YP_PROC_HAS_COMPUTE   0x08UL
 
 typedef struct
 {
@@ -100,7 +104,7 @@ typedef struct
     int access;
     int speed;
     int type;
-    int interpreter_instance;
+    int instance;
     int subblock_count;
     YP_Subblock subblock[YP_MAX_SUBBLOCKS];
     unsigned long present;
@@ -137,11 +141,17 @@ typedef struct
 
 typedef struct
 {
+    char interleaving[YP_MAX_VALUE];
     YP_DataTypeConstraint data_type;
     YP_NumberConstraint frame_length;
     YP_NumberConstraint sample_rate;
+    double sample_rate_accuracy;
     YP_NumberConstraint nb_channels;
+    unsigned long present;
 } YP_InterfaceFormat;
+
+#define YP_FMT_HAS_INTERLEAVING  0x01UL
+#define YP_FMT_HAS_RATE_ACCURACY 0x02UL
 
 typedef struct
 {
@@ -151,6 +161,10 @@ typedef struct
     char name[YP_MAX_NAME];
     char direction[YP_MAX_VALUE];
     char domain[YP_MAX_VALUE];
+    char protocol[YP_MAX_VALUE];
+    char malloc_mode[YP_MAX_VALUE];
+    char set0copy1[YP_MAX_VALUE];
+    double setup_time;
     YP_InterfaceFormat format;
     unsigned long present;
 } YP_Interface;
@@ -160,6 +174,10 @@ typedef struct
 #define YP_IF_HAS_C_PLATFORM_INDEX 0x04UL
 #define YP_IF_HAS_DIRECTION        0x08UL
 #define YP_IF_HAS_DOMAIN           0x10UL
+#define YP_IF_HAS_PROTOCOL         0x20UL
+#define YP_IF_HAS_MALLOC           0x40UL
+#define YP_IF_HAS_SET0COPY1        0x80UL
+#define YP_IF_HAS_SETUP_TIME       0x100UL
 
 typedef struct
 {

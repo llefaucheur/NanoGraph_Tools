@@ -646,6 +646,22 @@ const YN_Parameter *yn_find_parameter(const YN_NodeManifest *m, const char *name
 }
 
 #ifdef YAML_NODE_TEST
+static void yn_test_string_list(const YN_StringList *v)
+{
+    int i;
+    printf("[");
+    for (i = 0; i < v->count; ++i) printf("%s%s", (i == 0) ? "" : ", ", v->value[i]);
+    printf("]");
+}
+
+static void yn_test_number_list(const YN_NumberList *v)
+{
+    int i;
+    printf("[");
+    for (i = 0; i < v->count; ++i) printf("%s%g", (i == 0) ? "" : ", ", v->value[i]);
+    printf("]");
+}
+
 int main(int argc, char **argv)
 {
     YN_NodeManifest m;
@@ -653,56 +669,75 @@ int main(int argc, char **argv)
     int rc;
     int i;
 
-    filename = (argc > 1) ? argv[1] : "node.yaml";
+    filename = (argc > 1) ? argv[1] : "node.txt";
     rc = yn_read_file(filename, &m);
     if (rc != YN_OK)
     {
-        fprintf(stderr, "parse error %d, line %d: %s\n",
-                rc, m.error_line, m.error_text);
+        fprintf(stderr, "parse error %d, line %d: %s\n", rc, m.error_line, m.error_text);
         return 1;
     }
 
-    printf("node: %s version=%d designer=%s\n", m.node, m.version, m.node_designer);
-    printf("ports: input=%d output=%d\n", m.input_count, m.output_count);
-    i = 0;
-    while (i < m.input_count)
+    printf("manifest.present=0x%lx\n", m.present);
+    printf("node=%s node_designer=%s version=%d description=%s\n", m.node, m.node_designer, m.version, m.description);
+    printf("nb_input=%d nb_output=%d input_count=%d output_count=%d activation.key=%s\n",
+           m.nb_input, m.nb_output, m.input_count, m.output_count, m.activation_key);
+
+    for (i = 0; i < m.input_count; ++i)
+        printf("input[%d].present=0x%lx name=%s index=%d format=%s domain=%s buffer_overlay=%d\n",
+               i, m.input[i].present, m.input[i].name, m.input[i].index,
+               m.input[i].format, m.input[i].domain, m.input[i].buffer_overlay);
+    for (i = 0; i < m.output_count; ++i)
+        printf("output[%d].present=0x%lx name=%s index=%d format=%s domain=%s buffer_overlay=%d\n",
+               i, m.output[i].present, m.output[i].name, m.output[i].index,
+               m.output[i].format, m.output[i].domain, m.output[i].buffer_overlay);
+
+    printf("formats=%d\n", m.format_count);
+    for (i = 0; i < m.format_count; ++i)
     {
-        printf("  input[%d] name=%s index=%d format=%s overlay=%d\n",
-               i, m.input[i].name, m.input[i].index,
-               m.input[i].format, m.input[i].buffer_overlay);
-        ++i;
+        const YN_Format *f = &m.format[i];
+        printf("  format[%d].present=0x%lx name=%s interleaving=%s\n", i, f->present, f->name, f->interleaving);
+        printf("    data_type=%s data_type_default=%s data_type_values=", f->data_type, f->data_type_default);
+        yn_test_string_list(&f->data_type_values); printf("\n");
+        printf("    frame_length_default=%d frame_length_values=", f->frame_length_default);
+        yn_test_number_list(&f->frame_length_values); printf("\n");
+        printf("    sample_rate_type=%s sample_rate_default=%g sample_rate_values=", f->sample_rate_type, f->sample_rate_default);
+        yn_test_number_list(&f->sample_rate_values); printf(" sample_rate_accuracy=%g\n", f->sample_rate_accuracy);
+        printf("    nb_channels_default=%d nb_channels_values=", f->nb_channels_default);
+        yn_test_number_list(&f->nb_channels_values);
+        printf(" nb_channels_min=%d nb_channels_max=%d\n", f->nb_channels_min, f->nb_channels_max);
+        printf("    consume_min=%d consume_max=%d produce_min=%d produce_max=%d unit=%s unit_scale=%g\n",
+               f->consume_min, f->consume_max, f->produce_min, f->produce_max, f->unit, f->unit_scale);
+        printf("    same_as.interface=%s same_as.index=%d\n", f->same_as_interface, f->same_as_index);
     }
-    i = 0;
-    while (i < m.output_count)
+
+    printf("parameters=%d\n", m.parameter_count);
+    for (i = 0; i < m.parameter_count; ++i)
     {
-        printf("  output[%d] name=%s index=%d format=%s overlay=%d\n",
-               i, m.output[i].name, m.output[i].index,
-               m.output[i].format, m.output[i].buffer_overlay);
-        ++i;
+        const YN_Parameter *p = &m.parameter[i];
+        printf("  parameter[%d].present=0x%lx name=%s type=%s default=%s values=", i, p->present, p->name, p->type, p->default_value);
+        yn_test_string_list(&p->values);
+        printf(" min=%g max=%g unit=%s help=%s\n", p->min_value, p->max_value, p->unit, p->help);
     }
-    printf("formats: %d\n", m.format_count);
-    i = 0;
-    while (i < m.format_count)
+
+    printf("implementation.present=0x%lx\n", m.implementation.present);
+    printf("  language=%s complexity=%g header=%s init=%s process=%s\n",
+           m.implementation.language, m.implementation.complexity, m.implementation.header,
+           m.implementation.init, m.implementation.process);
+    printf("  processor_architecture=%s processor_fpu_option=%s malloc=%s reentrant=%s compatibility=%d nb_memory_banks=%d library=%d memory_bank_count=%d\n",
+           m.implementation.processor_architecture, m.implementation.processor_fpu_option,
+           m.implementation.malloc_mode, m.implementation.reentrant, m.implementation.compatibility,
+           m.implementation.nb_memory_banks, m.implementation.library, m.implementation.memory_bank_count);
+    for (i = 0; i < m.implementation.memory_bank_count; ++i)
     {
-        printf("  [%d] %s present=0x%lx\n", i, m.format[i].name, m.format[i].present);
-        if (m.format[i].present & YN_FMT_HAS_SAME_AS_INTERFACE)
-            printf("      same_as.interface=%s\n", m.format[i].same_as_interface);
-        if (m.format[i].present & YN_FMT_HAS_SAME_AS_INDEX)
-            printf("      same_as.index=%d\n", m.format[i].same_as_index);
-        ++i;
+        const YN_MemoryBank *b = &m.implementation.memory_bank[i];
+        printf("  memory_bank[%d].present=0x%lx section=%s index=%d relocatable=%d memory_clear=%d data0prog1=%d mem_alloc=%d mem_type=%s mem_speed=%s\n",
+               i, b->present, b->section, b->index, b->relocatable, b->memory_clear,
+               b->data0prog1, b->mem_alloc, b->mem_type, b->mem_speed);
+        printf("    mem_alloc_a=%d mem_alloc_b=%d mem_alloc_b_type=%d mem_alloc_b_arc=%d mem_alloc_c=%d mem_alloc_c_arc=%d mem_alloc_d=%d mem_alloc_d_arc=%d format=%s\n",
+               b->mem_alloc_a, b->mem_alloc_b, b->mem_alloc_b_type, b->mem_alloc_b_arc,
+               b->mem_alloc_c, b->mem_alloc_c_arc, b->mem_alloc_d, b->mem_alloc_d_arc, b->format);
     }
-    printf("parameters: %d\n", m.parameter_count);
-    i = 0;
-    while (i < m.parameter_count)
-    {
-        printf("  [%d] %s type=%s default=%s\n", i,
-               m.parameter[i].name, m.parameter[i].type,
-               m.parameter[i].default_value);
-        ++i;
-    }
-    printf("implementation: language=%s arch=%s memory_banks=%d\n",
-           m.implementation.language, m.implementation.processor_architecture,
-           m.implementation.memory_bank_count);
+    printf("error_line=%d error_text=%s\n", m.error_line, m.error_text);
     return 0;
 }
 #endif

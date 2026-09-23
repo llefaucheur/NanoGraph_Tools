@@ -43,6 +43,16 @@ RED.nodes = (function() {
     }
 
 
+    function inferInterleaving(type, def) {
+        if (/audio/.test(type)) return "audio_out";
+        if (/2d/.test(type)) return "2d_out";
+        if (/analog/.test(type)) return "analog_out";
+        if (/ui/.test(type)) return "user_interface";
+        return "";
+    }
+
+
+
     function ensureDefault(def, name, value, required, validate) {
         def.defaults = def.defaults || {};
         if (!def.defaults[name]) {
@@ -66,11 +76,11 @@ RED.nodes = (function() {
             ensureDefault(def, "per_hr", "", false, RED.validators.positiveNumber());
             ensureDefault(def, "per_day", "", false, RED.validators.positiveNumber());
             ensureDefault(def, "samprt_percent_accuracy", "", false, RED.validators.nonNegativeNumber());
-            ensureDefault(def, "unit", "vrms", false);
-            ensureDefault(def, "scale", "1", false, RED.validators.positiveNumber());
+            ensureDefault(def, "unit", "", false);
+            ensureDefault(def, "scale", "", false, RED.validators.positiveNumber());
             ensureDefault(def, "data_type", "", false, RED.validators.dataType());
-            ensureDefault(def, "time_stamp", "none", false, RED.validators.oneOf(["none","counter","delta","absolute"]));
-            ensureDefault(def, "interleaving", "interleaved", false, RED.validators.oneOf(["interleaved","deinterleaved"]));  /* ["sample","frame"] */
+            ensureDefault(def, "time_stamp", "", false, RED.validators.oneOf(["","counter","delta","absolute"]));
+            ensureDefault(def, "interleaving", "", false, RED.validators.oneOf(["interleaved","deinterleaved"]));
             ensureDefault(def, "paramFile", "", false);
             ensureDefault(def, "paramtxt", "", false);
         } else if (def.category !== "config" && ((def.inputs || 0) > 0 || (def.outputs || 0) > 0)) {
@@ -79,6 +89,10 @@ RED.nodes = (function() {
             ensureDefault(def, "preset", "", false);
             ensureDefault(def, "minopp", "", false, RED.validators.positiveInteger());
             ensureDefault(def, "script", "", false);
+            /* Resolver provenance. A manually placed converter keeps generated=false. */
+            ensureDefault(def, "generated", false, false);
+            ensureDefault(def, "generated_by", "", false);
+            ensureDefault(def, "generated_reason", "", false);
 
             if (manifest && manifest.parameters && manifest.parameters.length) {
                 /*
@@ -95,10 +109,6 @@ RED.nodes = (function() {
                     var defaultValue = (parameter["default"] == null) ? "" : parameter["default"];
                     ensureDefault(def, parameter.name, defaultValue, parameter.required === true);
                 });
-            } else {
-                /* Backward-compatible nodes that do not yet have a manifest. */
-                ensureDefault(def, "paramFile", "", false);
-                ensureDefault(def, "paramtxt", "", false);
             }
         }
     }
@@ -656,13 +666,6 @@ var node_map = {};
 
             for (i=0;i<newNodes.length;i++) {
                 n = newNodes[i];
-
-                /* Backward compatibility: old GUI versions persisted the
-                 * external parameter-file field as "params". Migrate it to
-                 * the current "paramFile" property on import. */
-                if (n.paramFile == null && n.params != null) {
-                    n.paramFile = n.params;
-                }
 
                 if (n.type !== "workspace" && n.type !== "tab") {
                     var def = getType(n.type);

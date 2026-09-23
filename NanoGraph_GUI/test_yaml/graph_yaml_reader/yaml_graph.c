@@ -721,78 +721,68 @@ int main(int argc, char **argv)
     int i;
     int j;
 
-    filename = (argc > 1) ? argv[1] : "graph.yaml";
+    filename = (argc > 1) ? argv[1] : "graph.txt";
     rc = yg_read_file(filename, &g);
     if (rc != YG_OK)
     {
-        fprintf(stderr, "parse error %d, line %d: %s\n",
-                rc, g.error_line, g.error_text);
+        fprintf(stderr, "parse error %d, line %d: %s\n", rc, g.error_line, g.error_text);
         return 1;
     }
 
-    printf("platform: %s\n", (g.present & YG_GRAPH_HAS_PLATFORM) ? g.platform : "<none>");
-    printf("nodes: %d\n", g.nb_nodes);
-    i = 0;
-    while (i < g.nb_nodes)
+    printf("graph.present=0x%lx\n", g.present);
+    printf("platform=%s\n", g.platform);
+    printf("nodes=%d\n", g.nb_nodes);
+    for (i = 0; i < g.nb_nodes; ++i)
     {
-        const YG_Node *n;
-        n = &g.nodes[i];
-        printf("  [%d] %s %s\n", i, yg_test_kind(n->kind), n->name);
-        printf("       scope=%s local=%s base=%s instance=%d depth=%d\n",
-               n->scope, n->local_name, n->base_name,
-               n->instance_index, n->hierarchy_depth);
-        if (n->present & YG_NODE_HAS_FRAMEL) printf("       framel=%d\n", n->framel);
-        if (n->present & YG_NODE_HAS_DOMAIN) printf("       domain=%s\n", n->domain);
-        if (n->present & YG_NODE_HAS_NBCHAN) printf("       nbchan=%d\n", n->nbchan);
-        if (n->present & YG_NODE_HAS_SAMPRT) printf("       samprt=%g\n", n->samprt);
-        if (n->present & YG_NODE_HAS_DATA_TYPE) printf("       data_type=%s\n", n->data_type);
-        if (n->present & YG_NODE_HAS_PARAMTXT) printf("       paramtxt=%s\n", n->paramtxt);
-        if (n->present & YG_NODE_HAS_PARAM_FILE) printf("       paramFile=%s\n", n->param_file);
-        if (n->present & YG_NODE_HAS_MINOPP) printf("       minopp=%d\n", n->minopp);
-        j = 0;
-        while (j < n->nb_named_parameters)
-        {
-            printf("       parameter %s=%s\n",
-                   n->named_parameter[j].name, n->named_parameter[j].value);
-            ++j;
-        }
-        ++i;
-    }
-
-    printf("arcs: %d\n", g.nb_arcs);
-    i = 0;
-    while (i < g.nb_arcs)
-    {
-        const YG_Arc *a;
-        a = &g.arcs[i];
-        printf("  [%d] OPort_%d %s %s -> IPort_%d %s %s\n",
-               i, a->source.port, yg_test_kind(a->source.kind), a->source.name,
-               a->destination.port, yg_test_kind(a->destination.kind), a->destination.name);
-        if (a->present & YG_ARC_HAS_NAME) printf("       arc_name=%s\n", a->arc_name);
-        if (a->present & YG_ARC_HAS_BUFFER_SIZE) printf("       buffer_size=%d\n", a->buffer_size);
-        if (a->present & YG_ARC_HAS_DATA_TYPE) printf("       data_type=%s\n", a->data_type);
-        if (a->present & YG_ARC_HAS_SAMPLE_RATE) printf("       sample_rate=%g\n", a->sample_rate);
-        if (a->present & YG_ARC_HAS_NB_CHANNELS) printf("       nb_channels=%d\n", a->nb_channels);
-        if (a->present & YG_ARC_HAS_INTERLEAVING) printf("       interleaving=%s\n", a->interleaving);
-        if (a->present & YG_ARC_HAS_OVERLAY_WITH) printf("       overlay_with=%s\n", a->overlay_with);
-        if (a->present & YG_ARC_HAS_FORMAT_ID) printf("       formatID=%s\n", a->format_id);
-        ++i;
-    }
-
-    printf("formats: %d\n", g.nb_formats);
-    i = 0;
-    while (i < g.nb_formats)
-    {
-        const YG_Format *fmt;
-        fmt = &g.formats[i];
-        printf("  [%d] formatID=%d", i, fmt->format_id);
-        if (fmt->present & YG_FORMAT_HAS_DATA_TYPE) printf(" data_type=%s", fmt->data_type);
-        if (fmt->present & YG_FORMAT_HAS_SAMPLE_RATE) printf(" sample_rate=%g", fmt->sample_rate);
-        if (fmt->present & YG_FORMAT_HAS_NB_CHANNELS) printf(" nb_channels=%d", fmt->nb_channels);
-        if (fmt->present & YG_FORMAT_HAS_INTERLEAVING) printf(" interleaving=%s", fmt->interleaving);
+        const YG_Node *n = &g.nodes[i];
+        printf("  node[%d].present=0x%lx kind=%s name=%s local_name=%s base_name=%s instance_index=%d scope=%s hierarchy_depth=%d\n",
+               i, n->present, yg_test_kind(n->kind), n->name, n->local_name, n->base_name,
+               n->instance_index, n->scope, n->hierarchy_depth);
+        printf("    framel=%d period=%g per_hr=%g per_day=%g domain=%s nbchan=%d samprt=%g samprt_percent_accuracy=%g\n",
+               n->framel, n->period, n->per_hr, n->per_day, n->domain, n->nbchan,
+               n->samprt, n->samprt_percent_accuracy);
+        printf("    unit=%s scale=%g data_type=%s time_stamp=%s interleaving=%s\n",
+               n->unit, n->scale, n->data_type, n->time_stamp, n->interleaving);
+        printf("    nb_params=%d", n->nb_params);
+        for (j = 0; j < n->nb_params; ++j) printf(" params[%d]=%g", j, n->params[j]);
         printf("\n");
-        ++i;
+        printf("    paramtxt=%s paramFile=%s preset=%d minopp=%d script=%s formatID=%s\n",
+               n->paramtxt, n->param_file, n->preset, n->minopp, n->script, n->format_id);
+        printf("    named_parameters=%d\n", n->nb_named_parameters);
+        for (j = 0; j < n->nb_named_parameters; ++j)
+            printf("      parameter[%d] name=%s value=%s\n", j,
+                   n->named_parameter[j].name, n->named_parameter[j].value);
     }
+
+    printf("arcs=%d\n", g.nb_arcs);
+    for (i = 0; i < g.nb_arcs; ++i)
+    {
+        const YG_Arc *a = &g.arcs[i];
+        printf("  arc[%d].present=0x%lx\n", i, a->present);
+        printf("    source: port=%d kind=%s name=%s local_name=%s base_name=%s instance_index=%d scope=%s hierarchy_depth=%d\n",
+               a->source.port, yg_test_kind(a->source.kind), a->source.name,
+               a->source.local_name, a->source.base_name, a->source.instance_index,
+               a->source.scope, a->source.hierarchy_depth);
+        printf("    destination: port=%d kind=%s name=%s local_name=%s base_name=%s instance_index=%d scope=%s hierarchy_depth=%d\n",
+               a->destination.port, yg_test_kind(a->destination.kind), a->destination.name,
+               a->destination.local_name, a->destination.base_name, a->destination.instance_index,
+               a->destination.scope, a->destination.hierarchy_depth);
+        printf("    arc_name=%s buffer_size=%d data_type=%s sample_rate=%g nb_channels=%d interleaving=%s\n",
+               a->arc_name, a->buffer_size, a->data_type, a->sample_rate,
+               a->nb_channels, a->interleaving);
+        printf("    refresh=%s jitter_percent=%g overlay_with=%s formatID=%s script=%s\n",
+               a->refresh, a->jitter_percent, a->overlay_with, a->format_id, a->script);
+    }
+
+    printf("formats=%d\n", g.nb_formats);
+    for (i = 0; i < g.nb_formats; ++i)
+    {
+        const YG_Format *f = &g.formats[i];
+        printf("  format[%d].present=0x%lx formatID=%d data_type=%s sample_rate=%g nb_channels=%d interleaving=%s\n",
+               i, f->present, f->format_id, f->data_type, f->sample_rate,
+               f->nb_channels, f->interleaving);
+    }
+    printf("error_line=%d error_text=%s\n", g.error_line, g.error_text);
     return 0;
 }
 #endif

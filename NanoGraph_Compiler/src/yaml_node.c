@@ -5,6 +5,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable: 4996)
 
 static void yn_copy(char *dst, int size, const char *src)
 {

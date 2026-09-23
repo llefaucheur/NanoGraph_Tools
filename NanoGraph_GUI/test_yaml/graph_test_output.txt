@@ -1,0 +1,59 @@
+graph.present=0x1
+platform=Computer
+nodes=5
+  node[0].present=0x0 kind=IO name=io_data_in[0] local_name=io_data_in[0] base_name=io_data_in instance_index=0 scope= hierarchy_depth=0
+    framel=0 period=0 per_hr=0 per_day=0 domain= nbchan=0 samprt=0 samprt_percent_accuracy=0
+    unit= scale=0 data_type= time_stamp= interleaving=
+    nb_params=0
+    paramtxt= paramFile= preset=0 minopp=0 script= formatID=
+    named_parameters=0
+  node[1].present=0x0 kind=IO name=io_data_in[1] local_name=io_data_in[1] base_name=io_data_in instance_index=1 scope= hierarchy_depth=0
+    framel=0 period=0 per_hr=0 per_day=0 domain= nbchan=0 samprt=0 samprt_percent_accuracy=0
+    unit= scale=0 data_type= time_stamp= interleaving=
+    nb_params=0
+    paramtxt= paramFile= preset=0 minopp=0 script= formatID=
+    named_parameters=0
+  node[2].present=0x104000 kind=node name=arm_filter_0 local_name=arm_filter_0 base_name=arm_filter instance_index=0 scope= hierarchy_depth=0
+    framel=0 period=0 per_hr=0 per_day=0 domain= nbchan=0 samprt=0 samprt_percent_accuracy=0
+    unit= scale=0 data_type= time_stamp= interleaving=
+    nb_params=0
+    paramtxt=inline gain=3 mode=test paramFile=configs/arm_filter_0.params preset=0 minopp=0 script= formatID=
+    named_parameters=0
+  node[3].present=0x0 kind=node name=arm_filter_cascade_0__arm_filter_1 local_name=arm_filter_1 base_name=arm_filter instance_index=1 scope=arm_filter_cascade_0 hierarchy_depth=1
+    framel=0 period=0 per_hr=0 per_day=0 domain= nbchan=0 samprt=0 samprt_percent_accuracy=0
+    unit= scale=0 data_type= time_stamp= interleaving=
+    nb_params=0
+    paramtxt= paramFile= preset=0 minopp=0 script= formatID=
+    named_parameters=0
+  node[4].present=0x40000 kind=node name=arm_converter_0 local_name=arm_converter_0 base_name=arm_converter instance_index=0 scope= hierarchy_depth=0
+    framel=0 period=0 per_hr=0 per_day=0 domain= nbchan=0 samprt=0 samprt_percent_accuracy=0
+    unit= scale=0 data_type= time_stamp= interleaving=
+    nb_params=0
+    paramtxt= paramFile= preset=0 minopp=0 script= formatID=
+    named_parameters=6
+      parameter[0] name=i_data_type value=float32
+      parameter[1] name=i_frame_length value=8
+      parameter[2] name=i_sample_rate value=44100
+      parameter[3] name=o_data_type value=int16
+      parameter[4] name=o_frame_length value=32
+      parameter[5] name=o_sample_rate value=16000
+arcs=3
+  arc[0].present=0x82
+    source: port=0 kind=IO name=io_data_in[0] local_name=io_data_in[0] base_name=io_data_in instance_index=0 scope= hierarchy_depth=0
+    destination: port=0 kind=node name=arm_filter_0 local_name=arm_filter_0 base_name=arm_filter instance_index=0 scope= hierarchy_depth=0
+    arc_name= buffer_size=4 data_type= sample_rate=0 nb_channels=0 interleaving=
+    refresh= jitter_percent=0 overlay_with= formatID=0 script=
+  arc[1].present=0x82
+    source: port=0 kind=IO name=io_data_in[1] local_name=io_data_in[1] base_name=io_data_in instance_index=1 scope= hierarchy_depth=0
+    destination: port=0 kind=node name=arm_filter_cascade_0__arm_filter_1 local_name=arm_filter_1 base_name=arm_filter instance_index=1 scope=arm_filter_cascade_0 hierarchy_depth=1
+    arc_name= buffer_size=16 data_type= sample_rate=0 nb_channels=0 interleaving=
+    refresh= jitter_percent=0 overlay_with= formatID=1 script=
+  arc[2].present=0x82
+    source: port=0 kind=node name=arm_converter_0 local_name=arm_converter_0 base_name=arm_converter instance_index=0 scope= hierarchy_depth=0
+    destination: port=0 kind=node name=arm_filter_0 local_name=arm_filter_0 base_name=arm_filter instance_index=0 scope= hierarchy_depth=0
+    arc_name= buffer_size=32 data_type= sample_rate=0 nb_channels=0 interleaving=
+    refresh= jitter_percent=0 overlay_with= formatID=0 script=
+formats=2
+  format[0].present=0xf formatID=0 data_type=int16 sample_rate=16000 nb_channels=2 interleaving=interleaved
+  format[1].present=0xf formatID=1 data_type=float32 sample_rate=44100 nb_channels=1 interleaving=deinterleaved
+error_line=0 error_text=

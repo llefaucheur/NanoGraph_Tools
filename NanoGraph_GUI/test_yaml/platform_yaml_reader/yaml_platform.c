@@ -200,6 +200,10 @@ static int yp_set_processor(YP_Processor *p, const char *key, char *value)
     { yp_copy(p->archID,YP_MAX_VALUE,value); p->present |= YP_PROC_HAS_ARCH; }
     else if (strcmp(key,"procID") == 0)
     { if(!yp_int(value,&p->procID)) return 0; p->present |= YP_PROC_HAS_ID; }
+    else if (strcmp(key,"cacheLine") == 0)
+    { if(!yp_int(value,&p->cacheLine)) return 0; p->present |= YP_PROC_HAS_CACHELINE; }
+    else if (strcmp(key,"computeServices") == 0)
+    { if(!yp_int(value,&p->computeServices)) return 0; p->present |= YP_PROC_HAS_COMPUTE; }
     return 1;
 }
 
@@ -229,8 +233,8 @@ static int yp_set_memory(YP_Memory *m, const char *key, char *value)
     { if(!yp_int(value,&m->speed)) return 0; m->present |= YP_MEM_HAS_SPEED; }
     else if (strcmp(key,"type") == 0)
     { if(!yp_int(value,&m->type)) return 0; m->present |= YP_MEM_HAS_TYPE; }
-    else if (strcmp(key,"interpreter_instance") == 0)
-    { if(!yp_int(value,&m->interpreter_instance)) return 0; m->present |= YP_MEM_HAS_INSTANCE; }
+    else if (strcmp(key,"instance") == 0)
+    { if(!yp_int(value,&m->instance)) return 0; m->present |= YP_MEM_HAS_INSTANCE; }
     return 1;
 }
 
@@ -267,12 +271,28 @@ static int yp_set_interface(YP_Interface *p, const char *key, char *value)
     { yp_copy(p->direction,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_DIRECTION; }
     else if (strcmp(key,"domain") == 0)
     { yp_copy(p->domain,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_DOMAIN; }
+    else if (strcmp(key,"protocol") == 0)
+    { yp_copy(p->protocol,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_PROTOCOL; }
+    else if (strcmp(key,"malloc") == 0)
+    { yp_copy(p->malloc_mode,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_MALLOC; }
+    else if (strcmp(key,"set0copy1") == 0)
+    { yp_copy(p->set0copy1,YP_MAX_VALUE,value); p->present |= YP_IF_HAS_SET0COPY1; }
+    else if (strcmp(key,"setup_time") == 0)
+    { if(!yp_double(value,&p->setup_time)) return 0; p->present |= YP_IF_HAS_SETUP_TIME; }
     return 1;
 }
 
 static int yp_set_constraint(YP_Interface *p, int group, const char *key, char *value)
 {
     YP_NumberConstraint *n;
+    if (group == 0)
+    {
+        if (strcmp(key,"interleaving") == 0)
+        { yp_copy(p->format.interleaving,YP_MAX_VALUE,value); p->format.present |= YP_FMT_HAS_INTERLEAVING; }
+        else if (strcmp(key,"samprt_percent_accuracy") == 0)
+        { if(!yp_double(value,&p->format.sample_rate_accuracy)) return 0; p->format.present |= YP_FMT_HAS_RATE_ACCURACY; }
+        return 1;
+    }
     if (group == 1)
     {
         if (strcmp(key,"default") == 0)
@@ -468,6 +488,10 @@ int yp_read_file(const char *filename, YP_PlatformManifest *m)
                 if (m->instance[iinst].interface_count >= YP_MAX_INTERFACES) goto toomany;
                 iif=m->instance[iinst].interface_count++; fmt_group=0;
                 memset(&m->instance[iinst].interface[iif],0,sizeof(YP_Interface));
+                yp_copy(m->instance[iinst].interface[iif].protocol,YP_MAX_VALUE,"servant");
+                yp_copy(m->instance[iinst].interface[iif].malloc_mode,YP_MAX_VALUE,"platform");
+                yp_copy(m->instance[iinst].interface[iif].set0copy1,YP_MAX_VALUE,"set");
+                m->instance[iinst].interface[iif].setup_time=0.0;
                 text=yp_ltrim(text+1);
                 if ((*text!='\0') && yp_key_value(text,&key,&value))
                 {
@@ -488,7 +512,7 @@ int yp_read_file(const char *filename, YP_PlatformManifest *m)
                 else if (strcmp(key,"frame_length") == 0) fmt_group=2;
                 else if (strcmp(key,"sample_rate") == 0) fmt_group=3;
                 else if (strcmp(key,"nb_channels") == 0) fmt_group=4;
-                else fmt_group=0;
+                else { fmt_group=0; if(!yp_set_constraint(&m->instance[iinst].interface[iif],0,key,value)) goto badnum; }
             }
             else if ((ind >= 12) && (iinst >= 0) && (iif >= 0) && (fmt_group != 0) && yp_key_value(text,&key,&value))
             { yp_unquote(value); if(!yp_set_constraint(&m->instance[iinst].interface[iif],fmt_group,key,value)) goto badnum; }
@@ -551,6 +575,29 @@ const YP_Interface *yp_find_interface(const YP_InterpreterInstance *instance,
 }
 
 #ifdef YAML_PLATFORM_TEST
+static void yp_test_string_list(const YP_StringList *v)
+{
+    int i;
+    printf("[");
+    for (i = 0; i < v->count; ++i) printf("%s%s", (i == 0) ? "" : ", ", v->value[i]);
+    printf("]");
+}
+
+static void yp_test_number_list(const YP_NumberList *v)
+{
+    int i;
+    printf("[");
+    for (i = 0; i < v->count; ++i) printf("%s%g", (i == 0) ? "" : ", ", v->value[i]);
+    printf("]");
+}
+
+static void yp_test_number_constraint(const char *name, const YP_NumberConstraint *n)
+{
+    printf("        %s.present=0x%lx type=%s default=%g values=", name, n->present, n->type, n->default_value);
+    yp_test_number_list(&n->values);
+    printf("\n");
+}
+
 int main(int argc, char **argv)
 {
     YP_PlatformManifest m;
@@ -559,74 +606,70 @@ int main(int argc, char **argv)
     int i;
     int j;
 
-    filename = (argc > 1) ? argv[1] : "platform.yaml";
+    filename = (argc > 1) ? argv[1] : "platform.txt";
     rc = yp_read_file(filename, &m);
     if (rc != YP_OK)
     {
-        fprintf(stderr, "parse error %d, line %d: %s\n",
-                rc, m.error_line, m.error_text);
+        fprintf(stderr, "parse error %d, line %d: %s\n", rc, m.error_line, m.error_text);
         return 1;
     }
 
-    printf("platform: %s version=%d\n", m.platform, m.version);
-    printf("file_paths: %d\n", m.file_path_count);
-    i = 0;
-    while (i < m.file_path_count)
+    printf("manifest.present=0x%lx platform=%s version=%d description=%s\n", m.present, m.platform, m.version, m.description);
+    printf("file_paths=%d\n", m.file_path_count);
+    for (i = 0; i < m.file_path_count; ++i)
+        printf("  file_path[%d].present=0x%lx path_to=%s index=%d path=%s\n", i,
+               m.file_path[i].present, m.file_path[i].path_to, m.file_path[i].index, m.file_path[i].path);
+
+    printf("processors=%d\n", m.processor_count);
+    for (i = 0; i < m.processor_count; ++i)
     {
-        printf("  [%d] %s index=%d path=%s\n", i,
-               m.file_path[i].path_to, m.file_path[i].index,
-               m.file_path[i].path);
-        ++i;
+        const YP_Processor *p = &m.processor[i];
+        printf("  processor[%d].present=0x%lx archID=%s procID=%d cacheLine=%d computeServices=%d node_count=%d\n",
+               i, p->present, p->archID, p->procID, p->cacheLine, p->computeServices, p->node_count);
+        for (j = 0; j < p->node_count; ++j)
+            printf("    node[%d].present=0x%lx path=%d index=%d name=%s\n", j,
+                   p->node[j].present, p->node[j].path, p->node[j].index, p->node[j].name);
     }
-    printf("processors: %d\n", m.processor_count);
-    i = 0;
-    while (i < m.processor_count)
+
+    printf("memories=%d\n", m.memory_count);
+    for (i = 0; i < m.memory_count; ++i)
     {
-        printf("  [%d] archID=%s procID=%d nodes=%d\n", i,
-               m.processor[i].archID, m.processor[i].procID,
-               m.processor[i].node_count);
-        j = 0;
-        while (j < m.processor[i].node_count)
+        const YP_Memory *mem = &m.memory[i];
+        printf("  memory[%d].present=0x%lx name=%s index=%d size=%lu access=%d speed=%d type=%d instance=%d subblock_count=%d\n",
+               i, mem->present, mem->name, mem->index, mem->size, mem->access, mem->speed,
+               mem->type, mem->instance, mem->subblock_count);
+        for (j = 0; j < mem->subblock_count; ++j)
+            printf("    subblock[%d].present=0x%lx index=%d name=%s base=%lu size=%lu\n", j,
+                   mem->subblock[j].present, mem->subblock[j].index, mem->subblock[j].name,
+                   mem->subblock[j].base, mem->subblock[j].size);
+    }
+
+    printf("interpreter_instances=%d\n", m.instance_count);
+    for (i = 0; i < m.instance_count; ++i)
+    {
+        const YP_InterpreterInstance *in = &m.instance[i];
+        printf("  instance[%d].present=0x%lx name=%s index=%d archID=%s procID=%d priority=%d trace_depth=%d trace_verbosity=%d memory_isolation=%d interface_count=%d\n",
+               i, in->present, in->name, in->index, in->archID, in->procID, in->priority,
+               in->trace_depth, in->trace_verbosity, in->memory_isolation, in->interface_count);
+        for (j = 0; j < in->interface_count; ++j)
         {
-            printf("       node[%d] path=%d index=%d name=%s\n", j,
-                   m.processor[i].node[j].path,
-                   m.processor[i].node[j].index,
-                   m.processor[i].node[j].name);
-            ++j;
+            const YP_Interface *itf = &in->interface[j];
+            printf("    interface[%d].present=0x%lx path=%d index=%d c_platform_index=%d name=%s direction=%s domain=%s\n",
+                   j, itf->present, itf->path, itf->index, itf->c_platform_index,
+                   itf->name, itf->direction, itf->domain);
+            printf("      protocol=%s malloc=%s set0copy1=%s setup_time=%g\n",
+                   itf->protocol, itf->malloc_mode, itf->set0copy1, itf->setup_time);
+            printf("      format.present=0x%lx interleaving=%s samprt_percent_accuracy=%g\n",
+                   itf->format.present, itf->format.interleaving, itf->format.sample_rate_accuracy);
+            printf("        data_type.present=0x%lx default=%s values=", itf->format.data_type.present,
+                   itf->format.data_type.default_value);
+            yp_test_string_list(&itf->format.data_type.values); printf("\n");
+            yp_test_number_constraint("frame_length", &itf->format.frame_length);
+            yp_test_number_constraint("sample_rate", &itf->format.sample_rate);
+            yp_test_number_constraint("nb_channels", &itf->format.nb_channels);
         }
-        ++i;
     }
-    printf("memories: %d\n", m.memory_count);
-    i = 0;
-    while (i < m.memory_count)
-    {
-        printf("  [%d] %s index=%d size=%lu subblocks=%d interpreter_instance %d\n", i,
-               m.memory[i].name, m.memory[i].index, m.memory[i].size,
-               m.memory[i].subblock_count, m.memory[i].interpreter_instance);
-        ++i;
-    }
-    printf("interpreter_instances: %d\n", m.instance_count);
-    i = 0;
-    while (i < m.instance_count)
-    {
-        printf("  [%d] %s archID=%s procID=%d interfaces=%d\n", i,
-               m.instance[i].name, m.instance[i].archID,
-               m.instance[i].procID, m.instance[i].interface_count);
-        j = 0;
-        while (j < m.instance[i].interface_count)
-        {
-            const YP_Interface *itf;
-            itf = &m.instance[i].interface[j];
-            printf("       interface[%d] %s[%d] c_platform_index=%d direction=%s domain=%s",
-                   j, itf->name, itf->index, itf->c_platform_index,
-                   itf->direction, itf->domain);
-            if (itf->format.sample_rate.present & YP_NUM_HAS_DEFAULT)
-                printf(" sample_rate_default=%g", itf->format.sample_rate.default_value);
-            printf("\n");
-            ++j;
-        }
-        ++i;
-    }
+    printf("error_line=%d error_text=%s\n", m.error_line, m.error_text);
     return 0;
 }
 #endif

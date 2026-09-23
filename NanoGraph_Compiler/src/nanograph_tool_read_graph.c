@@ -400,35 +400,35 @@ void compute_memreq(struct node_memory_bank *m, struct formatStruct *all_format,
 */
 void nanograph_tool_read_subgraph (char **pt_line, struct nanograph_platform_manifest* platform,struct nanograph_graph_linkedlist *graph)
 {   
-    char *new_ggraph, file_name[NBCHAR_NAME], file_name2[NBCHAR_NAME], *subName, paths[MAX_NB_PATH][NBCHAR_LINE], dbg;
-    uint32_t ipath, i;
-    char *dbgchar;
-    extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform,
-        struct nanograph_graph_linkedlist* graph,
-        char* ggraph_txt);
-    
-    strcpy(file_name, ""); strcpy(file_name2, "");
-    new_ggraph = calloc (MAXINPUT, 1);
-    
-    jump2next_valid_line(pt_line);
-    subName = &(graph->mangling[graph->subg_depth][0]);
-    dbg = sscanf (*pt_line, "%s", subName); jump2next_valid_line(pt_line);
-    
-    graph->subg_depth++;
-    
-    /* create the first characters of names of this subgraph */
-    strcpy(graph->toConcatenate, "");
-    for (i = 0; i < graph->subg_depth; i++)
-    {   strcat (graph->toConcatenate, graph->mangling[i]);
-        strcat (graph->toConcatenate, "_");
-    }
-    
-    /* read subgraph as a recursion */ 
-    dbg = sscanf (*pt_line, "%d %s", &ipath, file_name2); jump2next_valid_line(pt_line);
-    strncpy(file_name, paths[ipath], NBCHAR_NAME); 
-    file_name[NBCHAR_NAME-1] = '\0';
-    file_name2[NBCHAR_NAME-1] = '\0';
-    dbgchar = strcat(file_name, file_name2);
+//   char *new_ggraph, file_name[NBCHAR_NAME], file_name2[NBCHAR_NAME], *subName, paths[MAX_NB_PATH][NBCHAR_LINE], dbg;
+//   uint32_t ipath, i;
+//   char *dbgchar;
+//   extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform,
+//       struct nanograph_graph_linkedlist* graph,
+//       char* ggraph_txt);
+//   
+//   strcpy(file_name, ""); strcpy(file_name2, "");
+//   new_ggraph = calloc (MAXINPUT, 1);
+//   
+//   jump2next_valid_line(pt_line);
+//   subName = &(graph->mangling[graph->subg_depth][0]);
+//   dbg = sscanf (*pt_line, "%s", subName); jump2next_valid_line(pt_line);
+//   
+//   graph->subg_depth++;
+//   
+//   /* create the first characters of names of this subgraph */
+//   strcpy(graph->toConcatenate, "");
+//   for (i = 0; i < graph->subg_depth; i++)
+//   {   strcat (graph->toConcatenate, graph->mangling[i]);
+//       strcat (graph->toConcatenate, "_");
+//   }
+//   
+//   /* read subgraph as a recursion */ 
+//   dbg = sscanf (*pt_line, "%d %s", &ipath, file_name2); jump2next_valid_line(pt_line);
+//   strncpy(file_name, paths[ipath], NBCHAR_NAME); 
+//   file_name[NBCHAR_NAME-1] = '\0';
+//   file_name2[NBCHAR_NAME-1] = '\0';
+//   dbgchar = strcat(file_name, file_name2);
     read_input_file (file_name, new_ggraph);
 
     /* recursion starts here */

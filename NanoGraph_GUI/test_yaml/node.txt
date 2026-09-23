@@ -6,7 +6,7 @@ description: CMSIS-DSP based filtering node
 
 interfaces:
   - rx_interface:               
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                 
     name: input0        
     
     domain: general
@@ -26,7 +26,7 @@ interfaces:
 
   - tx_interface:                     
 #    path: 1
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                 
     name: output0        
     
     domain: general

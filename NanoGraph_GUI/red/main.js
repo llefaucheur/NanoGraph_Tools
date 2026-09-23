@@ -61,22 +61,11 @@ var RED = (function() {
         name = String(name);
         name = name.replace(/[\s+\-]+/g, "_");
 
-        /*
-         * Historical GUI compatibility: the palette component is still
-         * called io_sink, while platform manifests use the canonical logical
-         * interface name io_data_sink.  Export the canonical name so graph
-         * YAML and platform lookup share the same (name,index) identity.
-         */
-        name = name.replace(/^io_sink(?=\[|$)/, "io_data_sink");
         return name;
     }
 
     function isPlatformNode(n) {
-        /* Backward compatible: older saved graphs may not yet contain
-         * kind="platform", but the palette category already identifies
-         * platform objects. */
-        return !!(n && (n.kind === "platform" ||
-                       (n._def && n._def.category === "Platforms")));
+        return !!(n && n.kind === "platform");
     }
 
     function platformName(n) {
@@ -699,7 +688,15 @@ var RED = (function() {
                 } else {
                     k = (n.kind === "IO") ? "IO" : "node";
                 }
-                flat.nodes.push({kind:k, type:n.type, name:rootName, props:n});
+                flat.nodes.push({
+                    kind:k,
+                    type:n.type,
+                    name:rootName,
+                    props:n,
+                    generated:(n.generated === true || String(n.generated).toLowerCase() === "true"),
+                    generated_by:n.generated_by || "",
+                    generated_reason:n.generated_reason || ""
+                });
                 descriptors[n.id] = {
                     direct:true,
                     name:rootName,
@@ -1003,7 +1000,20 @@ var RED = (function() {
         props.i_frame_length = R.frameLengthValue(src.format.frame_length);
         props.o_frame_length = R.frameLengthValue(dst.format.frame_length);
 
-        flat.nodes.push({kind:"node", type:"arm_converter", name:converterName, props:props, generated:true});
+        var generatedReasons = [];
+        if (dataResult && !dataResult.compatible) generatedReasons.push("data_type");
+        if (rateResult && !rateResult.compatible) generatedReasons.push("sample_rate");
+        if (channelsResult && !channelsResult.compatible) generatedReasons.push("nb_channels");
+        if (interleavingResult && !interleavingResult.compatible) generatedReasons.push("interleaving");
+        flat.nodes.push({
+            kind:"node",
+            type:"arm_converter",
+            name:converterName,
+            props:props,
+            generated:true,
+            generated_by:"format_resolver",
+            generated_reason:generatedReasons.join(",")
+        });
 
         firstAttrs = copyArcAttrs(a.attrs);
         secondAttrs = copyArcAttrs(a.attrs);
@@ -1034,7 +1044,7 @@ var RED = (function() {
         var i, a, src, dst, requested, dataResult, rateResult, channelsResult, interleavingResult;
         var defs, splitArcs, progress, pass;
         if (!R) throw new Error("format resolver is not loaded");
-        if (!platformManifest) return flat; /* Graphs without platform keep legacy behavior. */
+        if (!platformManifest) throw new Error("Graph has no platform");
 
         /*
          * Resolve in passes because same_as may make a TX interface depend on an
@@ -1057,21 +1067,6 @@ var RED = (function() {
                     !applySameAsIfReady(dst,a.destination,resolved)) {
                     nextPending.push(a);
                     continue;
-                }
-
-                /*
-                 * same_as is a hard equality constraint. If such an output
-                 * feeds a physical platform IO, keep the IO platform defaults
-                 * as exact target operating values. A disagreement must be
-                 * solved by arm_converter; the downstream default must never
-                 * rewrite the same_as output format.
-                 */
-                if (src.sameAs && dst.platformInterface) {
-                    dst.format = copyObject(dst.format || {});
-                    dst.format.data_type = R.platformDefaultAsExact(dst.format.data_type);
-                    dst.format.sample_rate = R.platformDefaultAsExact(dst.format.sample_rate);
-                    dst.format.nb_channels = R.platformDefaultAsExact(dst.format.nb_channels);
-                    dst.format.interleaving = R.platformDefaultAsExact(dst.format.interleaving);
                 }
 
                 defs = {
@@ -1217,6 +1212,8 @@ var RED = (function() {
         var i, n, a, props;
         yml += "# AUTOMATICALLY GENERATED ! " + (new Date()).toDateString() + "\n";
         yml += "# Subgraphs are flattened; internal names use '__' mangling.\n\n";
+        yml += "graph_format_version: 1\n";
+        yml += "graph_state: resolved\n";
 
         /* The platform is graph-level metadata, not a processing node. */
         for (i=0; i<flat.nodes.length; i++) {
@@ -1242,6 +1239,11 @@ var RED = (function() {
                 for (var j=0; j<ioFields.length; j++) yml = appendField(yml,props,ioFields[j]);
             } else {
                 yml += "  - node: " + n.name + "\n";
+                if (n.generated) {
+                    yml += "    generated: true\n";
+                    if (!isEmpty(n.generated_by)) yml += "    generated_by: " + n.generated_by + "\n";
+                    if (!isEmpty(n.generated_reason)) yml += "    generated_reason: " + n.generated_reason + "\n";
+                }
                 var m = manifestForType(n.type);
                 if (m && m.parameters && m.parameters.length) {
                     yml = appendField(yml,props,"preset");
@@ -1286,6 +1288,287 @@ var RED = (function() {
 
         return yml;
     }
+
+
+    /* ------------------------------------------------------------------
+     * Graph YAML import
+     * ------------------------------------------------------------------
+     * This parser deliberately accepts the YAML subset emitted by
+     * renderFlattenedYaml(). It is not intended to be a general YAML parser.
+     * A manually edited arm_converter is treated as a normal design node unless
+     * it explicitly carries `generated: true`.
+     */
+    function parseGraphScalar(text) {
+        var t = $.trim(String(text == null ? "" : text));
+        if (t.length >= 2 && t.charAt(0) === '"' && t.charAt(t.length-1) === '"') {
+            try { return JSON.parse(t); } catch (ignore) { return t.substring(1,t.length-1); }
+        }
+        if (t === "true") return true;
+        if (t === "false") return false;
+        if (t === "null") return null;
+        if (/^-?[0-9]+$/.test(t)) return parseInt(t,10);
+        if (/^-?(?:[0-9]+\.[0-9]*|[0-9]*\.[0-9]+)(?:[eE][+-]?[0-9]+)?$/.test(t) ||
+            /^-?[0-9]+[eE][+-]?[0-9]+$/.test(t)) return parseFloat(t);
+        return t;
+    }
+
+    function parseExportedGraphYaml(text) {
+        var lines = String(text || "").replace(/\r/g,"").split("\n");
+        var model = {graph_format_version:null, graph_state:"", platform:"", nodes:[], arcs:[]};
+        var section = "", currentNode = null, currentArc = null, inParameters = false;
+        var i, line, m, key, value;
+
+        for (i=0; i<lines.length; i++) {
+            line = lines[i];
+            if (!line || /^\s*#/.test(line)) continue;
+
+            if (/^graph_format_version\s*:/.test(line)) {
+                model.graph_format_version = parseGraphScalar(line.substring(line.indexOf(":")+1));
+                continue;
+            }
+            if (/^graph_state\s*:/.test(line)) {
+                model.graph_state = String(parseGraphScalar(line.substring(line.indexOf(":")+1)));
+                continue;
+            }
+            if (/^platform\s*:/.test(line)) {
+                model.platform = $.trim(line.substring(line.indexOf(":")+1));
+                continue;
+            }
+            if (/^nodes\s*:/.test(line)) { section="nodes"; currentNode=null; currentArc=null; continue; }
+            if (/^arcs\s*:/.test(line)) { section="arcs"; currentNode=null; currentArc=null; continue; }
+            if (/^formats\s*:/.test(line)) { section="formats"; currentNode=null; currentArc=null; continue; }
+
+            if (section === "nodes") {
+                m = line.match(/^\s{2}-\s+(IO|node)\s*:\s*(.+?)\s*$/);
+                if (m) {
+                    currentNode = {kind:m[1], name:$.trim(m[2]), props:{}, parameters:{}, generated:false};
+                    model.nodes.push(currentNode);
+                    inParameters = false;
+                    continue;
+                }
+                if (!currentNode) continue;
+                if (/^\s{4}parameters\s*:\s*$/.test(line)) { inParameters=true; continue; }
+                if (inParameters) {
+                    m = line.match(/^\s{6}([^:]+)\s*:\s*(.*)$/);
+                    if (m) {
+                        currentNode.parameters[$.trim(m[1])] = parseGraphScalar(m[2]);
+                        continue;
+                    }
+                    inParameters=false;
+                }
+                m = line.match(/^\s{4}([^:]+)\s*:\s*(.*)$/);
+                if (m) {
+                    key=$.trim(m[1]); value=parseGraphScalar(m[2]);
+                    if (key === "generated") currentNode.generated=(value === true || String(value).toLowerCase() === "true");
+                    else if (key === "generated_by") currentNode.generated_by=String(value);
+                    else if (key === "generated_reason") currentNode.generated_reason=String(value);
+                    else currentNode.props[key]=value;
+                }
+                continue;
+            }
+
+            if (section === "arcs") {
+                m = line.match(/^\s{2}-\s+OPort_([0-9]+)\s+(IO|node)\s*:\s*(.+?)\s*$/);
+                if (m) {
+                    currentArc={
+                        source:{port:parseInt(m[1],10),kind:m[2],name:$.trim(m[3])},
+                        destination:null,
+                        attrs:{}
+                    };
+                    model.arcs.push(currentArc);
+                    continue;
+                }
+                if (!currentArc) continue;
+                m = line.match(/^\s{4}IPort_([0-9]+)\s+(IO|node)\s*:\s*(.+?)\s*$/);
+                if (m) {
+                    currentArc.destination={port:parseInt(m[1],10),kind:m[2],name:$.trim(m[3])};
+                    continue;
+                }
+                m = line.match(/^\s{4}([^:]+)\s*:\s*(.*)$/);
+                if (m) currentArc.attrs[$.trim(m[1])] = parseGraphScalar(m[2]);
+            }
+        }
+        return model;
+    }
+
+    function inferImportedNodeType(node) {
+        var name = String(node.name || "");
+        var manifests, types, i, type;
+        if (node.kind === "IO") return name.replace(/\[[0-9]+\]$/,"");
+        manifests = window.NG_NODE_MANIFESTS || {};
+        types = Object.keys(manifests).sort(function(a,b){ return b.length-a.length; });
+        for (i=0; i<types.length; i++) {
+            type=types[i];
+            if (name === type || name.indexOf(type+"_") === 0 || name.indexOf(type+"[") === 0) return type;
+        }
+        return name.replace(/_[0-9]+$/,"");
+    }
+
+    function editorNameFromExported(name, kind) {
+        if (kind === "IO") return name;
+        return String(name).replace(/_([0-9]+)$/,"[$1]");
+    }
+
+    function mergeLogicalArcAttrs(a,b) {
+        var out={}, keys=["arc_name","buffer_size","refresh","jitter_percent","overlay_with","script"], i, k;
+        a=a||{}; b=b||{};
+        for (i=0;i<keys.length;i++) {
+            k=keys[i];
+            if (!isEmpty(a[k])) out[k]=a[k];
+            else if (!isEmpty(b[k])) out[k]=b[k];
+        }
+        /* formatID belongs to a resolved graph and is intentionally discarded. */
+        return out;
+    }
+
+    function collapseGeneratedNodes(model) {
+        var generated={}, i, n, incoming, outgoing, newArcs=[], consumed={};
+        for (i=0;i<model.nodes.length;i++) if (model.nodes[i].generated) generated[model.nodes[i].name]=model.nodes[i];
+        Object.keys(generated).forEach(function(name){
+            incoming=[]; outgoing=[];
+            for (var j=0;j<model.arcs.length;j++) {
+                var a=model.arcs[j];
+                if (a.destination && a.destination.name === name) incoming.push({arc:a,index:j});
+                if (a.source && a.source.name === name) outgoing.push({arc:a,index:j});
+            }
+            if (incoming.length !== 1 || outgoing.length !== 1) {
+                throw new Error("Generated node " + name + " cannot be collapsed: expected exactly one input and one output arc");
+            }
+            consumed[incoming[0].index]=true; consumed[outgoing[0].index]=true;
+            newArcs.push({
+                source:incoming[0].arc.source,
+                destination:outgoing[0].arc.destination,
+                attrs:mergeLogicalArcAttrs(incoming[0].arc.attrs,outgoing[0].arc.attrs)
+            });
+        });
+        for (i=0;i<model.arcs.length;i++) if (!consumed[i]) newArcs.push(model.arcs[i]);
+        model.arcs=newArcs;
+        model.nodes=model.nodes.filter(function(x){ return !x.generated; });
+        model.graph_state="logical";
+        return model;
+    }
+
+    function importedWireAttrs(attrs) {
+        attrs=attrs||{};
+        return {
+            bufferSize:isEmpty(attrs.buffer_size)?"":String(attrs.buffer_size),
+            arcName:isEmpty(attrs.arc_name)?"":String(attrs.arc_name),
+            refresh:isEmpty(attrs.refresh)?"":String(attrs.refresh),
+            jitterPercent:isEmpty(attrs.jitter_percent)?"":String(attrs.jitter_percent),
+            overlayWith:isEmpty(attrs.overlay_with)?"":String(attrs.overlay_with),
+            formatID:isEmpty(attrs.formatID)?"":String(attrs.formatID),
+            script:isEmpty(attrs.script)?"":String(attrs.script)
+        };
+    }
+
+    function graphModelToNodeRed(model) {
+        var records=[], byName={}, x=140, y=100, row=0, i, n, type, def, rec, a, src, wire, p;
+
+        if (model.platform) {
+            def=RED.nodes.getType(model.platform);
+            if (!def) throw new Error("Unknown platform type '" + model.platform + "'");
+            rec={id:RED.nodes.id(), type:model.platform, name:model.platform, x:120, y:60, wires:[]};
+            records.push(rec); byName[model.platform]=rec;
+        }
+
+        for (i=0;i<model.nodes.length;i++) {
+            n=model.nodes[i]; type=inferImportedNodeType(n); def=RED.nodes.getType(type);
+            if (!def) throw new Error("Unknown node type '" + type + "' for " + n.name);
+            rec={
+                id:RED.nodes.id(),
+                type:type,
+                name:editorNameFromExported(n.name,n.kind),
+                x:x + (row%4)*190,
+                y:150 + Math.floor(row/4)*100,
+                wires:[]
+            };
+            row++;
+            for (p in n.props) if (n.props.hasOwnProperty(p)) rec[p]=n.props[p];
+            for (p in n.parameters) if (n.parameters.hasOwnProperty(p)) rec[p]=n.parameters[p];
+            if (n.generated) {
+                rec.generated=true;
+                rec.generated_by=n.generated_by || "";
+                rec.generated_reason=n.generated_reason || "";
+            }
+            for (var w=0; w<(def.outputs||0); w++) rec.wires.push([]);
+            records.push(rec); byName[n.name]=rec;
+        }
+
+        for (i=0;i<model.arcs.length;i++) {
+            a=model.arcs[i];
+            if (!a.destination) throw new Error("Arc from " + a.source.name + " has no destination");
+            src=byName[a.source.name];
+            var dst=byName[a.destination.name];
+            if (!src) throw new Error("Arc source not found: " + a.source.name);
+            if (!dst) throw new Error("Arc destination not found: " + a.destination.name);
+            while (src.wires.length <= a.source.port) src.wires.push([]);
+            wire=importedWireAttrs(a.attrs);
+            wire.target=dst.id;
+            wire.targetPort=a.destination.port;
+            src.wires[a.source.port].push(wire);
+        }
+        return records;
+    }
+
+    function replaceCurrentWorkspaceWith(records) {
+        var workspace=RED.view.getWorkspace(), removeIds=[];
+        RED.nodes.eachNode(function(n){ if (String(n.z) === String(workspace)) removeIds.push(n.id); });
+        for (var i=0;i<removeIds.length;i++) RED.nodes.remove(removeIds[i]);
+        for (i=0;i<records.length;i++) records[i].z=workspace;
+        var result=RED.nodes.import(records,false);
+        if (!result) throw new Error("Node-RED rejected imported graph");
+        RED.view.redraw();
+        RED.view.dirty(true);
+        return result;
+    }
+
+    function importGraphYaml(text, preserveGenerated) {
+        var model=parseExportedGraphYaml(text);
+        if (model.graph_format_version != null && Number(model.graph_format_version) !== 1)
+            throw new Error("Unsupported graph_format_version " + model.graph_format_version);
+        if (!model.platform) throw new Error("Imported graph has no platform");
+        if (!preserveGenerated) collapseGeneratedNodes(model);
+        var records=graphModelToNodeRed(model);
+        replaceCurrentWorkspaceWith(records);
+        RED.notify("Graph imported: " + model.nodes.length + " nodes, " + model.arcs.length + " arcs" +
+                   (preserveGenerated ? " (generated nodes preserved)" : " (generated nodes will be regenerated on export)"),"success");
+    }
+
+    function showImportGraphDialog() {
+        RED.view.getForm('dialog-form','graph-import-dialog',function(){
+            $("#node-input-graph-import").val("");
+            $("#graph-import-logical").prop("checked",true);
+            $("#node-input-graph-file").off("change.nggraph").on("change.nggraph",function(evt){
+                var file=evt.target.files && evt.target.files[0];
+                if (!file) return;
+                var reader=new FileReader();
+                reader.onload=function(e){ $("#node-input-graph-import").val(e.target.result || ""); };
+                reader.onerror=function(){ RED.notify("Unable to read graph file","error"); };
+                reader.readAsText(file);
+            });
+            $("#dialog").dialog("option",{
+                title:"Import NanoGraph YAML",
+                width:700,
+                buttons:[
+                    {
+                        text:"Import",
+                        click:function(){
+                            try {
+                                var preserve=$("#graph-import-preserve").prop("checked");
+                                importGraphYaml($("#node-input-graph-import").val(),preserve);
+                                $(this).dialog("close");
+                            } catch(err) {
+                                RED.notify("<strong>Import error</strong>: " + err.message,"error");
+                            }
+                        }
+                    },
+                    {text:"Cancel",click:function(){ $(this).dialog("close"); }}
+                ]
+            }).dialog("open");
+        });
+    }
+
+    $('#btn-import-graph').click(function(){ showImportGraphDialog(); });
 
     function save(force) {
         RED.storage.update();

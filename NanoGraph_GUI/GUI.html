@@ -101,7 +101,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
                 <div class="btn-group pull-left">
                     <a id="btn-parent-graph" class="btn" href="#" style="display:none" title="Return to the graph containing this subgraph"><i class="icon-arrow-left"></i> Back to Parent Graph</a>
                     <a id="btn-deploy" class="btn action-deploy disabled" href="#"><i id="btn-icn-deploy" class="icon-upload"></i>Export Graph</a>
-                    <!-- <a id="btn-import" class="btn action-import disabled" href="#"><i id="btn-icn-download" class="icon-download"></i>Import</a> -->
+                    <a id="btn-import-graph" class="btn action-import" href="#"><i class="icon-download"></i>Import Graph</a>
                 </div>
             </div>
         </div>
@@ -172,7 +172,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
                     <option value="flush">flush</option>
                     <option value="invalidate">invalidate</option>
                     <option value="both">both</option>
-                    <option value="none">none</option>
+
                 </select>
             </div>
             <div class="form-row">
@@ -182,10 +182,6 @@ span.mainfunction {color: #993300; font-weight: bolder}
             <div class="form-row">
                 <label for="arc-input-overlay-with"><i class="icon-resize-small"></i> Overlay with:</label>
                 <input type="text" id="arc-input-overlay-with" placeholder="optional arc name">
-            </div>
-            <div class="form-row">
-                <label for="arc-formatID"><i class="icon-resize-small"></i> formatID:</label>
-                <input type="text" id="arc-formatID" placeholder="generated during export" readonly>
             </div>
             <div class="form-row">
                 <label for="arc-input-script"><i class="icon-file"></i> Script:</label>
@@ -370,6 +366,27 @@ span.mainfunction {color: #993300; font-weight: bolder}
         </div>
     </script>
 
+    <script type="text/x-red" data-template-name="graph-import-dialog">
+        <div class="form-row">
+            <label for="node-input-graph-file"><i class="icon-folder-open"></i>File:</label>
+            <input type="file" id="node-input-graph-file" accept=".yaml,.yml,.txt,text/yaml,text/plain">
+        </div>
+        <div class="form-row">
+            <label for="node-input-graph-import"><i class="icon-download"></i>Graph YAML:</label>
+            <textarea style="font-family: monospace; font-size: 12px; background:rgb(226, 229, 255); padding-left:0.5em; width:100%;" id="node-input-graph-import" rows="18" placeholder="Paste an exported NanoGraph YAML graph here, or select a file above"></textarea>
+        </div>
+        <div class="form-row">
+            <label style="width:auto;"><input type="radio" name="graph-import-mode" id="graph-import-logical" checked> Logical import</label>
+            <span style="margin-left:8px;">discard nodes marked <code>generated: true</code> and regenerate them on the next export</span>
+        </div>
+        <div class="form-row">
+            <label style="width:auto;"><input type="radio" name="graph-import-mode" id="graph-import-preserve"> Preserve resolved graph</label>
+            <span style="margin-left:8px;">keep resolver-generated converters exactly as graph nodes</span>
+        </div>
+        <p><b>Manual converters are always preserved:</b> an <code>arm_converter</code> without <code>generated: true</code> is treated as user-authored.</p>
+        <p>Import replaces the nodes and arcs in the current workspace.</p>
+    </script>
+
     <script src="jquery/js/jquery-1.9.1.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="jquery/js/jquery-ui-1.10.3.custom.min.js"></script>
@@ -497,10 +514,10 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
-         {"type":             "io_sink",
+         {"type":             "io_data_sink",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
                   "framel":{"value":"", "required": "true" },"samprt":{"value":"", "required": "true" },"nbchan":{"value":"", "required": "true" } },
-                  "shortName":"io_sink","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
+                  "shortName":"io_data_sink","inputs":1,"outputs":0, "category":"output-function","color":"#ffeaf1","icon":"arrow-in.png"}},
 
          {"type":             "io_data_out",
           "data":{"defaults":{"name":{"value":"new"},"kind":{"value": "IO", "required" : "true"},
@@ -903,8 +920,8 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
 
 
-    <!----------------------------------- io_sink ------------------------------------------->
-    <script type="text/x-red"      data-template-name="io_sink">
+    <!----------------------------------- io_data_sink ------------------------------------------->
+    <script type="text/x-red"      data-template-name="io_data_sink">
 
         <div class="form-row"> <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">  </div>
@@ -919,7 +936,7 @@ span.mainfunction {color: #993300; font-weight: bolder}
                             <i class= "fa fa-tag"></i> samprt</label>
                     <input type="text"  id="node-input-samprt">  </div>
 
-    </script><script type="text/x-red" data-help-name="io_sink">
+    </script><script type="text/x-red" data-help-name="io_data_sink">
         <h4>Summary</h4> <div class=tooltipinfo>
         <p>Absorbs all data, its FIFO is always empty </p>
         </div> </script>

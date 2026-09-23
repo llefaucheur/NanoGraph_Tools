@@ -679,6 +679,7 @@ void arm_nanograph_read_manifests (struct nanograph_platform_manifest *platform,
 }
 
 
+
 #ifdef __cplusplus
 }
 #endif

@@ -12,13 +12,13 @@
  */
 
 #define YG_MAX_NODES             64
-#define YG_MAX_ARCS             128
+#define YG_MAX_ARCS              64
 #define YG_MAX_FORMATS           64
 #define YG_MAX_NAME             256
 #define YG_MAX_LOCAL_NAME        64
 #define YG_MAX_SCOPE            256
 #define YG_MAX_PLATFORM          64
-#define YG_MAX_DOMAIN            32
+#define YG_MAX_DOMAIN            16
 #define YG_MAX_DATA_TYPE         32
 #define YG_MAX_TEXT             256
 #define YG_MAX_SCRIPT           128

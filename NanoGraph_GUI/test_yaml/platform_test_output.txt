@@ -1,0 +1,148 @@
+manifest.present=0x3 platform=Computer version=1 description=Desktop computer test platform (Windows, macOS or Linux).
+file_paths=2
+  file_path[0].present=0x3 path_to=node_manifest_arm index=0 path=../manifests
+  file_path[1].present=0x3 path_to=node_manifest_sigp index=1 path=../manifests
+processors=2
+  processor[0].present=0xf archID=armv7m procID=0 cacheLine=0 computeServices=15 node_count=16
+    node[0].present=0x3 path=0 index=1 name=arm_script
+    node[1].present=0x3 path=0 index=2 name=arm_filter
+    node[2].present=0x3 path=0 index=3 name=arm_converter
+    node[3].present=0x3 path=0 index=4 name=bb_jpegenc
+    node[4].present=0x3 path=0 index=5 name=eml_tjpgdec
+    node[5].present=0x3 path=0 index=6 name=sigp_amplifier
+    node[6].present=0x3 path=0 index=7 name=sigp_modulator
+    node[7].present=0x3 path=0 index=8 name=sigp_demodulator
+    node[8].present=0x3 path=0 index=9 name=sigp_filter2D
+    node[9].present=0x3 path=0 index=10 name=sigp_detector
+    node[10].present=0x3 path=0 index=11 name=sigp_detector2D
+    node[11].present=0x3 path=0 index=12 name=sigp_resampler
+    node[12].present=0x3 path=0 index=13 name=sigp_compressor
+    node[13].present=0x3 path=0 index=14 name=sigp_decompressor
+    node[14].present=0x3 path=0 index=15 name=sigp_router
+    node[15].present=0x3 path=0 index=16 name=sigp_analysis
+  processor[1].present=0x7 archID=armv7m procID=0 cacheLine=0 computeServices=0 node_count=1
+    node[0].present=0x3 path=0 index=2 name=sigp_filter2D
+memories=5
+  memory[0].present=0x3f name=shared index=0 size=8000 access=0 speed=0 type=0 instance=-1 subblock_count=0
+  memory[1].present=0x3f name=SRAM index=1 size=8000 access=0 speed=0 type=0 instance=-1 subblock_count=2
+    subblock[0].present=0xf index=0 name=sram1 base=0 size=1014
+    subblock[1].present=0xf index=1 name=sram2 base=1024 size=1014
+  memory[2].present=0x3f name=RET index=2 size=80 access=0 speed=0 type=1 instance=-1 subblock_count=0
+  memory[3].present=0x2b name=private0 index=3 size=8000 access=0 speed=2 type=0 instance=0 subblock_count=0
+  memory[4].present=0x23 name=private1 index=4 size=80 access=0 speed=0 type=0 instance=1 subblock_count=0
+interpreter_instances=2
+  instance[0].present=0x7f name=MAIN index=0 archID=armv7m procID=0 priority=1 trace_depth=256 trace_verbosity=2 memory_isolation=1 interface_count=16
+    interface[0].present=0x6 path=0 index=0 c_platform_index=0 name=io_data_sink direction= domain=
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x0 default= values=[]
+        frame_length.present=0x0 type= default=0 values=[]
+        sample_rate.present=0x0 type= default=0 values=[]
+        nb_channels.present=0x0 type= default=0 values=[]
+    interface[1].present=0x6 path=0 index=1 c_platform_index=0 name=io_data_sink direction= domain=
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x0 default= values=[]
+        frame_length.present=0x0 type= default=0 values=[]
+        sample_rate.present=0x0 type= default=0 values=[]
+        nb_channels.present=0x0 type= default=0 values=[]
+    interface[2].present=0x6 path=0 index=2 c_platform_index=0 name=io_data_sink direction= domain=
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x0 default= values=[]
+        frame_length.present=0x0 type= default=0 values=[]
+        sample_rate.present=0x0 type= default=0 values=[]
+        nb_channels.present=0x0 type= default=0 values=[]
+    interface[3].present=0x1ff path=1 index=0 c_platform_index=1 name=io_data_in direction=rx domain=general
+      protocol=initiator malloc=in_graph set0copy1=copy setup_time=0.0125
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=16000 values=[8000, 16000, 44100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[4].present=0x1f path=1 index=1 c_platform_index=2 name=io_data_in direction=rx domain=general
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=44100 values=[8000, 16000, 44100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[5].present=0x3f path=1 index=0 c_platform_index=21 name=io_data_out direction=tx domain=gpio
+      protocol=initiator malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=8000 values=[8000, 16000, 44100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[6].present=0x1f path=1 index=1 c_platform_index=4 name=io_data_out direction=tx domain=gpio
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=44100 values=[8000, 16000, 44100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[7].present=0x1f path=1 index=0 c_platform_index=5 name=io_sensor_in direction=rx domain=analog_in
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x2 interleaving= samprt_percent_accuracy=5
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=100 values=[100, 200, 400]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 3, 4]
+    interface[8].present=0x3f path=1 index=0 c_platform_index=9 name=io_timer direction=rx domain=time
+      protocol=initiator malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=44100 values=[8000, 16000, 44100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[9].present=0x1f path=1 index=0 c_platform_index=11 name=io_ui_in direction=rx domain=user_interface
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[10].present=0x1f path=1 index=0 c_platform_index=15 name=io_ui_out direction=tx domain=user_interface
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[11].present=0x1f path=1 index=0 c_platform_index=19 name=io_serial_in direction=rx domain=general
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[12].present=0x1f path=1 index=0 c_platform_index=21 name=io_analog_in direction=tx domain=analog_in
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[13].present=0x3f path=1 index=0 c_platform_index=23 name=io_audio_in direction=rx domain=audio_in
+      protocol=initiator malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[14].present=0x3f path=1 index=0 c_platform_index=26 name=io_audio_out direction=tx domain=audio_out
+      protocol=initiator malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+    interface[15].present=0x1f path=1 index=0 c_platform_index=30 name=io_2d_in direction=rx domain=2d_in
+      protocol=servant malloc=platform set0copy1=set setup_time=0
+      format.present=0x0 interleaving= samprt_percent_accuracy=0
+        data_type.present=0x3 default=int16 values=[int16, float32]
+        frame_length.present=0x7 type=int default=4 values=[1, 2, 3, 4, 8, 16, 32]
+        sample_rate.present=0x7 type=float default=1 values=[1, 10, 100]
+        nb_channels.present=0x7 type=int default=1 values=[1, 2, 4]
+  instance[1].present=0x3f name=BACKGROUND index=1 archID=armv6m procID=0 priority=1 trace_depth=256 trace_verbosity=2 memory_isolation=0 interface_count=0
+error_line=0 error_text=

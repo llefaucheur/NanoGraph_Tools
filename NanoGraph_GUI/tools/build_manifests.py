@@ -21,23 +21,10 @@ for path in sorted((ROOT / "manifests").glob("*.yaml")):
         raise ValueError("duplicate node/subgraph name '%s' in %s" % (name, path))
     data["component_kind"] = "node"
 
-    # Backward-compatible normalization: entries using "format:" inside
-    # parameters are stream-format descriptors, not editable node parameters.
-    # Move them to a dedicated top-level "formats" list so the generic GUI
-    # can display them without trying to create an input field named undefined.
     params = data.get("parameters") or []
-    formats = list(data.get("formats") or [])
-    real_params = []
     for entry in params:
-        if isinstance(entry, dict) and entry.get("format") and not entry.get("name"):
-            formats.append(entry)
-        else:
-            if not isinstance(entry, dict) or not entry.get("name"):
-                raise ValueError("%s has a parameter without 'name:'" % path)
-            real_params.append(entry)
-    data["parameters"] = real_params
-    if formats:
-        data["formats"] = formats
+        if not isinstance(entry, dict) or not entry.get("name"):
+            raise ValueError("%s has a parameter without 'name:'" % path)
 
     manifests[name] = data
 

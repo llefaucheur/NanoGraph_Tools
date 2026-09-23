@@ -21,6 +21,8 @@ window.NG_PLATFORM_MANIFESTS = {
         "processor": null,
         "archID": "armv7m",
         "procID": 0,
+        "cacheLine": 0,
+        "computeServices": 15,
         "nodes": [
           {
             "node": null,
@@ -124,6 +126,7 @@ window.NG_PLATFORM_MANIFESTS = {
         "processor": null,
         "archID": "armv7m",
         "procID": 0,
+        "cacheLine": 0,
         "nodes": [
           {
             "node": null,
@@ -229,9 +232,13 @@ window.NG_PLATFORM_MANIFESTS = {
             "name": "io_data_in",
             "direction": "rx",
             "domain": "general",
+            "protocol": "initiator",
+            "malloc": "in_graph",
+            "set0copy1": "copy",
+            "setup_time": 0.0125,
             "format": {
               "data_type": {
-                "default": "float32",
+                "default": "int16",
                 "values": [
                   "int16",
                   "float32"
@@ -326,7 +333,8 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 21,
             "name": "io_data_out",
             "direction": "tx",
-            "domain": "general",
+            "protocol": "initiator",
+            "domain": "gpio",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -350,7 +358,7 @@ window.NG_PLATFORM_MANIFESTS = {
               },
               "sample_rate": {
                 "type": "float",
-                "default": 44100,
+                "default": 8000,
                 "values": [
                   8000,
                   16000,
@@ -375,7 +383,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 4,
             "name": "io_data_out",
             "direction": "tx",
-            "domain": "general",
+            "domain": "gpio",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -424,7 +432,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 5,
             "name": "io_sensor_in",
             "direction": "rx",
-            "domain": "general",
+            "domain": "analog_in",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -475,7 +483,8 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 9,
             "name": "io_timer",
             "direction": "rx",
-            "domain": "general",
+            "domain": "time",
+            "protocol": "initiator",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -524,7 +533,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 11,
             "name": "io_ui_in",
             "direction": "rx",
-            "domain": "general",
+            "domain": "user_interface",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -573,7 +582,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 15,
             "name": "io_ui_out",
             "direction": "tx",
-            "domain": "general",
+            "domain": "user_interface",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -671,7 +680,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 21,
             "name": "io_analog_in",
             "direction": "tx",
-            "domain": "general",
+            "domain": "analog_in",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -720,7 +729,8 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 23,
             "name": "io_audio_in",
             "direction": "rx",
-            "domain": "general",
+            "domain": "audio_in",
+            "protocol": "initiator",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -769,7 +779,8 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 26,
             "name": "io_audio_out",
             "direction": "tx",
-            "domain": "general",
+            "domain": "audio_out",
+            "protocol": "initiator",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -818,7 +829,7 @@ window.NG_PLATFORM_MANIFESTS = {
             "c_platform_index": 30,
             "name": "io_2d_in",
             "direction": "rx",
-            "domain": "general",
+            "domain": "2d_in",
             "format": {
               "data_type": {
                 "default": "int16",
@@ -1147,11 +1158,11 @@ window.NG_PLATFORM_MANIFESTS = {
               },
               "sample_rate": {
                 "type": "float",
-                "default": 44100,
+                "default": 44101,
                 "values": [
-                  8000,
-                  16000,
-                  44100
+                  8001,
+                  16001,
+                  44101
                 ]
               },
               "nb_channels": {

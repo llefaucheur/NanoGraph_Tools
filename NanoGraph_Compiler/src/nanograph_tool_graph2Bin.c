@@ -1433,8 +1433,12 @@ void arm_nanograph_graphTxt2Bin (struct nanograph_platform_manifest *platform, s
             sprintf(tmpstring, " user Key1 %ld %08X", FMT0, FMT0);
             GTEXT(tmpstring);  GWORDINC(FMT0);
 
-            /* platform key TBD  TODO @@@@@ */
+            /* platform_key TBD  TODO @@@@@ */
+            FMT0 = platform->platform_key[0];
+            sprintf(tmpstring, " platform Key0 %ld %08X", FMT0, FMT0);
             GTEXT(tmpstring);  GWORDINC(FMT0);
+            FMT0 = platform->platform_key[1];
+            sprintf(tmpstring, " platform Key1 %ld %08X", FMT0, FMT0);
             GTEXT(tmpstring);  GWORDINC(FMT0);
         }
 

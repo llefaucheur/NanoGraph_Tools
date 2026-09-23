@@ -43,8 +43,9 @@ interfaces:
       
 
 parameters:
-  - name: i_data_type
+  - name: i_conv_type
     type: enum
+    default: int16
     values: [int8,int16,int32,int64,  uint8,uint16,uint32,uint64,  float32,float64,  utf8,utf16]
     help: input data type
   - name: i_frame_length
@@ -59,8 +60,9 @@ parameters:
     values: [interleaved, deinterleaved]
     
 
-  - name: o_data_type
+  - name: o_conv_type
     type: enum
+    default: int16
     values: [int8,int16,int32,int64,  uint8,uint16,uint32,uint64,  float32,float64,  utf8,utf16]
     help: outut data type
   - name: o_frame_length

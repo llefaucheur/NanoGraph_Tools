@@ -17,11 +17,11 @@
 #define YP_MAX_VALUE             64
 #define YP_MAX_LINE             512
 #define YP_MAX_FILE_PATHS        16
-#define YP_MAX_PROCESSORS         8
+#define YP_MAX_PROCESSORS         4
 #define YP_MAX_NODES_PER_PROC    64
-#define YP_MAX_MEMORIES          32
-#define YP_MAX_SUBBLOCKS         16
-#define YP_MAX_INSTANCES         16
+#define YP_MAX_MEMORIES           8
+#define YP_MAX_SUBBLOCKS          4
+#define YP_MAX_INSTANCES          4
 #define YP_MAX_INTERFACES        32
 #define YP_MAX_VALUES            32
 

@@ -129,7 +129,6 @@
     <ClInclude Include="..\..\..\src\nanograph_tool_define.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_include.h" />
     <ClInclude Include="..\..\..\src\nanograph_tool_types.h" />
-    <ClInclude Include="..\..\..\src\nanograph_tool_yaml.h" />
     <ClInclude Include="..\..\..\src\yaml_graph.h" />
     <ClInclude Include="..\..\..\src\yaml_node.h" />
     <ClInclude Include="..\..\..\src\yaml_platform.h" />
@@ -138,11 +137,7 @@
     <ClCompile Include="..\..\..\src\nanograph_tool_graph2Bin.c" />
     <ClCompile Include="..\..\..\src\nanograph_tool_library.c" />
     <ClCompile Include="..\..\..\src\nanograph_tool_main.c" />
-    <ClCompile Include="..\..\..\src\nanograph_tool_readManifests.c" />
-    <ClCompile Include="..\..\..\src\nanograph_tool_read_graph.c" />
-    <ClCompile Include="..\..\..\src\nanograph_tool_read_gui.c" />
     <ClCompile Include="..\..\..\src\nanograph_tool_read_script.c" />
-    <ClCompile Include="..\..\..\src\nanograph_tool_yaml.c" />
     <ClCompile Include="..\..\..\src\yaml_graph.c" />
     <ClCompile Include="..\..\..\src\yaml_node.c" />
     <ClCompile Include="..\..\..\src\yaml_platform.c" />

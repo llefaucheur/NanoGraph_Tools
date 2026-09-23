@@ -5,7 +5,7 @@ description: Desktop computer test platform (Windows, macOS or Linux).
 #------------------------------------------
 file_paths:
   - path_to: node_manifest_arm
-    index: 0        # this avoids modifying all the paths in processors/nodea/node:
+    index: 0        # this avoids modifying all the paths in processors/../node:
     path: ../manifests
   - path_to: node_manifest_sigp
     index: 1
@@ -16,10 +16,7 @@ processors:
   - processor:
     archID: armv7m
     procID: 0
-    cacheLine: 0        # cache line length in Bytes
-    computeServices: 15 # attached to an instance to let coprocessor 
-    
-    nodes:              # list of nodes 
+    nodes:          # list of nodes 
 
       - node: 
         path: 0
@@ -52,7 +49,7 @@ processors:
       - node: 
         path: 0
         index: 8
-        name: sigp_demodulator
+        name: sigp_demodulatory
       - node: 
         path: 0
         index: 9
@@ -80,17 +77,16 @@ processors:
       - node: 
         path: 0
         index: 15
-        name: sigp_router    
+        name: sigp_router
       - node: 
         path: 0
         index: 16
-        name: sigp_analysis            
+        name: sigp_analysis
         
 
   - processor:
     archID: armv7m
     procID: 0
-    cacheLine: 0    # cache line length in Bytes
     nodes:          # list of nodes 
       - node: 
         path: 0
@@ -178,15 +174,8 @@ interpreter_instances:
         index: 0
         c_platform_index: 0
         name: io_data_sink
-      - interface:                      # io_data_sink[1]
-        index: 1
-        c_platform_index: 0
-        name: io_data_sink
-      - interface:                      # io_data_sink[2]
-        index: 2
-        c_platform_index: 0
-        name: io_data_sink
-      
+        direction: tx
+        domain: general
 
             
       - interface:                      # io_data_in[0]
@@ -196,14 +185,9 @@ interpreter_instances:
         name: io_data_in
         direction: rx
         domain: general
-        protocol: initiator             # default is "servant"
-        malloc: in_graph                # default is "platform"
-        set0copy1: copy                 # default is "set"
-        setup_time: 0.0125              # wait 12.5ms before receiving valid data
-        
         format:
           data_type:
-            default: int16             
+            default: float32             
             values: [int16, float32]
           frame_length:
             type: int
@@ -245,11 +229,10 @@ interpreter_instances:
       - interface:                      # io_data_out[0]
         path: 1
         index: 0
-        c_platform_index: 21
+        c_platform_index: 3
         name: io_data_out
         direction: tx
-        protocol: initiator             # default is "servant"
-        domain: gpio
+        domain: general
         format:
           data_type:
             default: int16             
@@ -260,7 +243,7 @@ interpreter_instances:
             values: [1, 2, 3, 4, 8, 16, 32]
           sample_rate:
             type: float
-            default: 8000
+            default: 44100
             values: [8000, 16000, 44100]
           nb_channels:
             type: int
@@ -273,7 +256,7 @@ interpreter_instances:
         c_platform_index: 4
         name: io_data_out
         direction: tx
-        domain: gpio
+        domain: general
         format:
           data_type:
             default: int16             
@@ -297,7 +280,7 @@ interpreter_instances:
         c_platform_index: 5
         name: io_sensor_in
         direction: rx
-        domain: analog_in
+        domain: general
         format:
           data_type:
             default: int16             
@@ -322,8 +305,7 @@ interpreter_instances:
         c_platform_index: 9
         name: io_timer
         direction: rx
-        domain: time
-        protocol: initiator             # default is "servant"
+        domain: general
         format:
           data_type:
             default: int16             
@@ -347,7 +329,7 @@ interpreter_instances:
         c_platform_index: 11
         name: io_ui_in
         direction: rx
-        domain: user_interface
+        domain: general
         format:
           data_type:
             default: int16             
@@ -371,7 +353,7 @@ interpreter_instances:
         c_platform_index: 15
         name: io_ui_out
         direction: tx
-        domain: user_interface
+        domain: general
         format:
           data_type:
             default: int16             
@@ -419,7 +401,7 @@ interpreter_instances:
         c_platform_index: 21
         name: io_analog_in
         direction: tx
-        domain: analog_in
+        domain: general
         format:
           data_type:
             default: int16             
@@ -443,8 +425,7 @@ interpreter_instances:
         c_platform_index: 23
         name: io_audio_in
         direction: rx
-        domain: audio_in
-        protocol: initiator             # default is "servant"
+        domain: general
         format:
           data_type:
             default: int16             
@@ -468,8 +449,7 @@ interpreter_instances:
         c_platform_index: 26
         name: io_audio_out
         direction: tx
-        domain: audio_out
-        protocol: initiator             # default is "servant"
+        domain: general
         format:
           data_type:
             default: int16             
@@ -493,7 +473,7 @@ interpreter_instances:
         c_platform_index: 30
         name: io_2d_in
         direction: rx
-        domain: 2d_in
+        domain: general
         format:
           data_type:
             default: int16             

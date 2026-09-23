@@ -37,17 +37,17 @@ try { R.choose("data_type","float32","int16",{}); } catch(e) { mismatch=true; }
 if (!mismatch) process.exit(5);
 console.log("converter case detected: float32 -> int16");
 
-// Regression: old GUI io_sink[0] must resolve to canonical platform io_data_sink[0].
-const sink = R.findPlatformInterface(platform, "io_sink[0]");
+/* Canonical data sink resolves directly. */
+const sink = R.findPlatformInterface(platform, "io_data_sink[0]");
 if (!sink || sink.name !== "io_data_sink" || Number(sink.index) !== 0) {
-    throw new Error("io_sink[0] compatibility alias did not resolve to io_data_sink[0]");
+    throw new Error("io_data_sink[0] did not resolve");
 }
 const sinkType = R.choose("data_type", "float32", sink.format && sink.format.data_type, {});
 const sinkRate = R.choose("sample_rate", 44100, sink.format && sink.format.sample_rate, {});
 if (String(sinkType) !== "float32" || Number(sinkRate) !== 44100) {
     throw new Error("wildcard io_data_sink did not inherit producer format");
 }
-console.log("io_sink[0] alias -> io_data_sink[0] wildcard inherits float32/44100");
+console.log("io_data_sink[0] wildcard inherits float32/44100");
 
 
 /* Interleaving is a first-class negotiated field. */
@@ -111,13 +111,15 @@ if (Number(R.choose("nb_channels", negotiatedRx.nb_channels, 2, {})) !== 2) proc
 if (R.choose("interleaving", negotiatedRx.interleaving, "interleaved", {}) !== "interleaved") process.exit(16);
 console.log("same_as relation present: sigp_amplifier tx[0] inherits negotiated rx_interface[0] tuple");
 
-/* same_as is hard: a downstream platform IO default must not rewrite it. */
-const hardSameAsRate = 16000;
-const outTargetRate = R.platformDefaultAsExact(out0.format.sample_rate);
-let sameAsNeedsConverter=false;
-try { R.choose("sample_rate", hardSameAsRate, outTargetRate, {}); }
-catch(e) { sameAsNeedsConverter=true; console.log("same_as hard constraint triggers converter: 16000 -> platform output default 44100"); }
-if (!sameAsNeedsConverter) process.exit(17);
+/* same_as remains exact, while a platform default is only a preference.
+ * If the exact same_as value is in the platform capability set, no converter
+ * is needed even when the platform default is different. */
+const sameAsRate = 16000;
+const outCapabilityRate = out0.format.sample_rate;
+const sameAsResolvedRate = R.choose("sample_rate", sameAsRate, outCapabilityRate,
+                                    {platformDefault:outCapabilityRate.default});
+if (Number(sameAsResolvedRate) !== 16000) process.exit(17);
+console.log("same_as 16000 intersects platform [8000,16000,44100]: no converter");
 
 
 /* frame_length is not negotiated; it only sizes FIFO storage. */
@@ -130,8 +132,8 @@ console.log("frame_length stays outside negotiation; FIFO size=max(producer,cons
 
 /* Mono-stream rule: interleaving is meaningless when both endpoints are one channel. */
 const monoInterleaving = R.chooseInterleaving("interleaved","deinterleaved",1,1,{});
-if (monoInterleaving !== "interleaved") process.exit(23);
-console.log("mono interleaving mismatch ignored and canonicalized to interleaved");
+if (monoInterleaving !== "") process.exit(23);
+console.log("mono interleaving mismatch ignored and canonicalized to empty value");
 
 /* Multichannel streams must still convert on an interleaving mismatch. */
 let multiInterleavingMismatch=false;
@@ -148,6 +150,6 @@ const monoFormatTable = R.buildFormatTable(monoFormatArcs);
 if (monoFormatTable.length !== 1) throw new Error("mono formats were not deduplicated");
 if (monoFormatArcs[0].attrs.formatID !== "0" || monoFormatArcs[1].attrs.formatID !== "0")
   throw new Error("mono formatID canonicalization failed");
-if (monoFormatTable[0].interleaving !== "interleaved")
-  throw new Error("mono canonical interleaving is not interleaved");
+if (monoFormatTable[0].interleaving !== "")
+  throw new Error("mono canonical interleaving is not empty");
 console.log("mono common-format deduplication passes");

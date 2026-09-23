@@ -1,5 +1,5 @@
 node: sigp_analysis
-node_designer : arm (ltd)
+node_designer : signal-processing.fr
 version: 1
 description: Extraction of features
 
@@ -7,7 +7,7 @@ description: Extraction of features
 interfaces:
   - rx_interface:               
 #    path: 1
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                 
     name: input0        
     
     domain: general
@@ -34,7 +34,7 @@ interfaces:
 
   - tx_interface:                     
 #    path: 1
-    index: 0                        # index 0 is reserved for the internal "data sink"                        
+    index: 0                                                 
     name: output0        
     
     domain: general

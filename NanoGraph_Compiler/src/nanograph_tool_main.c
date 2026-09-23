@@ -35,6 +35,223 @@
 #include "nanograph_tool_types.h"
 #include "nanograph_tool_include.h"
 
+#include "yaml_platform.h"
+#include "yaml_graph.h"
+#include "yaml_node.h"
+
+
+#if 1
+
+YP_PlatformManifest m;
+YG_Graph g;
+
+
+extern int yp_read_file(const char* filename, YP_PlatformManifest* m);
+extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_txt);
+extern void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_gui, FILE* ggraph_txt_result);
+extern void arm_nanograph_graphTxt2Bin(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_source);
+
+static const char* yg_test_kind(YG_ItemKind kind)
+{
+    return (kind == YG_ITEM_IO) ? "IO" : "node";
+}
+
+/**
+  @brief            (main)
+  @param[in/out]    none
+  @return           int
+
+  @par              translates the graph intermediate format GraphTxt to GraphBin to be reused
+                    in CMSIS-Stream/nanograph_graph/*.txt
+  @remark
+ */
+
+int main(int argc, char* argv[])
+{
+    const char* platform_filename;
+    const char* graph_filename;
+    int rc;
+    int i;
+    int j;
+    struct nanograph_platform_manifest* platform;
+    struct nanograph_graph_linkedlist* graph;
+
+    /* ---------------------------------------------------- */
+
+    platform_filename = (argc > 2) ? argv[1] : "platform.yaml";
+    graph_filename = (argc > 2) ? argv[2] : "graph.yaml";
+
+    rc = yp_read_file(platform_filename, &m);
+    if (rc != YP_OK)
+    {
+        fprintf(stderr, "parse error %d, line %d: %s\n",
+            rc, m.error_line, m.error_text);
+        return 1;
+    }
+
+    /* ---------------------------------------------------- */
+
+    printf("platform: %s version=%d\n", m.platform, m.version);
+    printf("file_paths: %d\n", m.file_path_count);
+    i = 0;
+    while (i < m.file_path_count)
+    {
+        printf("  [%d] %s index=%d path=%s\n", i,
+            m.file_path[i].path_to, m.file_path[i].index,
+            m.file_path[i].path);
+        ++i;
+    }
+    printf("processors: %d\n", m.processor_count);
+    i = 0;
+    while (i < m.processor_count)
+    {
+        printf("  [%d] archID=%s procID=%d nodes=%d\n", i,
+            m.processor[i].archID, m.processor[i].procID,
+            m.processor[i].node_count);
+        j = 0;
+        while (j < m.processor[i].node_count)
+        {
+            printf("       node[%d] path=%d index=%d name=%s\n", j,
+                m.processor[i].node[j].path,
+                m.processor[i].node[j].index,
+                m.processor[i].node[j].name);
+            ++j;
+        }
+        ++i;
+    }
+    printf("memories: %d\n", m.memory_count);
+    i = 0;
+    while (i < m.memory_count)
+    {
+        printf("  [%d] %s index=%d size=%lu subblocks=%d interpreter_instance %d\n", i,
+            m.memory[i].name, m.memory[i].index, m.memory[i].size,
+            m.memory[i].subblock_count, m.memory[i].interpreter_instance);
+        ++i;
+    }
+    printf("interpreter_instances: %d\n", m.instance_count);
+    i = 0;
+    while (i < m.instance_count)
+    {
+        printf("  [%d] %s archID=%s procID=%d interfaces=%d\n", i,
+            m.instance[i].name, m.instance[i].archID,
+            m.instance[i].procID, m.instance[i].interface_count);
+        j = 0;
+        while (j < m.instance[i].interface_count)
+        {
+            const YP_Interface* itf;
+            itf = &m.instance[i].interface[j];
+            printf("       interface[%d] %s[%d] c_platform_index=%d direction=%s domain=%s",
+                j, itf->name, itf->index, itf->c_platform_index,
+                itf->direction, itf->domain);
+            if (itf->format.sample_rate.present & YP_NUM_HAS_DEFAULT)
+                printf(" sample_rate_default=%g", itf->format.sample_rate.default_value);
+            printf("\n");
+            ++j;
+        }
+        ++i;
+    }
+
+    printf("\n-----------------------------------------\n");
+
+    /* --------------------COPY TO INTERNAL ------------- */
+
+    {
+        extern void copy_manifest_yaml2C(YP_PlatformManifest *yaml, struct nanograph_platform_manifest *platform);
+
+        if (0 == (platform = calloc(sizeof(struct nanograph_platform_manifest), 1))) { printf("\n init error \n"); exit(1); }
+
+        copy_manifest_yaml2C(&m, platform);
+    }
+
+    /* ---------------------------------------------------- */
+    
+    rc = yg_read_file(graph_filename, &g);
+    if (rc != YG_OK)
+    {
+        fprintf(stderr, "parse error %d, line %d: %s\n",
+            rc, g.error_line, g.error_text);
+        return 1;
+    }
+
+    printf("platform: %s\n", (g.present & YG_GRAPH_HAS_PLATFORM) ? g.platform : "<none>");
+    printf("nodes: %d\n", g.nb_nodes);
+    i = 0;
+    while (i < g.nb_nodes)
+    {
+        const YG_Node* n;
+        n = &g.nodes[i];
+        printf("  [%d] %s %s\n", i, yg_test_kind(n->kind), n->name);
+        printf("       scope=%s local=%s base=%s instance=%d depth=%d\n",
+            n->scope, n->local_name, n->base_name,
+            n->instance_index, n->hierarchy_depth);
+        if (n->present & YG_NODE_HAS_FRAMEL) printf("       framel=%d\n", n->framel);
+        if (n->present & YG_NODE_HAS_DOMAIN) printf("       domain=%s\n", n->domain);
+        if (n->present & YG_NODE_HAS_NBCHAN) printf("       nbchan=%d\n", n->nbchan);
+        if (n->present & YG_NODE_HAS_SAMPRT) printf("       samprt=%g\n", n->samprt);
+        if (n->present & YG_NODE_HAS_DATA_TYPE) printf("       data_type=%s\n", n->data_type);
+        if (n->present & YG_NODE_HAS_MINOPP) printf("       minopp=%d\n", n->minopp);
+        j = 0;
+        while (j < n->nb_named_parameters)
+        {
+            printf("       parameter %s=%s\n",
+                n->named_parameter[j].name, n->named_parameter[j].value);
+            ++j;
+        }
+        ++i;
+    }
+
+    printf("arcs: %d\n", g.nb_arcs);
+    i = 0;
+    while (i < g.nb_arcs)
+    {
+        const YG_Arc* a;
+        a = &g.arcs[i];
+        printf("  [%d] OPort_%d %s %s -> IPort_%d %s %s\n",
+            i, a->source.port, yg_test_kind(a->source.kind), a->source.name,
+            a->destination.port, yg_test_kind(a->destination.kind), a->destination.name);
+        if (a->present & YG_ARC_HAS_NAME) printf("       arc_name=%s\n", a->arc_name);
+        if (a->present & YG_ARC_HAS_BUFFER_SIZE) printf("       buffer_size=%d\n", a->buffer_size);
+        if (a->present & YG_ARC_HAS_DATA_TYPE) printf("       data_type=%s\n", a->data_type);
+        if (a->present & YG_ARC_HAS_SAMPLE_RATE) printf("       sample_rate=%g\n", a->sample_rate);
+        if (a->present & YG_ARC_HAS_NB_CHANNELS) printf("       nb_channels=%d\n", a->nb_channels);
+        if (a->present & YG_ARC_HAS_INTERLEAVING) printf("       interleaving=%s\n", a->interleaving);
+        if (a->present & YG_ARC_HAS_OVERLAY_WITH) printf("       overlay_with=%s\n", a->overlay_with);
+        if (a->present & YG_ARC_HAS_FORMAT_ID) printf("       formatID=%s\n", a->format_id);
+        ++i;
+    }
+
+    printf("formats: %d\n", g.nb_formats);
+    i = 0;
+    while (i < g.nb_formats)
+    {
+        const YG_Format* fmt;
+        fmt = &g.formats[i];
+        printf("  [%d] formatID=%d", i, fmt->format_id);
+        if (fmt->present & YG_FORMAT_HAS_DATA_TYPE) printf(" data_type=%s", fmt->data_type);
+        if (fmt->present & YG_FORMAT_HAS_SAMPLE_RATE) printf(" sample_rate=%g", fmt->sample_rate);
+        if (fmt->present & YG_FORMAT_HAS_NB_CHANNELS) printf(" nb_channels=%d", fmt->nb_channels);
+        if (fmt->present & YG_FORMAT_HAS_INTERLEAVING) printf(" interleaving=%s", fmt->interleaving);
+        printf("\n");
+        ++i;
+    }
+
+    /* --------------------COPY TO INTERNAL ------------- */
+
+    {
+        extern void copy_graph_yaml2C(YG_Graph* yaml, struct nanograph_graph_linkedlist* graph);
+
+        if (0 == (graph = calloc(sizeof(struct nanograph_graph_linkedlist), 1))) { printf("\n init error \n"); exit(1); }
+
+        copy_graph_yaml2C(&g, graph);
+    }
+
+    /* --------------------BUILD THE BINARY GRAPH -------------- */
+
+
+    return 0;
+}
+
+#else
 extern void arm_nanograph_read_manifests (struct nanograph_platform_manifest *platform, char *all_files);
 extern void arm_nanograph_read_graph(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_txt);
 extern void arm_nanograph_read_GUI(struct nanograph_platform_manifest* platform, struct nanograph_graph_linkedlist* graph, char* ggraph_gui, FILE * ggraph_txt_result);
@@ -187,3 +404,4 @@ void main(int argc, char* argv[])
     printf (  "\n graph compilation done \n");
     exit( 3); 
 }
+#endif
