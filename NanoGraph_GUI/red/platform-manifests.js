@@ -1158,11 +1158,11 @@ window.NG_PLATFORM_MANIFESTS = {
               },
               "sample_rate": {
                 "type": "float",
-                "default": 44101,
+                "default": 44100,
                 "values": [
-                  8001,
-                  16001,
-                  44101
+                  8000,
+                  16000,
+                  44100
                 ]
               },
               "nb_channels": {

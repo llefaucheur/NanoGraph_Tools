@@ -30,21 +30,123 @@ RED.sidebar.info = (function() {
             .replace(/"/g,"&quot;");
     }
 
+    function isIoNode(node) {
+        var category = node && node._def ? node._def.category : "";
+        return !!(node && (node.kind === "IO" ||
+               category === "input-function" || category === "output-function"));
+    }
+
     function nodeManifest(node) {
-        return (window.NG_NODE_MANIFESTS || {})[node.type] || null;
+        var manifests = window.NG_NODE_MANIFESTS || {};
+        var type, key;
+        if (!node) return null;
+
+        type = String(node.type || "");
+        if (manifests[type]) return manifests[type];
+
+        /* Be tolerant of an editor/imported instance name being used as the
+         * type. The manifest itself remains the source of truth; this fallback
+         * only finds its key. */
+        type = type.replace(/\[[0-9]+\]$/, "").replace(/_[0-9]+$/, "");
+        if (manifests[type]) return manifests[type];
+
+        for (key in manifests) {
+            if (!manifests.hasOwnProperty(key)) continue;
+            if (manifests[key] && String(manifests[key].node || "") === type) {
+                return manifests[key];
+            }
+        }
+        return null;
     }
 
     function platformManifest(node) {
-        return (window.NG_PLATFORM_MANIFESTS || {})[node.type] || null;
+        var manifests = window.NG_PLATFORM_MANIFESTS || {};
+        var type, key;
+        if (!node) return null;
+        type = String(node.type || node.name || "");
+        if (manifests[type]) return manifests[type];
+        for (key in manifests) {
+            if (!manifests.hasOwnProperty(key)) continue;
+            if (manifests[key] && String(manifests[key].platform || "") === type) {
+                return manifests[key];
+            }
+        }
+        return null;
     }
 
-    function selectedManifest(node) {
-        if (node && node.kind === "platform") return platformManifest(node);
-        return nodeManifest(node);
+    function selectedPlatformNode(contextNode) {
+        var sameWorkspace = null;
+        var anyPlatform = null;
+        if (!RED.nodes || !RED.nodes.eachNode) return null;
+        RED.nodes.eachNode(function(candidate) {
+            if (!candidate || candidate.kind !== "platform") return;
+            if (!anyPlatform) anyPlatform = candidate;
+            if (contextNode && candidate.z === contextNode.z && !sameWorkspace) {
+                sameWorkspace = candidate;
+            }
+        });
+        return sameWorkspace || anyPlatform;
     }
 
-    function manifestTitle(node) {
-        return (node && node.kind === "platform") ? "Platform Manifest" : "Node Manifest";
+    function ioManifestInfo(node) {
+        var platformNode = selectedPlatformNode(node);
+        var platform = platformManifest(platformNode);
+        var resolver = window.NG_FORMAT_RESOLVER;
+        var interfaceName, itf;
+
+        if (!platform || !node) return null;
+        interfaceName = String(node.name || node.id || "");
+
+        if (resolver && resolver.findPlatformInterface) {
+            itf = resolver.findPlatformInterface(platform, interfaceName);
+        }
+
+        /* Normally IO instances are named io_xxx[index]. If an old/imported
+         * graph has no index in its display name, use the node type as index 0
+         * only when the platform really exposes that interface. */
+        if (!itf && resolver && resolver.findPlatformInterface &&
+                interfaceName.indexOf("[") < 0) {
+            itf = resolver.findPlatformInterface(platform, String(node.type || "") + "[0]");
+        }
+
+        if (!itf) return null;
+        return {
+            platformNode: platformNode,
+            platform: platform,
+            interfaceManifest: itf,
+            interfaceName: interfaceName
+        };
+    }
+
+    function selectedManifestInfo(node) {
+        var ioInfo, manifest;
+        if (!node) return null;
+
+        if (node.kind === "platform") {
+            manifest = platformManifest(node);
+            return manifest ? {kind:"platform", manifest:manifest} : null;
+        }
+
+        if (isIoNode(node)) {
+            ioInfo = ioManifestInfo(node);
+            return ioInfo ? {
+                kind:"io",
+                manifest:ioInfo.interfaceManifest,
+                platformNode:ioInfo.platformNode,
+                platform:ioInfo.platform,
+                interfaceName:ioInfo.interfaceName
+            } : null;
+        }
+
+        manifest = nodeManifest(node);
+        return manifest ? {kind:"node", manifest:manifest} : null;
+    }
+
+    function manifestTitle(info) {
+        if (!info) return "Manifest";
+        if (info.kind === "platform") return "Platform Manifest";
+        if (info.kind === "io") return "Platform I/O Manifest";
+        return "Node Manifest";
     }
 
     function getManifestParameter(node, property) {
@@ -151,12 +253,23 @@ RED.sidebar.info = (function() {
     }
 
     function manifestOverview(node) {
-        var manifest = selectedManifest(node);
-        if (!manifest) return "";
+        var info = selectedManifestInfo(node);
+        var manifest;
+        if (!info) return "";
+        manifest = info.manifest;
 
         var html = '<div class="manifest-sidebar">';
-        html += '<h3>'+escapeHtml(manifestTitle(node))+'</h3>';
-        html += renderObject("Properties", manifest, 0, node);
+        html += '<h3>'+escapeHtml(manifestTitle(info))+'</h3>';
+
+        if (info.kind === "io") {
+            html += '<table class="node-info"><tbody>';
+            html += '<tr><td>&nbsp;Platform</td><td>'+escapeHtml((info.platform && info.platform.platform) || (info.platformNode && info.platformNode.type) || "")+'</td></tr>';
+            html += '<tr><td>&nbsp;I/O instance</td><td>'+escapeHtml(info.interfaceName || node.name || node.id || "")+'</td></tr>';
+            html += '</tbody></table>';
+            html += renderObject("Interface Properties", manifest, 0, node);
+        } else {
+            html += renderObject("Properties", manifest, 0, node);
+        }
         html += '</div>';
         return html;
     }

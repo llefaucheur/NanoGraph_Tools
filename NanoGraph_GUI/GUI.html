@@ -671,25 +671,25 @@ span.mainfunction {color: #993300; font-weight: bolder}
 
         <h3>Graph connexions </h3>
         <table class=doc  cellpadding=8>
-            <tr class=top><th>NG ID</th>          <th>Port</th>           <th>Computer </th>          <th>Nuvoton55</th></tr>
-            <tr class=odd><td>  0 </td><td align=left>io_data_in_0   </td><td>In0 General</td><td>Input signal #2   </td></tr>
-            <tr class=odd><td>  1 </td><td align=left>io_data_in_1   </td><td>In1 General </td><td>Sum of all inputs </td></tr>
-            <tr class=odd><td>  2 </td><td align=left>io_sensor_in_0 </td><td>In0 General </td><td>Sum of all inputs </td></tr>
-            <tr class=odd><td>  3 </td><td align=left>io_timer_0     </td><td>Input  </td><td>Input signal #1   </td></tr>
-            <tr class=odd><td>  4 </td><td align=left>io_ui_in_0     </td><td>Input  </td><td>Input signal #2   </td></tr>
-            <tr class=odd><td>  5 </td><td align=left>io_serial_in_0 </td><td>Input  </td><td>Input signal #1   </td></tr>
-            <tr class=odd><td>  9 </td><td align=left>io_analog_in_0 </td><td>Input  </td><td>Input signal #2   </td></tr>
-            <tr class=odd><td> 11 </td><td align=left>io_audio_in_0  </td><td>Sum of </td><td>Sum of all inputs </td></tr>
-            <tr class=odd><td> 15 </td><td align=left>io_2d_in_0     </td><td>Input  </td><td>Input signal #2   </td></tr>
-            <tr class=odd><td> 19 </td><td align=left>io_data_sink   </td><td>Input  </td><td>Input signal #1   </td></tr>
-            <tr class=odd><td> 21 </td><td align=left>io_data_out_0  </td><td>Input  </td><td>Input signal #1   </td></tr>
-            <tr class=odd><td> 23 </td><td align=left>io_data_out_1  </td><td>Input  </td><td>Input signal #2   </td></tr>
-            <tr class=odd><td> 26 </td><td align=left>io_ui_out_0    </td><td>Sum of </td><td>Sum of all inputs </td></tr>
-            <tr class=odd><td> 30 </td><td align=left>io_audio_out_0 </td><td>Input  </td><td>Input signal #1   </td></tr>
+            <tr class=top><th>NG ID</th>          <th>Port</th>       </tr>
+            <tr class=odd><td>  0 </td><td align=left>io_data_in_0   </td></tr>
+            <tr class=odd><td>  1 </td><td align=left>io_data_in_1   </td></tr>
+            <tr class=odd><td>  2 </td><td align=left>io_sensor_in_0 </td></tr>
+            <tr class=odd><td>  3 </td><td align=left>io_timer_0     </td></tr>
+            <tr class=odd><td>  4 </td><td align=left>io_ui_in_0     </td></tr>
+            <tr class=odd><td>  5 </td><td align=left>io_serial_in_0 </td></tr>
+            <tr class=odd><td>  9 </td><td align=left>io_analog_in_0 </td></tr>
+            <tr class=odd><td> 11 </td><td align=left>io_audio_in_0  </td></tr>
+            <tr class=odd><td> 15 </td><td align=left>io_2d_in_0     </td></tr>
+            <tr class=odd><td> 19 </td><td align=left>io_data_sink   </td></tr>
+            <tr class=odd><td> 21 </td><td align=left>io_data_out_0  </td></tr>
+            <tr class=odd><td> 23 </td><td align=left>io_data_out_1  </td></tr>
+            <tr class=odd><td> 26 </td><td align=left>io_ui_out_0    </td></tr>
+            <tr class=odd><td> 30 </td><td align=left>io_audio_out_0 </td></tr>
             
         </table>
         
-        <h3>Listing</h3>
+        <h3>Source code </h3>
         <ul>
         <li> /* 
         <li>     IO interfaces functions to the possible streams of this platform
@@ -1417,20 +1417,20 @@ The list of routing and mixing information is :
         <div class="form-row"> <label  for="node-input-preset"> <i class= "fa fa-tag"></i> preset</label> <input type="text"  id="node-input-preset">  </div>
         <div class="form-row"> <label  for="node-input-script"> <i class= "fa fa-tag"></i> script</label> <input type="text"  id="node-input-script">  </div>
         <div class="form-row"> <label  for="node-input-paramFile"> <i class= "fa fa-tag"></i> paramFile</label> <input type="text"  id="node-input-paramFile">  </div>
-        </script> <script type="text/x-red" data-help-name="sigp_analysis"> </script> 
-        
-        <h4>Operation</h4> <div class=tooltipinfo>
-        <p> extraction of features  </p><p>
+        </script>
+        <script type="text/x-red" data-help-name="sigp_analysis">
+        <h4>Operation</h4> <div class="tooltipinfo">
+        <p>extraction of features</p><p>
 Metadata is accessed with NANOGRAPH_READ_PARAMETER command.
 </p><p>- 1 : find the 2 main peaks and valleys of the spectrum
 </p><p>- 2 : 2nd order auto-regression analysis
-</p><p>- 3 : time-domain statistical data (zero crossing rate, amplitude peaks) 
+</p><p>- 3 : time-domain statistical data (zero crossing rate, amplitude peaks)
 </p><p>- 4 : computation benchmark for FFT
 </p><p>- 5 : computation benchmark with IIR filtering
 </p><p>- 6 : computation benchmark with CNN filter
-   </p>        
-        <!-- Parameter controls are generated from manifests/sigp_analysis.yaml -->
-        <script type="text/x-red" data-help-name="sigp_analysis"> </script>
+        </p>
+        </div>
+        </script>
         
     <!---------------------------------------------------- bb_jpegenc ------------------------------------------->
     <script type="text/x-red" data-template-name=         "bb_jpegenc">
@@ -1463,70 +1463,3 @@ Metadata is accessed with NANOGRAPH_READ_PARAMETER command.
         
 </body>
 </html>
-
-
-<!-- Template for UI Boxes:
-
-<!-- <form id="dialog-form" class="form-horizontal" autocomplete="off" style="height: 438px;"><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-user" type="text" autocomplete="off"></span><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-username" type="text" autocomplete="off"></span><span style="position: absolute; top: -2000px;"><input id="red-ui-trap-password" type="password" autocomplete="off"></span>
-        <div class="form-row">
-            <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
-            <div style="width: 70%; display: inline-flex;"><select id="node-input-group" style="flex-grow: 1;" class="input-error"><option value="138f1c9eb86904ea" selected="">[unassigned] sin chart</option><option value="a25e3f35.7e46c">[Files] Group 2</option><option value="ab397e95.29ebe">[Charts] Inputs</option><option value="89749fb7.87f01">[Charts] Charts</option><option value="4e7edda4.417004">[Charts] Group 3</option><option value="b14e0265.d6fc1">[Weegschaal] Weegschaal</option><option value="e250c38c.04261">[Charts] Graph</option><option value="a0e246d1b4737443">[Node-Red Dashboard]  Signal-Generator</option><option value="5d218c05f4088ef2">[SinChart] SinChart</option><option value="afe97566.fbda58">[Charts] Inputs</option><option value="44d9222c.07961c">[Charts] Charts</option><option value="ef33233b.dd28f">[Charts] Group 3</option><option value="2257ffde.e0372">[Tab1] Group 1</option><option value="dcb5c39c85066c72">[Files] json</option><option value="c77b04401d9c2692">[Tab1] OutputSignal</option><option value="_ADD_">Add new dashboard group...</option>
-            Note: This is for the pencil to create additional custom option in dropdown
-            </select><a id="node-input-lookup-group" class="red-ui-button" style="margin-left: 10px;"><i class="fa fa-pencil"></i></a></div>
-        </div>
-        <div class="form-row">
-            <label><i class="fa fa-object-group"></i> Size</label>
-            <input type="hidden" id="node-input-width" autocomplete="off" value="0" dir="">
-            <input type="hidden" id="node-input-height" autocomplete="off" value="0" dir="">
-            <button class="editor-button" id="node-input-size" style="min-width: 36px;">auto</button>
-        </div>
-        <div class="form-row">
-            <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
-            <input type="text" id="node-input-label" autocomplete="off" dir="">
-        </div>
-        <div class="form-row">
-            <label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
-            <input type="text" id="node-input-tooltip" placeholder="optional tooltip" autocomplete="off" dir="">
-        </div>
-        <div class="form-row">
-            <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
-            <input type="text" id="node-input-format" placeholder="{{value}}" autocomplete="off" dir="">
-        </div>
-        <div class="form-row">
-            <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
-            <span for="node-input-min">min</span>
-            <input type="text" id="node-input-min" style="width:60px" autocomplete="off" dir="">
-            <span for="not-input-max" style="margin-left:22px;">max</span>
-            <input type="text" id="node-input-max" style="width:60px" autocomplete="off" dir="">
-            <span for="not-input-step" style="margin-left:22px;">step</span>
-            <input type="text" id="node-input-step" style="width:60px" autocomplete="off" dir="">
-        </div>
-        <div class="form-row">
-            <label style="width:auto" for="node-input-wrap"><i class="fa fa-refresh"></i> Wrap value from max to min and min to max.</label>
-            <input type="checkbox" id="node-input-wrap" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
-        </div>
-        <div class="form-row">
-            <label style="width:auto" for="node-input-passthru"><i class="fa fa-arrow-right"></i> If <code>msg</code> arrives on input, pass through to output: </label>
-            <input type="checkbox" checked="" id="node-input-passthru" style="display:inline-block; width:auto; vertical-align:top;" autocomplete="off">
-        </div>
-        <div class="form-row">
-            <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> When changed, send:</label>
-        </div>
-        <div class="form-row">
-            <label style="padding-left:25px; margin-right:-25px">Payload</label>
-            <label style="width:auto">Current value</label>
-        </div>
-        <div class="form-row">
-            <label for="node-input-topic" style="padding-left:25px; margin-right:-25px">Topic</label>
-            <input type="hidden" id="node-input-topic" autocomplete="off" dir="" class="red-ui-typedInput" value="topic">
-            <input type="hidden" id="node-input-topicType" autocomplete="off" value="msg" dir="" style="display: none;">
-        <div style="width: 331.717px; margin-right: 0px; margin-left: 0px;" class="red-ui-typedInput-container"><button type="button" class="red-ui-typedInput-type-select" tabindex="0" title="msg."><i class="red-ui-typedInput-icon fa fa-caret-down"></i><span class="red-ui-typedInput-type-label">msg.</span></button><div class="red-ui-typedInput-input-wrap"><input class="red-ui-typedInput-input red-ui-autoComplete" type="text" style="margin-right: 0px; margin-left: 0px;" autocomplete="off"></div><div class="red-ui-typedInput-value-label" style="display: none;"></div><button type="button" tabindex="0" class="red-ui-typedInput-option-trigger" style="display: none;"><span class="red-ui-typedInput-option-label"></span><span class="red-ui-typedInput-option-caret"><i class="red-ui-typedInput-icon fa fa-caret-down"></i></span></button><button type="button" tabindex="0" class="red-ui-typedInput-option-expand" style="display: none;"><i class="red-ui-typedInput-icon fa fa-ellipsis-h"></i></button></div></div>
-        <div class="form-row">
-            <label for="node-input-className"><i class="fa fa-code"></i>  Class</label>
-            <input type="text" id="node-input-className" placeholder="Optional CSS class name(s) for widget" autocomplete="off" dir="">
-        </div>
-        <div class="form-row">
-            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-            <input type="text" id="node-input-name" autocomplete="off" dir="">
-        </div>
-    </form> -->-->

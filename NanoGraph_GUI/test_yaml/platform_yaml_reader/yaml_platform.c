@@ -669,7 +669,7 @@ int main(int argc, char **argv)
             yp_test_number_constraint("nb_channels", &itf->format.nb_channels);
         }
     }
-    printf("error_line=%d error_text=%s\n", m.error_line, m.error_text);
+    printf("error_line=%d error_text=%s\n\n\n\n", m.error_line, m.error_text);
     return 0;
 }
 #endif

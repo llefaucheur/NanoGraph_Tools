@@ -782,7 +782,7 @@ int main(int argc, char **argv)
                i, f->present, f->format_id, f->data_type, f->sample_rate,
                f->nb_channels, f->interleaving);
     }
-    printf("error_line=%d error_text=%s\n", g.error_line, g.error_text);
+    printf("error_line=%d error_text=%s\n\n\n\n\n", g.error_line, g.error_text);
     return 0;
 }
 #endif

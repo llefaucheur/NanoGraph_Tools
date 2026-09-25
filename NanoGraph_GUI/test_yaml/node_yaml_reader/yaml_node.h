@@ -148,29 +148,27 @@ typedef struct
 {
     char section[YN_MAX_NAME];
     int index;
-    int relocatable;
-    int memory_clear;
-    int data0prog1;
-    int mem_alloc;
-    char mem_type[YN_MAX_VALUE];
-    char mem_speed[YN_MAX_VALUE];
-    int mem_alloc_a;
-    int mem_alloc_b;
-    int mem_alloc_b_type;
-    int mem_alloc_b_arc;
-    int mem_alloc_c;
-    int mem_alloc_c_arc;
-    int mem_alloc_d;
-    int mem_alloc_d_arc;
+    int mreloc;
+    int mclear;
+    int mdata0prog1;
+    char mtype[YN_MAX_VALUE];
+    char mspeed[YN_MAX_VALUE];
+    int malloc_a;
+    int malloc_b;
+    int malloc_b_type;
+    int malloc_b_arc;
+    int malloc_c;
+    int malloc_c_arc;
+    int malloc_d;
+    int malloc_d_arc;
     char format[YN_MAX_NAME];
     unsigned long present;
 } YN_MemoryBank;
 
 #define YN_MEM_HAS_INDEX          0x00000001UL
-#define YN_MEM_HAS_RELOCATABLE    0x00000002UL
+#define YN_MEM_HAS_mreloc    0x00000002UL
 #define YN_MEM_HAS_CLEAR          0x00000004UL
 #define YN_MEM_HAS_DATA0PROG1     0x00000008UL
-#define YN_MEM_HAS_ALLOC          0x00000010UL
 #define YN_MEM_HAS_TYPE           0x00000020UL
 #define YN_MEM_HAS_SPEED          0x00000040UL
 #define YN_MEM_HAS_ALLOC_A        0x00000080UL

@@ -192,8 +192,8 @@ interpreter_instances:
             values: [1, 2, 3, 4, 8, 16, 32]
           sample_rate:
             type: float
-            default: 44101
-            values: [8001, 16001, 44101]
+            default: 44100
+            values: [8000, 16000, 44100]
           nb_channels:
             type: int
             default: 1

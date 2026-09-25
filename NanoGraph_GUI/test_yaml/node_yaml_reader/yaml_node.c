@@ -295,23 +295,22 @@ static int yn_set_memory(YN_MemoryBank *m, const char *key, char *value)
 {
 #define YN_MI(k,field,flag) if (strcmp(key,k)==0) { if(!yn_int(value,&m->field)) return 0; m->present|=flag; return 1; }
     YN_MI("index", index, YN_MEM_HAS_INDEX)
-    YN_MI("relocatable", relocatable, YN_MEM_HAS_RELOCATABLE)
-    YN_MI("memory_clear", memory_clear, YN_MEM_HAS_CLEAR)
-    YN_MI("data0prog1", data0prog1, YN_MEM_HAS_DATA0PROG1)
-    YN_MI("mem_alloc", mem_alloc, YN_MEM_HAS_ALLOC)
-    YN_MI("mem_alloc_a", mem_alloc_a, YN_MEM_HAS_ALLOC_A)
-    YN_MI("mem_alloc_b", mem_alloc_b, YN_MEM_HAS_ALLOC_B)
-    YN_MI("mem_alloc_b_type", mem_alloc_b_type, YN_MEM_HAS_ALLOC_B_TYPE)
-    YN_MI("mem_alloc_b_arc", mem_alloc_b_arc, YN_MEM_HAS_ALLOC_B_ARC)
-    YN_MI("mem_alloc_c", mem_alloc_c, YN_MEM_HAS_ALLOC_C)
-    YN_MI("mem_alloc_c_arc", mem_alloc_c_arc, YN_MEM_HAS_ALLOC_C_ARC)
-    YN_MI("mem_alloc_d", mem_alloc_d, YN_MEM_HAS_ALLOC_D)
-    YN_MI("mem_alloc_d_arc", mem_alloc_d_arc, YN_MEM_HAS_ALLOC_D_ARC)
+    YN_MI("mreloc",         mreloc, YN_MEM_HAS_mreloc)
+    YN_MI("mclear",         mclear, YN_MEM_HAS_CLEAR)
+    YN_MI("mdata0prog1",    mdata0prog1, YN_MEM_HAS_DATA0PROG1)
+    YN_MI("malloc_a",       malloc_a, YN_MEM_HAS_ALLOC_A)
+    YN_MI("malloc_b",       malloc_b, YN_MEM_HAS_ALLOC_B)
+    YN_MI("malloc_b_type",  malloc_b_type, YN_MEM_HAS_ALLOC_B_TYPE)
+    YN_MI("malloc_b_arc",   malloc_b_arc, YN_MEM_HAS_ALLOC_B_ARC)
+    YN_MI("malloc_c",       malloc_c, YN_MEM_HAS_ALLOC_C)
+    YN_MI("malloc_c_arc",   malloc_c_arc, YN_MEM_HAS_ALLOC_C_ARC)
+    YN_MI("malloc_d",       malloc_d, YN_MEM_HAS_ALLOC_D)
+    YN_MI("malloc_d_arc",   malloc_d_arc, YN_MEM_HAS_ALLOC_D_ARC)
 #undef YN_MI
     if (strcmp(key, "mem_type") == 0)
-    { yn_copy(m->mem_type, YN_MAX_VALUE, value); m->present |= YN_MEM_HAS_TYPE; }
-    else if (strcmp(key, "mem_speed") == 0)
-    { yn_copy(m->mem_speed, YN_MAX_VALUE, value); m->present |= YN_MEM_HAS_SPEED; }
+    { yn_copy(m->mtype, YN_MAX_VALUE, value); m->present |= YN_MEM_HAS_TYPE; }
+    else if (strcmp(key, "mspeed") == 0)
+    { yn_copy(m->mspeed, YN_MAX_VALUE, value); m->present |= YN_MEM_HAS_SPEED; }
     else if (strcmp(key, "format") == 0)
     { yn_copy(m->format, YN_MAX_NAME, value); m->present |= YN_MEM_HAS_FORMAT; }
     return 1;
@@ -730,14 +729,14 @@ int main(int argc, char **argv)
     for (i = 0; i < m.implementation.memory_bank_count; ++i)
     {
         const YN_MemoryBank *b = &m.implementation.memory_bank[i];
-        printf("  memory_bank[%d].present=0x%lx section=%s index=%d relocatable=%d memory_clear=%d data0prog1=%d mem_alloc=%d mem_type=%s mem_speed=%s\n",
-               i, b->present, b->section, b->index, b->relocatable, b->memory_clear,
-               b->data0prog1, b->mem_alloc, b->mem_type, b->mem_speed);
-        printf("    mem_alloc_a=%d mem_alloc_b=%d mem_alloc_b_type=%d mem_alloc_b_arc=%d mem_alloc_c=%d mem_alloc_c_arc=%d mem_alloc_d=%d mem_alloc_d_arc=%d format=%s\n",
-               b->mem_alloc_a, b->mem_alloc_b, b->mem_alloc_b_type, b->mem_alloc_b_arc,
-               b->mem_alloc_c, b->mem_alloc_c_arc, b->mem_alloc_d, b->mem_alloc_d_arc, b->format);
+        printf("  memory_bank[%d].present=0x%lx section=%s index=%d mreloc=%d memory_clear=%d mdata0prog1=%d mem_type=%s mem_speed=%s\n",
+               i, b->present, b->section, b->index, b->mreloc, b->mclear,
+               b->mdata0prog1, b->mtype, b->mspeed);
+        printf("    malloc_a=%d malloc_b=%d malloc_b_type=%d malloc_b_arc=%d malloc_c=%d malloc_c_arc=%d malloc_d=%d malloc_d_arc=%d format=%s\n",
+               b->malloc_a, b->malloc_b, b->malloc_b_type, b->malloc_b_arc,
+               b->malloc_c, b->malloc_c_arc, b->malloc_d, b->malloc_d_arc, b->format);
     }
-    printf("error_line=%d error_text=%s\n", m.error_line, m.error_text);
+    printf("error_line=%d error_text=%s\n\n\n\n\n", m.error_line, m.error_text);
     return 0;
 }
 #endif
