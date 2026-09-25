@@ -55,17 +55,17 @@ parameters:
 # assembly code is made for a specific familty of processors
 implementation:
   header: arm_script.h
-  init: arm_script_init   # name of the entry point for CMSIS-STREAM
+  init: arm_script_init     # name of the entry point for CMSIS-STREAM
   process: arm_script_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
-  malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph
-  reentrant: no           # code is reentrant
-  compatibility: 101      # the node is tested with framework V.101 and before
-  nb_memory_banks: 1      # number of memory banks
+  malloc: precomputed       # precomputed / dynamic allocation without help of NanoGraph
+  reentrant: no             # code is reentrant
+  compatibility: 101        # the node is tested with framework V.101 and before
+  nb_memory_banks: 1        # number of memory banks
 
   memoryBank2:
     - index: 0
-      mem_alloc: 78       # (coef + state)50 + (pointers + index)24
-      mem_type: static    # static / working / periodic_backup / pseudo_working 
-      mem_speed: normal   # critical / fast / normal / coprocessor memory
+      malloc: 78            # (coef + state)50 + (pointers + index)24
+      mtype: static         # static / working / periodic_backup / pseudo_working 
+      mspeed: normal        # critical / fast / normal / coprocessor memory
 
 

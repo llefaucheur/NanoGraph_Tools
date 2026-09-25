@@ -35,17 +35,6 @@ nodes:
       mode_1: "none"
       mode_2: "none"
       mode_3: "none"
-  - node: arm_converter_0
-    generated: true
-    generated_by: format_resolver
-    generated_reason: sample_rate
-    parameters:
-      i_frame_length: 4
-      i_sample_rate: 1
-      i_nb_channels: 1
-      o_frame_length: 4
-      o_sample_rate: 16000
-      o_nb_channels: 1
 
 arcs:
   - OPort_0 IO: io_data_in[0]
@@ -53,10 +42,6 @@ arcs:
     buffer_size: 4
     formatID: 0
   - OPort_0 IO: io_audio_in[0]
-    IPort_0 node: arm_converter_0
-    buffer_size: 4
-    formatID: 1
-  - OPort_0 node: arm_converter_0
     IPort_0 node: arm_filter_1
     buffer_size: 4
     formatID: 0
@@ -87,20 +72,6 @@ formats:
       sample_rate:
         type: float
         default: 16000
-      nb_channels:
-        type: int
-        default: 1
-  - format:
-      formatID: 1
-      interleaving:
-        type: enum
-        values: [interleaved, deinterleaved]
-      data_type:
-        default: int16
-        values: [int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, utf8, utf16]
-      sample_rate:
-        type: float
-        default: 1
       nb_channels:
         type: int
         default: 1

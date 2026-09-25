@@ -92,10 +92,10 @@ implementation:
   process: sigp_detector_process # name of the entry point for CMSIS-STREAM / NanoGraphInterpreter
   processor_architecture: armv7m, armv8m # list of processor architectures
   processor_fpu_option: double  # double precision FPU
-  malloc: precomputed     # precomputed / dynamic allocation without help of NanoGraph
-  reentrant: yes          # code is reentrant
-  compatibility: 101       # the node is tested with framework V.101 and before
-  nb_memory_banks: 2      # number of memory banks
+  malloc: precomputed       # precomputed / dynamic allocation without help of NanoGraph
+  reentrant: yes            # code is reentrant
+  compatibility: 101        # the node is tested with framework V.101 and before
+  nb_memory_banks: 2        # number of memory banks
 
   # memsize = 
   # A + 							   (fixed memory allocation in Bytes)
@@ -105,23 +105,24 @@ implementation:
   #    + parameter from the graph optional field "node_malloc_add"
   memoryBank1:
     - index: 0
-      relocatable: 1   # command 'STREAM_UPDATE_RELOCATABLE' is used with address changes
-      mclear: 1        # the scheduler clears the memory at reset time
-      data0prog1: 0    # data / program access
-      mtype: static    # 
-      malloc_a: 24     # "A" in the above formula : 4 bytes for the instance (2xint32 + 2xptr64)
-      malloc_b: 12     # "B"
-      malloc_b_type: 0 # take the max/min/sum of all input/output arcs/frame sizes
-      malloc_b_arc: 0  # index of arc(i) in the above equation
-      malloc_c: 12     # "C"
-      malloc_c_arc: 0  # "j" in the formula
-      malloc_d: 12     # "D"
-      malloc_d_arc: 0  # "k" in the formula
-
-  memoryBank2:
-    - index: 1
-      malloc: 78       # (coef + state)50 + (pointers + index)24
-      mtype: working   # static / working / periodic_backup / pseudo_working 
-      mem_speed: critical # critical / fast / best-effort / coprocessor memory
+      mreloc: 1             # command 'STREAM_UPDATE_RELOCATABLE' is used with address changes
+      mclear: 1             # the scheduler clears the memory at reset time
+      mmdata0prog1: 0       # data / program access
+      mtype: static         # 
+      malloc_a: 24          # 24 bytes for the instance (2xint32 + 2xptr64)
+      malloc_b: 12          # "B"
+      malloc_b_type: 0      # take the max/min/sum of all input/output arcs/frame sizes
+      malloc_b_arc: 0       # index of arc(i) in the above equation
+      malloc_c: 12          # "C"
+      malloc_c_arc: 0       # "j" in the formula
+      malloc_d: 12          # "D"
+      malloc_d_arc: 0       # "k" in the formula
+      mspeed: fast          # critical / fast / best-effort / coprocessor memory
+        
+  memoryBank2:      
+    - index: 1      
+      malloc_a: 78          # (coef + state)50 + (pointers + index)24
+      mtype: working        # static / working / periodic_backup / pseudo_working 
+      mspeed: critical      # critical / fast / best-effort / coprocessor memory
       format: format1
-  library: 16             # dependency to DSP services
+  library: 16               # dependency to DSP services

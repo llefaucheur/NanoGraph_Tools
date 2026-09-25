@@ -508,11 +508,12 @@ window.NG_PLATFORM_MANIFESTS = {
               },
               "sample_rate": {
                 "type": "float",
-                "default": 44100,
+                "default": 1,
                 "values": [
-                  8000,
-                  16000,
-                  44100
+                  0.01,
+                  0.1,
+                  1,
+                  10
                 ]
               },
               "nb_channels": {
@@ -754,16 +755,15 @@ window.NG_PLATFORM_MANIFESTS = {
               },
               "sample_rate": {
                 "type": "float",
-                "default": 1,
+                "default": 16000,
                 "values": [
-                  1,
-                  10,
-                  100
+                  16000,
+                  44100
                 ]
               },
               "nb_channels": {
                 "type": "int",
-                "default": 1,
+                "default": 16000,
                 "values": [
                   1,
                   2,
@@ -804,11 +804,10 @@ window.NG_PLATFORM_MANIFESTS = {
               },
               "sample_rate": {
                 "type": "float",
-                "default": 1,
+                "default": 16000,
                 "values": [
-                  1,
-                  10,
-                  100
+                  16000,
+                  44100
                 ]
               },
               "nb_channels": {

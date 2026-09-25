@@ -191,27 +191,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -398,27 +398,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -544,9 +544,9 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank2": [
         {
           "index": 0,
-          "mem_alloc": 78,
-          "mem_type": "static",
-          "mem_speed": "normal"
+          "malloc": 78,
+          "mtype": "static",
+          "mspeed": "normal"
         }
       ]
     },
@@ -642,27 +642,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -762,27 +762,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -892,27 +892,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -1017,23 +1017,32 @@ window.NG_NODE_MANIFESTS = {
       "malloc": "precomputed",
       "reentrant": true,
       "compatibility": 101,
-      "nb_memory_banks": 1,
+      "nb_memory_banks": 2,
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
+        }
+      ],
+      "memoryBank2": [
+        {
+          "index": 1,
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
+          "format": "format1"
         }
       ],
       "library": 16
@@ -1186,27 +1195,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -1361,27 +1370,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -1519,27 +1528,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -1690,27 +1699,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -1825,27 +1834,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -1957,27 +1966,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -2142,27 +2151,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -2306,27 +2315,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
@@ -2468,27 +2477,27 @@ window.NG_NODE_MANIFESTS = {
       "memoryBank1": [
         {
           "index": 0,
-          "relocatable": 1,
-          "memory_clear": 1,
-          "data0prog1": 0,
-          "mem_alloc": 24,
-          "mem_type": "static",
-          "mem_alloc_a": 12,
-          "mem_alloc_b": 12,
-          "mem_alloc_b_type": 0,
-          "mem_alloc_b_arc": 0,
-          "mem_alloc_c": 12,
-          "mem_alloc_c_arc": 0,
-          "mem_alloc_d": 12,
-          "mem_alloc_d_arc": 0
+          "mreloc": 1,
+          "mclear": 1,
+          "mmdata0prog1": 0,
+          "mtype": "static",
+          "malloc_a": 24,
+          "malloc_b": 12,
+          "malloc_b_type": 0,
+          "malloc_b_arc": 0,
+          "malloc_c": 12,
+          "malloc_c_arc": 0,
+          "malloc_d": 12,
+          "malloc_d_arc": 0,
+          "mspeed": "fast"
         }
       ],
       "memoryBank2": [
         {
           "index": 1,
-          "mem_alloc": 78,
-          "mem_type": "working",
-          "mem_speed": "critical",
+          "malloc_a": 78,
+          "mtype": "working",
+          "mspeed": "critical",
           "format": "format1"
         }
       ],
